@@ -287,6 +287,6 @@ public class EmergencyApp {
      * @return The count of discharged patients treated by professionals of the given specialization.
      */
     public int getNumberOfPatientsAssignedToProfessionalDischarged(String specialization) {
-        return (int) professionalMap.values().stream().filter(p->p.getSpecialization().equals(specialization)).flatMap(p->p.getPatients().stream()).distinct().count();
+        return (int) professionalMap.values().stream().filter(p->p.getSpecialization().equals(specialization)).flatMap(p->p.getPatients().stream()).filter(p->p.getStatus()==PatientStatus.DISCHARGED).distinct().count();
     }
 }

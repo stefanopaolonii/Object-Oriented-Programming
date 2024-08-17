@@ -11,10 +11,7 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import emergency.EmergencyApp;
-import emergency.EmergencyException;
-import emergency.Professional;
-
+import emergency.*;
 public class TestR1 {
 
 	/* Professional and Department Management */

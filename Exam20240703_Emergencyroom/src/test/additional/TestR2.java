@@ -7,9 +7,7 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import emergency.EmergencyApp;
-import emergency.EmergencyException;
-import emergency.Patient;
+import emergency.*;
 import emergency.EmergencyApp.*;
 
 

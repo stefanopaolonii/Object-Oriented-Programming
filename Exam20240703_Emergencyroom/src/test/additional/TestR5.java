@@ -1,12 +1,10 @@
 package test.additional;
-
 import static org.junit.Assert.*;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import emergency.EmergencyApp;
-import emergency.EmergencyException;
+import emergency.*;
 
 public class TestR5 {
     private static final String DATE = "2024-06-18";
