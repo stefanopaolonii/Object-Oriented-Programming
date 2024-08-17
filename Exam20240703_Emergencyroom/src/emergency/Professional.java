@@ -40,4 +40,8 @@ public class Professional {
     public String getWorkingHours() {
         return null;
     }
+
+    public void addPatient(Patient patient){
+        patients.add(patient);
+    }
 }

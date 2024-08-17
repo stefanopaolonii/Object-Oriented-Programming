@@ -15,6 +15,9 @@ public class EmergencyApp {
     }
     Map<String,Professional> professionalMap= new HashMap<>();
     Map<String,Department> departmentsMap= new HashMap<>();
+    Map<String,Patient> patientsMap= new HashMap<>();
+    Map<String,Report> reportsMap= new HashMap<>();
+    private int reportCounter=0;
     /**
      * Add a professional working in the emergency room
      * 
@@ -156,8 +159,10 @@ public class EmergencyApp {
      * @param dateTimeAccepted The date and time the patient was accepted into the emergency system.
      */
     public Patient addPatient(String fiscalCode, String name, String surname, String dateOfBirth, String reason, String dateTimeAccepted) {
-        //TODO: to be implemented
-        return null;
+        if(patientsMap.containsKey(fiscalCode)) return patientsMap.get(fiscalCode);
+        Patient newPatient= new Patient(fiscalCode, name, surname, dateOfBirth, reason, dateTimeAccepted);
+        patientsMap.put(fiscalCode, newPatient);
+        return newPatient;
     }
 
     /**
@@ -168,8 +173,7 @@ public class EmergencyApp {
      *         Returns an empty collection if no match is found.
      */    
     public List<Patient> getPatient(String identifier) throws EmergencyException {
-        //TODO: to be implemented
-        return null;
+        return patientsMap.values().stream().filter(p-> p.getFiscalCode().equals(identifier) || p.getSurname().equals(identifier)).collect(Collectors.toList());
     }
 
     /**
@@ -181,8 +185,7 @@ public class EmergencyApp {
      *         Returns an empty list if no patients were accepted on that date.
      */
     public List<String> getPatientsByDate(String date) {
-        //TODO: to be implemented
-        return null;
+        return patientsMap.values().stream().filter(p->p.getDateTimeAccepted().compareTo(date)==0).sorted(Comparator.comparing(Patient::getSurname).thenComparing(Patient::getName)).map(Patient::getFiscalCode).collect(Collectors.toList());
     }
 
     /**
@@ -194,13 +197,20 @@ public class EmergencyApp {
      * @throws EmergencyException If the patient does not exist, if no professionals with the required specialization are found, or if none are available during the period of the request.
      */
     public String assignPatientToProfessional(String fiscalCode, String specialization) throws EmergencyException {
-        //TODO: to be implemented
-        return null;
+        Patient searchedPatient=patientsMap.get(fiscalCode);
+        if(searchedPatient==null) throw new EmergencyException();
+        Optional<Professional> searchedProfessional=professionalMap.values().stream().filter(p->p.getSpecialization().equals(specialization)).filter(p->{String[] professionalPeriodParts=p.getPeriod().split(" to "); return professionalPeriodParts[0].compareTo(searchedPatient.getDateTimeAccepted())<=0 && professionalPeriodParts[1].compareTo(searchedPatient.getDateTimeAccepted())>=0;}).sorted(Comparator.comparing(Professional::getId)).findFirst();
+        if(searchedProfessional.isEmpty()) throw new EmergencyException();
+        searchedProfessional.get().addPatient(searchedPatient);
+        return searchedProfessional.get().getId();
     }
 
     public Report saveReport(String professionalId, String fiscalCode, String date, String description) throws EmergencyException {
-        //TODO: to be implemented
-        return null;
+        if(!professionalMap.containsKey(professionalId)) throw new EmergencyException();
+        String code=String.format("%d",++reportCounter);
+        Report newReport= new Report(code, professionalId, fiscalCode, date, description);
+        reportsMap.put(code, newReport);
+        return newReport;
     }
 
     /**
