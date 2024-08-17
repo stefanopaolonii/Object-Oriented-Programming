@@ -1,50 +1,24 @@
 name: EmergencyRoom CI
 
-# Esecuzione del workflow su ogni push o pull request, ma solo se vengono modificati file nel progetto EmergencyRoom
 on:
   push:
     paths:
-      - 'EmergencyRoom/**'
-  pull_request:
-    paths:
-      - 'EmergencyRoom/**'
+      - 'Exam20240703_Emergencyroom/**'  # Trigger solo se c'è un cambiamento nella cartella EmergencyRoom
 
 jobs:
   test:
     runs-on: ubuntu-latest
 
-    # Definizione delle variabili d'ambiente
-    env:
-      MAVEN_OPTS: >-
-        -Dhttps.protocols=TLSv1.2
-        -Dorg.slf4j.simpleLogger.showDateTime=true
-        -Djava.awt.headless=true
-      MAVEN_CLI_OPTS: >-
-        --batch-mode
-        --fail-at-end
-        --show-version
-
     steps:
-    # Step 1: Checkout del codice sorgente
     - name: Checkout code
       uses: actions/checkout@v3
 
-    # Step 2: Configurazione del JDK 17
     - name: Set up JDK 17
       uses: actions/setup-java@v3
       with:
         distribution: 'temurin'
         java-version: '17'
 
-    # Step 3: Esecuzione dei test Maven
-    - name: Run Maven Tests
-      working-directory: EmergencyRoom
-      run: mvn $MAVEN_CLI_OPTS src/test
-
-    # Step 4: Archiviazione dei report di test JUnit come artefatti
-    - name: Archive test results
-      if: always()
-      uses: actions/upload-artifact@v3
-      with:
-        name: junit-test-reports
-        path: EmergencyRoom/target/surefire-reports/TEST-*.xml
+    - name: Run Maven tests
+      working-directory: Exam20240703_Emergencyroom
+      run: mvn test
