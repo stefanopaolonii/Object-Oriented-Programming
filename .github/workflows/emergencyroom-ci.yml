@@ -39,7 +39,7 @@ jobs:
     # Step 3: Esecuzione dei test Maven
     - name: Run Maven Tests
       working-directory: EmergencyRoom
-      run: mvn $MAVEN_CLI_OPTS test
+      run: mvn $MAVEN_CLI_OPTS src/test
 
     # Step 4: Archiviazione dei report di test JUnit come artefatti
     - name: Archive test results
