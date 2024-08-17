@@ -108,15 +108,15 @@ public class Fields {
     }
     
     public long countServedAssociates() {
-        return -1;
+        return fieldsMap.values().stream().flatMap(field->field.getBookingsMap().values().stream()).distinct().count();
     }
     
     public Map<Integer,Long> fieldTurnover() {
-        return null;
+        return fieldsMap.values().stream().collect(Collectors.toMap(Field::getField,field -> (long) field.getOccupation()));
     }
     
     public double occupation() {
-        return -1;
+        return ((double)fieldsMap.values().stream().mapToInt(Field::getOccupation).sum()/(((toMinutes(closingTime)-toMinutes(openingTime))/60)*fieldsMap.size()));
     }
     
  }
