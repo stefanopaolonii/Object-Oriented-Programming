@@ -104,7 +104,7 @@ public class Fields {
     }
     
     public List<FieldOption> findOptions(String time, Features required){
-        return fieldsMap.values().stream().filter(field->!field.getBookingsMap().keySet().contains(time)).filter(field->{Features feature=field.getFeature(); return feature.indoor==required.indoor ;}).sorted(Comparator.comparingInt(Field::getOccupation).reversed().thenComparing(Comparator.comparing(Field::getField))).collect(Collectors.toList());
+        return fieldsMap.values().stream().filter(field->!field.getBookingsMap().keySet().contains(time)).filter(field->{Features feature=field.getFeature(); if(required.indoor && ! feature.indoor) return false; if(required.heating && ! feature.heating) return false; return !required.ac || feature.ac;}).sorted(Comparator.comparingInt(Field::getOccupation).reversed().thenComparing(Comparator.comparing(Field::getField))).collect(Collectors.toList());
     }
     
     public long countServedAssociates() {
