@@ -6,7 +6,6 @@ import java.io.Reader;
 import java.util.*;
 import java.util.stream.Collectors;
 
-
 public class EmergencyApp {
 
     public enum PatientStatus {
