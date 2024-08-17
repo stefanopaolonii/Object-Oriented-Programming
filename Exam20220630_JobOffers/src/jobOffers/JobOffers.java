@@ -78,12 +78,21 @@ public class JobOffers  {
 	
 //R4
 	public List<String> discardApplications() {
-		return null;
+		/*List<String> daritornare= new ArrayList<>();
+		for(Application app:applicationsList){
+			Candidate searchCandidate=candidatesMap.get(app.getCandidate());
+			Position searchedPosition=positionsMap.get(app.getPosition());
+				if(searchedPosition.getSkillslevelMap().entrySet().stream().anyMatch(entry->{Integer rating=searchCandidate.getSkillsRating().get(entry.getKey()); return rating==null || rating<entry.getValue();})){
+					daritornare.add(app.getCandidate()+":"+app.getPosition());
+				}
+		}
+		return daritornare;*/
+		return applicationsList.stream().filter(app-> {Candidate searchedCandidate= candidatesMap.get(app.getCandidate()); Position searchedPosition= positionsMap.get(app.getPosition()); return searchedPosition.getSkillslevelMap().entrySet().stream().anyMatch(entry->{Integer rating=searchedCandidate.getSkillsRating().get(entry.getKey()); return rating==null || rating<entry.getValue();});}).sorted(Comparator.comparing(Application::getCandidate).thenComparing(Application::getPosition)).map(app->app.getCandidate()+":"+app.getPosition()).collect(Collectors.toList());
 	}
 	
 	 
 	public List<String> getEligibleCandidates(String position) {
-		return null;
+		return applicationsList.stream().filter(app-> {Candidate searchedCandidate= candidatesMap.get(app.getCandidate()); Position searchedPosition= positionsMap.get(app.getPosition()); return searchedPosition.getSkillslevelMap().entrySet().stream().allMatch(entry->{Integer rating=searchedCandidate.getSkillsRating().get(entry.getKey()); return rating!=null && rating>=entry.getValue();});}).sorted(Comparator.comparing(Application::getCandidate)).map(app->app.getCandidate()).distinct().collect(Collectors.toList());
 	}
 	
 
