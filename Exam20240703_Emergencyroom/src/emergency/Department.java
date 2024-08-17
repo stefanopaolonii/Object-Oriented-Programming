@@ -19,5 +19,12 @@ public class Department {
     public List<Patient> getPatients() {
         return patients;
     }
+
+    public boolean isAvailable(){
+        return patients.size()<maxpatients;
+    }
     
+    public void addPatient(Patient patient){
+        patients.add(patient);
+    }
 }

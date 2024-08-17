@@ -49,4 +49,8 @@ public class Patient {
     public PatientStatus getStatus() {
         return status;
     }
+
+    public void setStatus(PatientStatus status){
+        this.status=status;
+    }
 }

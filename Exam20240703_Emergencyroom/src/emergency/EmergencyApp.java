@@ -221,7 +221,15 @@ public class EmergencyApp {
      * @throws EmergencyException If the patient does not exist or if the department does not exist.
      */
     public void dischargeOrHospitalize(String fiscalCode, String departmentName) throws EmergencyException {
-        //TODO: to be implemented
+        Patient searchedPatient= patientsMap.get(fiscalCode);
+        Department searchedDepartment= departmentsMap.get(departmentName);
+        if(searchedPatient==null) throw new EmergencyException();
+        if(searchedDepartment==null) throw new EmergencyException();
+        if(searchedDepartment.isAvailable()){
+            searchedPatient.setStatus(PatientStatus.HOSPITALIZED);
+            searchedDepartment.addPatient(searchedPatient);
+        }
+        searchedPatient.setStatus(PatientStatus.DISCHARGED);
     }
 
     /**
@@ -232,7 +240,10 @@ public class EmergencyApp {
      * @throws EmergencyException If no patient is found with the given fiscal code.
      */
     public int verifyPatient(String fiscalCode) throws EmergencyException{
-        //TODO: to be implemented
+        Patient searchedPatient=patientsMap.get(fiscalCode);
+        if(searchedPatient==null) throw new EmergencyException();
+        if(searchedPatient.getStatus()==PatientStatus.DISCHARGED) return 0;
+        if(searchedPatient.getStatus()==PatientStatus.HOSPITALIZED) return 1;
         return -1;
     }
 
