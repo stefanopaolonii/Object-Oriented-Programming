@@ -5,6 +5,7 @@ Scrivere un programma in grado di gestire l'accoglienza dei pazienti al pronto s
 Implementa solo i controlli richiesti. 
 Le eccezioni nei metodi descritti di seguito sono del tipo EmergencyException.
 
+
 La documentazione JDK si trova sul [server locale](https://oop.polito.it/api/).
 
 La versione Inglese di questi requisiti è disponibile in [README.md](README.md).
