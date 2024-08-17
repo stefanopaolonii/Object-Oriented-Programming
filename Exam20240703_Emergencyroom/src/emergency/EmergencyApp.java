@@ -253,8 +253,7 @@ public class EmergencyApp {
      * @return The total number of patients in the system.
      */    
     public int getNumberOfPatients() {
-        //TODO: to be implemented
-        return -1;
+        return (int) patientsMap.values().stream().filter(p->p.getStatus()==PatientStatus.ADMITTED).count();
     }
 
     /**
@@ -264,13 +263,12 @@ public class EmergencyApp {
      * @return The count of patients admitted on that date.
      */
     public int getNumberOfPatientsByDate(String date) {
-        //TODO: to be implemented
-        return -1;
+        return (int) patientsMap.values().stream().filter(p->p.getDateTimeAccepted().compareTo(date)==0).count();
     }
 
     public int getNumberOfPatientsHospitalizedByDepartment(String departmentName) throws EmergencyException {
-        //TODO: to be implemented
-        return -1;
+        if(!departmentsMap.containsKey(departmentName)) throw new EmergencyException();
+        return (int) departmentsMap.get(departmentName).getPatients().stream().count();
     }
 
     /**
@@ -279,8 +277,7 @@ public class EmergencyApp {
      * @return The count of discharged patients.
      */
     public int getNumberOfPatientsDischarged() {
-        //TODO: to be implemented
-        return -1;
+        return (int) patientsMap.values().stream().filter(p->p.getStatus()==PatientStatus.DISCHARGED).count();
     }
 
     /**
@@ -290,7 +287,6 @@ public class EmergencyApp {
      * @return The count of discharged patients treated by professionals of the given specialization.
      */
     public int getNumberOfPatientsAssignedToProfessionalDischarged(String specialization) {
-        //TODO: to be implemented
-        return -1;
+        return (int) professionalMap.values().stream().filter(p->p.getSpecialization().equals(specialization)).flatMap(p->p.getPatients().stream()).distinct().count();
     }
 }

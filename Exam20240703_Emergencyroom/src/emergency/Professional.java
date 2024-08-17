@@ -44,4 +44,8 @@ public class Professional {
     public void addPatient(Patient patient){
         patients.add(patient);
     }
+
+    public Collection<Patient> getPatients(){
+        return patients;
+    }
 }
