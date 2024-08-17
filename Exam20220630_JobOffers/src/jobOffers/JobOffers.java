@@ -9,6 +9,7 @@ public class JobOffers  {
 	Map<String,Candidate> candidatesMap= new HashMap<>();
 	List<Application> applicationsList= new ArrayList<>();
 	public enum Status {SUBMITTED,ACCEPTED,REJECTED};
+	Map<String,Consultant> consultantsMap= new HashMap<>();
 //R1
 	public int addSkills (String... skills) {
 		skillsSet.addAll(Arrays.asList(skills));
@@ -56,11 +57,23 @@ public class JobOffers  {
 	
 //R3
 	public int addConsultant (String name, String... skills) throws JOException {
-		return -1;
+		if(consultantsMap.containsKey(name)) throw new JOException("");
+		if(!skillsSet.containsAll(Arrays.asList(skills))) throw new JOException("");
+		consultantsMap.put(name, new Consultant(name, skills));
+		return Arrays.asList(skills).size();
 	}
 	
 	public Integer addRatings (String consultant, String candidate, String... skillRatings)  throws JOException {
-		return -1;
+		if(!consultantsMap.containsKey(consultant)) throw new JOException("");
+		if(!candidatesMap.containsKey(candidate)) throw new JOException("");
+		if(!consultantsMap.get(consultant).getSkillsSet().containsAll(candidatesMap.get(candidate).getCandidateskills())) throw new JOException("");
+		for(String skill:skillRatings){
+			String[] parts=skill.split(":");
+			int level=Integer.parseInt(parts[1]);
+			if(level<4 || level>10) throw new JOException("");
+			candidatesMap.get(candidate).addRating(parts[0], level);
+		}
+		return (int) candidatesMap.get(candidate).getSkillsRating().entrySet().stream().mapToInt(entry-> entry.getValue()).average().orElse(0);
 	}
 	
 //R4
