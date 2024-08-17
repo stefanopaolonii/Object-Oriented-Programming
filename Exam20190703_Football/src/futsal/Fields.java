@@ -1,6 +1,7 @@
 package futsal;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Represents a infrastructure with a set of playgrounds, it allows teams
@@ -99,11 +100,11 @@ public class Fields {
     
 
     public int getOccupation(int field) {
-        return -1;
+        return fieldsMap.get(field).getOccupation();
     }
     
     public List<FieldOption> findOptions(String time, Features required){
-        return null;
+        return fieldsMap.values().stream().filter(field->!field.getBookingsMap().keySet().contains(time)).filter(field->{Features feature=field.getFeature(); return feature.indoor==required.indoor ;}).sorted(Comparator.comparingInt(Field::getOccupation).reversed().thenComparing(Comparator.comparing(Field::getField))).collect(Collectors.toList());
     }
     
     public long countServedAssociates() {
