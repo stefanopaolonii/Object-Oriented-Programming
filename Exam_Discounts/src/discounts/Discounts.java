@@ -6,6 +6,8 @@ public class Discounts {
 	private Map<Integer,Card> cardsMap= new TreeMap<>();
 	private Map<String,Product> productsMap= new HashMap<>();
 	private Map<String,Category> categoriesMap= new HashMap<>();
+	private Map<Integer,Purchase> purchasesMap= new TreeMap<>();
+	private int purchaseCounter=0;
 	//R1
 	public int issueCard(String name) {
 		cardsMap.put(cardCounter, new Card(name, ++cardCounter));
@@ -26,7 +28,7 @@ public class Discounts {
 			throws DiscountsException {
 		if(productsMap.containsKey(productId)) throw new DiscountsException();
 		if(!categoriesMap.containsKey(categoryId)) categoriesMap.put(categoryId, new Category(categoryId));
-		productsMap.put(productId, new Product(categoryId, productId, price));
+		productsMap.put(productId, new Product(categoriesMap.get(categoryId), productId, price));
 	}
 	
 	public double getPrice(String productId) 
@@ -37,7 +39,7 @@ public class Discounts {
 
 	public int getAveragePrice(String categoryId) throws DiscountsException {
         if(!categoriesMap.containsKey(categoryId)) throw new DiscountsException();
-		return (int) Math.round(productsMap.values().stream().filter(product->product.getCategory().equals(categoryId)).mapToDouble(Product::getPrice).average().orElse(0.0));
+		return (int) Math.round(productsMap.values().stream().filter(product->product.getCategory().getName().equals(categoryId)).mapToDouble(Product::getPrice).average().orElse(0.0));
 	}
 	
 	//R3
@@ -53,23 +55,30 @@ public class Discounts {
 
 	//R4
 	public int addPurchase(int cardId, String... items) throws DiscountsException {
-        return -1;
+        for(String item:items){
+			String[] parts= item.split(":");
+			if(!productsMap.containsKey(parts[0])) throw new DiscountsException();
+		}
+		Purchase newPurchase= new Purchase(cardsMap.get(cardId),++purchaseCounter);
+		Arrays.asList(items).stream().forEach(item->{String[] parts=item.split(":"); newPurchase.addProduct(productsMap.get(parts[0]), Integer.parseInt(parts[1]));});
+		purchasesMap.put(purchaseCounter, newPurchase);
+		return purchaseCounter;
 	}
 
 	public int addPurchase(String... items) throws DiscountsException {
-        return -1;
+        return addPurchase(0, items);
 	}
 	
 	public double getAmount(int purchaseCode) {
-        return -1.0;
+        return purchasesMap.get(purchaseCode).getTotalPrice();
 	}
 	
 	public double getDiscount(int purchaseCode)  {
-        return -1.0;
+		return purchasesMap.get(purchaseCode).getTotatDiscount();
 	}
 	
 	public int getNofUnits(int purchaseCode) {
-        return -1;
+        return (int) purchasesMap.get(purchaseCode).getProductsMap().entrySet().stream().mapToInt(entry->entry.getValue()).sum();
 	}
 	
 	//R5
