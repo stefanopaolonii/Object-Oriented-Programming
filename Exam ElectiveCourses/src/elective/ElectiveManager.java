@@ -76,7 +76,11 @@ public class ElectiveManager {
      * @throws ElectiveException : if the number of selected course is not in [1,3] or the id has not been defined.
      */
     public int requestEnroll(String id, List<String> courses)  throws ElectiveException {
-        return -1;
+        if(courses.size()<1 || courses.size()>3) throw new ElectiveException();
+        if(!studentsMap.containsKey(id)) throw new ElectiveException();
+        if(courses.stream().anyMatch(course-> !coursesMap.keySet().contains(course))) throw new ElectiveException();
+        courses.stream().forEach(coursename-> studentsMap.get(id).addRequests(coursesMap.get(coursename)));
+        return courses.size();
     }
     
     /**
@@ -93,10 +97,10 @@ public class ElectiveManager {
      * @return the map of list of number of requests per course
      */
     public Map<String,List<Long>> numberRequests(){
-        return null;
+        return coursesMap.values().stream().collect(Collectors.toMap(Course::getName, course-> {List<Long> counts= new ArrayList<>(Arrays.asList(0L,0L,0L)); for(Student s: studentsMap.values()) for(int i=0;i<3;i++) if(i<s.getRequests().size() && s.getRequests().get(i).getName().equals(course.getName())) counts.set(i, counts.get(i)+1);return counts;}));
     }
     
-    
+
     /**
      * Make the definitive class assignments based on the grade averages and preferences.
      * <p>
