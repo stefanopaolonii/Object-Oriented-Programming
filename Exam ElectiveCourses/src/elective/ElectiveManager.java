@@ -125,7 +125,7 @@ public class ElectiveManager {
      * @return the map course name vs. student id list.
      */
     public Map<String,List<String>> getAssignments(){
-        return coursesMap.values().stream().collect(Collectors.toMap(Course::getName,course->course.getStudent().stream().sorted(Comparator.comparingDouble(Student::getAvarage)).map(Student::getId).collect(Collectors.toList())));
+        return coursesMap.values().stream().collect(Collectors.toMap(Course::getName,course->course.getStudent().stream().sorted(Comparator.comparingDouble(Student::getAvarage).reversed()).map(Student::getId).collect(Collectors.toList())));
     }
     
     
@@ -147,7 +147,7 @@ public class ElectiveManager {
      * @return the success rate (number between 0.0 and 1.0)
      */
     public double successRate(int choice){
-        return (double) studentsMap.values().stream().filter(student->{Course addmittedCourse=student.getAddmittedCourse(); return addmittedCourse!=null && student.getRequests().get(choice-1).getName().equals(addmittedCourse.getName());}).count()/studentsMap.size();
+        return (double) studentsMap.values().stream().filter(student->{Course addmittedCourse=student.getAddmittedCourse(); return addmittedCourse!=null && student.getRequests().size()>=choice &&student.getRequests().get(choice-1).getName().equals(addmittedCourse.getName());}).count()/studentsMap.size();
     }
 
     
