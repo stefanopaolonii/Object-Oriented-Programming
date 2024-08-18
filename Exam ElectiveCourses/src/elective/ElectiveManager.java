@@ -1,9 +1,7 @@
-package it.polito.oop.elective;
+package elective;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.SortedSet;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Manages elective courses enrollment.
@@ -11,7 +9,8 @@ import java.util.SortedSet;
  *
  */
 public class ElectiveManager {
-
+    Map<String,Course> coursesMap = new TreeMap<>();
+    Map<String,Student> studentsMap= new TreeMap<>();
     /**
      * Define a new course offer.
      * A course is characterized by a name and a number of available positions.
@@ -20,7 +19,7 @@ public class ElectiveManager {
      * @param availablePositions : the number of available positions
      */
     public void addCourse(String name, int availablePositions) {
-        
+        coursesMap.put(name,new Course(name, availablePositions));
     }
     
     /**
@@ -28,7 +27,7 @@ public class ElectiveManager {
      * @return
      */
     public SortedSet<String> getCourses(){
-        return null;
+        return (SortedSet<String>) coursesMap.keySet();
     }
     
     /**
@@ -37,9 +36,9 @@ public class ElectiveManager {
      * @param id : the id of the student
      * @param gradeAverage : the grade average
      */
-    public void loadStudent(String id, 
-                                  double gradeAverage){
-        
+    public void loadStudent(String id, double gradeAverage){
+        if(studentsMap.containsKey(id)) studentsMap.get(id).setAvarage(gradeAverage);
+        else studentsMap.put(id, new Student(id, gradeAverage));
     }
 
     /**
@@ -48,7 +47,7 @@ public class ElectiveManager {
      * @return : list of students ids.
      */
     public Collection<String> getStudents(){
-        return null;
+        return studentsMap.keySet().stream().collect(Collectors.toList());
     }
     
     /**
@@ -59,7 +58,7 @@ public class ElectiveManager {
      * @return : list of students ids.
      */
     public Collection<String> getStudents(double inf, double sup){
-        return null;
+        return studentsMap.values().stream().filter(student->student.getAvarage()>=inf && student.getAvarage()<=sup).map(Student::getId).collect(Collectors.toList());
     }
 
 

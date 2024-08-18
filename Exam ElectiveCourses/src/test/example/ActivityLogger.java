@@ -1,4 +1,4 @@
-package test.examle;
+package test.example;
 import java.time.Instant;
 
 import elective.Notifier;

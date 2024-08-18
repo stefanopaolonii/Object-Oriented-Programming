@@ -1,4 +1,4 @@
-package it.polito.oop.elective;
+package elective;
 
 /**
  * Listener interface that must be implemented by

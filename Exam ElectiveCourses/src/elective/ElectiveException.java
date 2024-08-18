@@ -1,4 +1,4 @@
-package it.polito.oop.elective;
+package elective;
 
 public class ElectiveException extends Exception {
     private static final long serialVersionUID = 1L;
