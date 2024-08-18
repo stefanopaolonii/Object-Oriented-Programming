@@ -12,6 +12,7 @@ public class ElectiveManager {
     Map<String,Course> coursesMap = new TreeMap<>();
     Map<String,Student> studentsMap= new TreeMap<>();
     public enum Status {CREATED,ADMITTED,NOTADMITTED};
+    private List<Notifier> listeners = new LinkedList<>();
     /**
      * Define a new course offer.
      * A course is characterized by a name and a number of available positions.
@@ -81,6 +82,7 @@ public class ElectiveManager {
         if(!studentsMap.containsKey(id)) throw new ElectiveException();
         if(courses.stream().anyMatch(course-> !coursesMap.keySet().contains(course))) throw new ElectiveException();
         courses.stream().forEach(coursename-> studentsMap.get(id).addRequests(coursesMap.get(coursename)));
+        listeners.forEach(l->l.requestReceived(id));
         return courses.size();
     }
     
@@ -112,7 +114,7 @@ public class ElectiveManager {
      * @return the number of students that could not be assigned to one of the selected courses.
      */
     public long makeClasses() {
-        studentsMap.values().stream().sorted(Comparator.comparingDouble(Student::getAvarage).reversed()).forEach(student->{List<Course> requests=student.getRequests(); boolean flag=true; for(Course rCourse : requests) {if(rCourse.getStudent().size()<rCourse.getAvailablePosition()){rCourse.addStudent(student); flag=false;break;}} if(flag) student.setStatus(Status.NOTADMITTED); else student.setStatus(Status.ADMITTED);;});
+        studentsMap.values().stream().sorted(Comparator.comparingDouble(Student::getAvarage).reversed()).forEach(student->{List<Course> requests=student.getRequests(); boolean flag=true; for(Course rCourse : requests) {if(rCourse.getStudent().size()<rCourse.getAvailablePosition()){rCourse.addStudent(student); listeners.forEach(l->l.assignedToCourse(student.getId(), rCourse.getName()));flag=false;break;}} if(flag) student.setStatus(Status.NOTADMITTED); else student.setStatus(Status.ADMITTED);;});
         return studentsMap.values().stream().filter(student->student.getStatus()!=Status.ADMITTED).count();
    
     }
@@ -135,7 +137,7 @@ public class ElectiveManager {
      * @param listener : the new notification listener
      */
     public void addNotifier(Notifier listener) {
-        
+        listeners.add(listener);
     }
     
     /**
