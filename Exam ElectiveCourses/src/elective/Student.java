@@ -1,17 +1,15 @@
 package elective;
 
 import java.util.*;
-import elective.ElectiveManager.Status;;
 
 public class Student {
     private final String id;
     private double avarage;
     private List<Course> requests = new ArrayList<>();
-    private Status status;
+    private Course addmittedCourse;
     public Student(String id, double avarage) {
         this.id = id;
         this.avarage = avarage;
-        this.status=Status.CREATED;
     }
     public String getId() {
         return id;
@@ -28,10 +26,10 @@ public class Student {
     public void setAvarage(double avarage) {
         this.avarage = avarage;
     }
-    public Status getStatus() {
-        return status;
+    public Course getAddmittedCourse() {
+        return addmittedCourse;
     }
-    public void setStatus(Status status) {
-        this.status = status;
+    public void setAddmittedCourse(Course addmittedCourse) {
+        this.addmittedCourse = addmittedCourse;
     }
 }

@@ -11,7 +11,6 @@ import java.util.stream.Collectors;
 public class ElectiveManager {
     Map<String,Course> coursesMap = new TreeMap<>();
     Map<String,Student> studentsMap= new TreeMap<>();
-    public enum Status {CREATED,ADMITTED,NOTADMITTED};
     private List<Notifier> listeners = new LinkedList<>();
     /**
      * Define a new course offer.
@@ -114,8 +113,8 @@ public class ElectiveManager {
      * @return the number of students that could not be assigned to one of the selected courses.
      */
     public long makeClasses() {
-        studentsMap.values().stream().sorted(Comparator.comparingDouble(Student::getAvarage).reversed()).forEach(student->{List<Course> requests=student.getRequests(); boolean flag=true; for(Course rCourse : requests) {if(rCourse.getStudent().size()<rCourse.getAvailablePosition()){rCourse.addStudent(student); listeners.forEach(l->l.assignedToCourse(student.getId(), rCourse.getName()));flag=false;break;}} if(flag) student.setStatus(Status.NOTADMITTED); else student.setStatus(Status.ADMITTED);;});
-        return studentsMap.values().stream().filter(student->student.getStatus()!=Status.ADMITTED).count();
+        studentsMap.values().stream().sorted(Comparator.comparingDouble(Student::getAvarage).reversed()).forEach(student->{List<Course> requests=student.getRequests(); boolean flag=true; for(Course rCourse : requests) {if(rCourse.getStudent().size()<rCourse.getAvailablePosition()){rCourse.addStudent(student); student.setAddmittedCourse(rCourse);listeners.forEach(l->l.assignedToCourse(student.getId(), rCourse.getName()));flag=false;break;}};});
+        return studentsMap.values().stream().filter(student->student.getAddmittedCourse()==null).count();
    
     }
     
@@ -148,7 +147,7 @@ public class ElectiveManager {
      * @return the success rate (number between 0.0 and 1.0)
      */
     public double successRate(int choice){
-        return -1;
+        return (double) studentsMap.values().stream().filter(student->{Course addmittedCourse=student.getAddmittedCourse(); return addmittedCourse!=null && student.getRequests().get(choice-1).getName().equals(addmittedCourse.getName());}).count()/studentsMap.size();
     }
 
     
@@ -158,7 +157,7 @@ public class ElectiveManager {
      * @return the student id list.
      */
     public List<String> getNotAssigned(){
-        return null;
+        return studentsMap.values().stream().filter(student-> student.getAddmittedCourse()==null).map(Student::getId).collect(Collectors.toList());
     }
     
     
