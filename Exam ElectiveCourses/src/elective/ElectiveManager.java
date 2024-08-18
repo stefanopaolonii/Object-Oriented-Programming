@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 public class ElectiveManager {
     Map<String,Course> coursesMap = new TreeMap<>();
     Map<String,Student> studentsMap= new TreeMap<>();
+    public enum Status {CREATED,ADMITTED,NOTADMITTED};
     /**
      * Define a new course offer.
      * A course is characterized by a name and a number of available positions.
@@ -111,7 +112,9 @@ public class ElectiveManager {
      * @return the number of students that could not be assigned to one of the selected courses.
      */
     public long makeClasses() {
-        return -1;
+        studentsMap.values().stream().sorted(Comparator.comparingDouble(Student::getAvarage).reversed()).forEach(student->{List<Course> requests=student.getRequests(); boolean flag=true; for(Course rCourse : requests) {if(rCourse.getStudent().size()<rCourse.getAvailablePosition()){rCourse.addStudent(student); flag=false;break;}} if(flag) student.setStatus(Status.NOTADMITTED); else student.setStatus(Status.ADMITTED);;});
+        return studentsMap.values().stream().filter(student->student.getStatus()!=Status.ADMITTED).count();
+   
     }
     
     
@@ -121,7 +124,7 @@ public class ElectiveManager {
      * @return the map course name vs. student id list.
      */
     public Map<String,List<String>> getAssignments(){
-        return null;
+        return coursesMap.values().stream().collect(Collectors.toMap(Course::getName,course->course.getStudent().stream().sorted(Comparator.comparingDouble(Student::getAvarage)).map(Student::getId).collect(Collectors.toList())));
     }
     
     

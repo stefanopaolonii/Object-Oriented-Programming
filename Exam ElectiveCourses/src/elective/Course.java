@@ -5,7 +5,7 @@ import java.util.*;
 public class Course {
     private final String name;
     private int availablePositions;
-    private List<Student> student;
+    private List<Student> studentsList= new ArrayList<>();
     public Course(String name, int availablePositions) {
         this.name = name;
         this.availablePositions = availablePositions;
@@ -17,6 +17,10 @@ public class Course {
         return availablePositions;
     }
     public List<Student> getStudent() {
-        return student;
+        return studentsList;
+    }
+
+    public void addStudent(Student student){
+        studentsList.add(student);
     }
 }
