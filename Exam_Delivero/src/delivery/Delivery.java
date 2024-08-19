@@ -1,6 +1,7 @@
 package delivery;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -70,6 +71,8 @@ public class Delivery {
 	 * @throws DeliveryException if the dish name already exists
 	 */
 	public void addDish(String name, String restaurantName, float price) throws DeliveryException {
+		if(restaurantsMap.get(restaurantName).getDishesMap().keySet().contains(name)) throw new DeliveryException();
+		restaurantsMap.get(restaurantName).addDish(name, price);
 	}
 	
 	/**
@@ -82,7 +85,7 @@ public class Delivery {
 	 * @return map restaurant -> dishes
 	 */
 	public Map<String,List<String>> getDishesByPrice(float minPrice, float maxPrice) {
-        return null;
+        return restaurantsMap.values().stream().filter(restaurant->restaurant.getDishesMap().values().stream().anyMatch(dish-> dish.getPrice()>=minPrice && dish.getPrice()<=maxPrice)).collect(Collectors.toMap(Restaurant::getName, restaurant-> restaurant.getDishesMap().values().stream().filter(dish->dish.getPrice()>=minPrice && dish.getPrice()<=maxPrice).map(Dish::getName).collect(Collectors.toList())));
 	}
 	
 	/**
@@ -94,7 +97,7 @@ public class Delivery {
 	 * @return alphabetically sorted list of dish names 
 	 */
 	public List<String> getDishesForRestaurant(String restaurantName) {
-        return null;
+        return restaurantsMap.get(restaurantName).getDishesMap().keySet().stream().sorted().collect(Collectors.toList());
 	}
 	
 	/**
@@ -106,7 +109,7 @@ public class Delivery {
 	 * @return 
 	 */
 	public List<String> getDishesByCategory(String category) {
-        return null;
+        return restaurantsMap.values().stream().filter(restaurant->restaurant.getCategory().equals(category)).flatMap(restaurant->restaurant.getDishesMap().keySet().stream()).distinct().collect(Collectors.toList());
 	}
 	
 	//R3
