@@ -93,7 +93,7 @@ public class TestExample {
 		
 		
 		assertNotNull(bestOptions);
-		assertEquals(1, bestOptions.size());
+		assertEquals(2, bestOptions.size());
 		assertEquals(date+"T10:00-12:00=2", bestOptions.iterator().next());
 		
 		

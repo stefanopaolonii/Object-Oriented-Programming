@@ -170,7 +170,11 @@ public class ReviewServer {
 	 * @param reviewId	id of the review
 	 */
 	public Collection<String> closePoll(String reviewId) {
-		return null;
+		Review searchedReview= reviewsMap.get(reviewId);
+		if(searchedReview==null) return null;
+		searchedReview.setStatus(Status.CLOSED);
+		return searchedReview.getPreferencesList().stream().collect(Collectors.groupingBy(Preference::getSlot,Collectors.counting())).entrySet().stream().map(entry->entry.getKey().getDate()+"T"+entry.getKey().toString()+"="+entry.getValue()).collect(Collectors.toList());
+	
 	}
 
 	
