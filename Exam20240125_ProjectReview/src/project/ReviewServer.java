@@ -1,12 +1,12 @@
 package project;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class ReviewServer {
-
+	private Set<String> groupsSet= new HashSet<>();
+	private Map<String,Review> reviewsMap= new HashMap<>();
+	private int reviewCounter=0;
 	/**
 	 * adds a set of student groups to the list of groups
 	 * The method can be invoked multiple times.
@@ -15,7 +15,7 @@ public class ReviewServer {
 	 * @param groups the project groups
 	 */
 	public void addGroups(String... groups) {
-
+		groupsSet.addAll(Arrays.asList(groups));
 	}
 
 	/**
@@ -24,7 +24,7 @@ public class ReviewServer {
 	 * @return list of groups
 	 */
 	public Collection<String> getGroups() {
-		return null;
+		return groupsSet.stream().collect(Collectors.toList());
 	}
 	
 	
@@ -38,7 +38,10 @@ public class ReviewServer {
 	 * @throws ReviewException in case of non-existing group
 	 */
 	public String addReview(String title, String topic, String group) throws ReviewException {
-		return null;
+		if(!groupsSet.contains(group)) throw new ReviewException();
+		String code= String.format("R%d", reviewCounter++);
+		reviewsMap.put(code, new Review(code, title, topic, group));
+		return code;
 	}
 
 	/**
@@ -48,7 +51,7 @@ public class ReviewServer {
 	 * @return list of review ids
 	 */
 	public Collection<String> getReviews(String group) {
-		return null;
+		return reviewsMap.values().stream().filter(review->review.getGroup().equals(group)).map(Review::getId).collect(Collectors.toList());
 	}
 
 	/**
@@ -58,7 +61,8 @@ public class ReviewServer {
 	 * @return the title
 	 */
 	public String getReviewTitle(String reviewId) {
-		return null;
+		if(reviewsMap.get(reviewId)==null) return null;
+		return reviewsMap.get(reviewId).getTitle();
 	}
 
 	/**
@@ -68,7 +72,8 @@ public class ReviewServer {
 	 * @return the topic of the review
 	 */
 	public String getReviewTopic(String reviewId) {
-		return null;
+		if(reviewsMap.get(reviewId)==null) return null;
+		return reviewsMap.get(reviewId).getTopic();
 	}
 
 	// R2
