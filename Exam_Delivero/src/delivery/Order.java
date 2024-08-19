@@ -7,14 +7,14 @@ public class Order {
     private final int code;
     private Status status;
     private String customerName;
-    private String restaurantName;
+    private Restaurant restaurant;
     private int deliveryTime;
     private int deliveryDistance;
     private Map<String,Integer> dishesMap= new HashMap<>();
-    public Order(int code, String customerName, String restaurantName, int deliveryTime, int deliveryDistance) {
+    public Order(int code, String customerName, Restaurant restaurant, int deliveryTime, int deliveryDistance) {
         this.code = code;
         this.customerName = customerName;
-        this.restaurantName = restaurantName;
+        this.restaurant = restaurant;
         this.deliveryTime = deliveryTime;
         this.deliveryDistance = deliveryDistance;
         this.status=Status.PENDING;
@@ -28,8 +28,8 @@ public class Order {
     public String getCustomerName() {
         return customerName;
     }
-    public String getRestaurantName() {
-        return restaurantName;
+    public Restaurant getRestaurant() {
+        return restaurant;
     }
     public int getDeliveryTime() {
         return deliveryTime;

@@ -134,7 +134,7 @@ public class Delivery {
 	 * @return order ID
 	 */
 	public int addOrder(String dishNames[], int quantities[], String customerName, String restaurantName, int deliveryTime, int deliveryDistance) {
-		Order newOrder= new Order(++orderCounter, customerName, restaurantName, deliveryTime, deliveryDistance);
+		Order newOrder= new Order(++orderCounter, customerName, restaurantsMap.get(restaurantName), deliveryTime, deliveryDistance);
 		ordersMap.put(orderCounter, newOrder );
 		for(int i=0;i<dishNames.length;i++) newOrder.addDish(dishNames[i], quantities[i]);
 		return orderCounter;
@@ -202,7 +202,7 @@ public class Delivery {
 	 * @return map category -> order count
 	 */
 	public Map<String,Long> ordersPerCategory() {
-        return null;
+        return categoriesList.stream().collect(Collectors.toMap(category->category,category-> ordersMap.values().stream().filter(order->order.getRestaurant().getCategory().equals(category)).count()));
 	}
 	
 	/**
@@ -211,6 +211,6 @@ public class Delivery {
 	 * @return restaurant name
 	 */
 	public String bestRestaurant() {
-        return null;
+        return restaurantsMap.values().stream().sorted(Comparator.comparingDouble(Restaurant::getAvgRating).reversed()).map(Restaurant::getName).findFirst().orElse(null);
 	}
 }
