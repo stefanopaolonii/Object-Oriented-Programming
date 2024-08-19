@@ -1,7 +1,10 @@
 package books;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 
 public class ExerciseChapter extends Chapter{
@@ -10,25 +13,10 @@ public class ExerciseChapter extends Chapter{
         super(title, numPages);
     }
     public List<Topic> getTopics() {
-        return null;
+        return questionsList.stream().map(Question::getMainTopic).distinct().sorted(Comparator.comparing(Topic::getKeyword)).collect(Collectors.toList());
 	};
 	
-
-    public String getTitle() {
-        return null;
-    }
-
-    public void setTitle(String newTitle) {
-    }
-
-    public int getNumPages() {
-        return -1;
-    }
-    
-    public void setNumPages(int newPages) {
-    }
-    
-
 	public void addQuestion(Question question) {
+        questionsList.add(question);
 	}	
 }

@@ -10,8 +10,16 @@ public class Chapter {
     public String getTitle() {
         return title;
     }
+
+    public void setTitle(String newTitle) {
+        this.title= newTitle;
+    }
     public int getNumPages() {
         return numPages;
+    }
+    
+    public void setNumPages(int newPages) {
+        this.numPages=newPages;
     }
     
 }

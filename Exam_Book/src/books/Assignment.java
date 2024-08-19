@@ -14,11 +14,11 @@ public class Assignment {
     }
 
     public String getID() {
-        return null;
+        return id;
     }
 
     public ExerciseChapter getChapter() {
-        return null;
+        return chapter;
     }
 
     public double addResponse(Question q,List<String> answers) {
