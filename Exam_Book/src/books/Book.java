@@ -7,6 +7,7 @@ public class Book {
 	Map<String,Topic> topicsMap= new HashMap<>();
 	List<Question> questionsList = new ArrayList<>();
 	List<Chapter> chaptersList= new ArrayList<>();
+	List<Assignment> assignmentsList= new ArrayList<>();
     /**
 	 * Creates a new topic, if it does not exist yet, or returns a reference to the
 	 * corresponding topic.
@@ -48,7 +49,9 @@ public class Book {
 	}
 
 	public Assignment newAssignment(String ID, ExerciseChapter chapter) {
-        return null;
+        Assignment newAssignment= new Assignment(ID, chapter);
+		assignmentsList.add(newAssignment);
+		return newAssignment;
 	}
 	
     /**
