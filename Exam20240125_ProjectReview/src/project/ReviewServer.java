@@ -173,7 +173,9 @@ public class ReviewServer {
 		Review searchedReview= reviewsMap.get(reviewId);
 		if(searchedReview==null) return null;
 		searchedReview.setStatus(Status.CLOSED);
-		return searchedReview.getPreferencesList().stream().collect(Collectors.groupingBy(Preference::getSlot,Collectors.counting())).entrySet().stream().map(entry->entry.getKey().getDate()+"T"+entry.getKey().toString()+"="+entry.getValue()).collect(Collectors.toList());
+		List<String> tmp= new ArrayList<>();
+		tmp.add(searchedReview.getPreferencesList().stream().collect(Collectors.groupingBy(Preference::getSlot,Collectors.counting())).entrySet().stream().sorted(Comparator.comparingLong((Map.Entry<Slot, Long> entry) -> entry.getValue()).reversed()).map(entry->entry.getKey().getDate()+"T"+entry.getKey().toString()+"="+entry.getValue()).findFirst().orElse(null));
+		return tmp;
 	
 	}
 
@@ -193,7 +195,8 @@ public class ReviewServer {
 	 */
 	public Map<String, List<String>> reviewPreferences(String reviewId) {
 		if(!reviewsMap.containsKey(reviewId)) return null;
-		return reviewsMap.get(reviewId).getPreferencesList().stream().map(Preference::getSlot).collect(Collectors.groupingBy(slot->slot,Collectors.counting())).entrySet().stream().collect(Collectors.groupingBy(entry->entry.getKey().getDate(),Collectors.mapping(entry->entry.getKey().toString()+"="+entry.getValue(), Collectors.toList())));
+		System.out.println(reviewsMap.get(reviewId).getSlotsList().stream().collect(Collectors.toMap(slot->slot, slot->reviewsMap.get(reviewId).getPreferencesList().stream().map(Preference::getSlot).filter(sslot->sslot.equals(slot)).count())).entrySet().stream().collect(Collectors.groupingBy(entry->entry.getKey().getDate(),Collectors.mapping(entry->{if(entry.getValue()==0) return null; return entry.getKey().toString()+"="+entry.getValue();}, Collectors.toList()))));
+		return reviewsMap.get(reviewId).getSlotsList().stream().collect(Collectors.toMap(slot->slot, slot->reviewsMap.get(reviewId).getPreferencesList().stream().map(Preference::getSlot).filter(sslot->sslot.equals(slot)).count())).entrySet().stream().collect(Collectors.groupingBy(entry->entry.getKey().getDate(),Collectors.mapping(entry->{if(entry.getValue()==0) return null; return entry.getKey().toString()+"="+entry.getValue();}, Collectors.toList()))).entrySet().stream().collect(Collectors.toMap(entry->entry.getKey(), entry->entry.getValue().stream().filter(string->string!=null).collect(Collectors.toList())));
 	}
 
 
