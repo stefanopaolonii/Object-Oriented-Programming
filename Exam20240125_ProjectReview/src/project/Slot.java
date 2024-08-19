@@ -30,5 +30,16 @@ public class Slot {
     public double slotinHour(){
         return (timeinMinutes(end)-timeinMinutes(start))/ (double) 60;
     }
+    @Override
+    public String toString(){
+        return start+"-"+end;
+    }
+    @Override
+    public boolean equals(Object other){
+        if(this==other) return true;
+        if(other==null || getClass()!=other.getClass());
+        Slot otherslot= (Slot) other;
+        return this.date.equals(otherslot.getDate()) && this.start.equals(otherslot.getStart()) && this.end.equals(otherslot.getEnd());
+    }
     
 }

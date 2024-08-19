@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 public class ReviewServer {
 	private Set<String> groupsSet= new HashSet<>();
 	private Map<String,Review> reviewsMap= new HashMap<>();
+	public enum Status{CREATED,OPEN,CLOSED};
 	private int reviewCounter=0;
 	/**
 	 * adds a set of student groups to the list of groups
@@ -108,7 +109,7 @@ public class ReviewServer {
 	 */
 	public Map<String, List<String>> showSlots(String reviewId) {
 		if(!reviewsMap.containsKey(reviewId)) return null;
-		return reviewsMap.get(reviewId).getSlotsList().stream().collect(Collectors.groupingBy(Slot::getDate,Collectors.mapping(slot->slot.getStart()+"-"+slot.getEnd(), Collectors.toList())));
+		return reviewsMap.get(reviewId).getSlotsList().stream().collect(Collectors.groupingBy(Slot::getDate,Collectors.mapping(slot->slot.toString(), Collectors.toList())));
 	}
 
 	/**
@@ -117,7 +118,8 @@ public class ReviewServer {
 	 * @param reviewId	is of the review
 	 */
 	public void openPoll(String reviewId) {
-		return;
+		if(!reviewsMap.containsKey(reviewId)) return;
+		reviewsMap.get(reviewId).setStatus(Status.OPEN);
 	}
 
 
@@ -135,7 +137,13 @@ public class ReviewServer {
 	 * @throws ReviewException	in case of invalid id or slot
 	 */
 	public int selectPreference(String email, String name, String surname, String reviewId, String date, String slot) throws ReviewException {
-		return -1;
+		if(!reviewsMap.containsKey(reviewId)) throw new ReviewException();
+		String[] parts=slot.split("-");
+		Slot searchedslot=reviewsMap.get(reviewId).getSlotsList().stream().filter(sslot->sslot.equals(new Slot(date, parts[0],parts[1]))).findFirst().orElse(null);
+		if(searchedslot==null) throw new ReviewException();
+		if(reviewsMap.get(reviewId).getStatus()!=Status.OPEN) throw new ReviewException();
+		reviewsMap.get(reviewId).addPreference(new Preference(email, name, surname, reviewId, searchedslot));
+		return (int) reviewsMap.get(reviewId).getPreferencesList().stream().filter(preference->preference.getSlot().equals(searchedslot)).count();
 	}
 
 	/**
@@ -148,7 +156,8 @@ public class ReviewServer {
 	 * @return list of preferences for the review
 	 */
 	public Collection<String> listPreferences(String reviewId) {
-		return null;
+		if(!reviewsMap.containsKey(reviewId)) return null;
+		return reviewsMap.get(reviewId).getPreferencesList().stream().map(preference->preference.getSlot().getDate()+"T"+preference.getSlot().toString()+"="+preference.getEmail()).collect(Collectors.toList());
 	}
 
 	/**
