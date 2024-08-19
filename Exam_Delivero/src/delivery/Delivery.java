@@ -2,6 +2,8 @@ package delivery;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -100,6 +102,7 @@ public class Delivery {
 	 * @return alphabetically sorted list of dish names 
 	 */
 	public List<String> getDishesForRestaurant(String restaurantName) {
+		if(!restaurantsMap.containsKey(restaurantName)) return Collections.emptyList();
         return restaurantsMap.get(restaurantName).getDishesMap().keySet().stream().sorted().collect(Collectors.toList());
 	}
 	
@@ -191,7 +194,7 @@ public class Delivery {
 	 * @return ordered list of restaurant names
 	 */
 	public List<String> restaurantsAverageRating() {
-        return restaurantsMap.values().stream().sorted(Comparator.comparingDouble(Restaurant::getAvgRating).reversed()).map(Restaurant::getName).collect(Collectors.toList());
+        return restaurantsMap.values().stream().filter(restaurant-> restaurant.getRatingsList().size()>0).sorted(Comparator.comparingDouble(Restaurant::getAvgRating).reversed()).map(Restaurant::getName).collect(Collectors.toList());
 	}
 	
 	//R5
