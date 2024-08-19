@@ -26,4 +26,11 @@ public class Restaurant {
     public void addDish(String dishname,double price){
         dishesMap.put(dishname, new Dish(dishname, price));
     }
+    public void addRating(int rating){
+        ratingsList.add(rating);
+    }
+
+    public double getAvgRating(){
+        return (double) ratingsList.stream().mapToInt(Integer::intValue).sum()/ratingsList.size();
+    }
 }
