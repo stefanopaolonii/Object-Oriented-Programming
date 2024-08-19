@@ -29,5 +29,8 @@ public class Review {
     public List<Slot> getSlotsList() {
         return slotsList;
     }
+    public void addSlot(Slot slot){
+        slotsList.add(slot);
+    }
     
 }

@@ -90,7 +90,11 @@ public class ReviewServer {
 	 * @throws ReviewException in case of slot overlap or wrong review id
 	 */
 	public double addOption(String reviewId, String date, String start, String end) throws ReviewException {
-		return -1.0;
+		if(!reviewsMap.containsKey(reviewId)) throw new ReviewException();
+		Slot newSlot= new Slot(date, start, end);
+		if(reviewsMap.get(reviewId).getSlotsList().stream().anyMatch(slot-> (slot.overlaps(newSlot)))) throw new ReviewException();
+		reviewsMap.get(reviewId).addSlot(newSlot);
+		return newSlot.slotinHour();
 	}
 
 	/**
@@ -103,7 +107,8 @@ public class ReviewServer {
 	 * @return a map date -> list of slots
 	 */
 	public Map<String, List<String>> showSlots(String reviewId) {
-		return null;
+		if(!reviewsMap.containsKey(reviewId)) return null;
+		return reviewsMap.get(reviewId).getSlotsList().stream().collect(Collectors.groupingBy(Slot::getDate,Collectors.mapping(slot->slot.getStart()+"-"+slot.getEnd(), Collectors.toList())));
 	}
 
 	/**
