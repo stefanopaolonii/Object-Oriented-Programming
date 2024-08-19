@@ -192,7 +192,8 @@ public class ReviewServer {
 	 * @return the map data -> slot preferences
 	 */
 	public Map<String, List<String>> reviewPreferences(String reviewId) {
-		return null;
+		if(!reviewsMap.containsKey(reviewId)) return null;
+		return reviewsMap.get(reviewId).getPreferencesList().stream().map(Preference::getSlot).collect(Collectors.groupingBy(slot->slot,Collectors.counting())).entrySet().stream().collect(Collectors.groupingBy(entry->entry.getKey().getDate(),Collectors.mapping(entry->entry.getKey().toString()+"="+entry.getValue(), Collectors.toList())));
 	}
 
 
@@ -203,6 +204,6 @@ public class ReviewServer {
 	 * @return the map id : preferences -> count
 	 */
 	public Map<String, Integer> preferenceCount() {
-		return null;
+		return reviewsMap.values().stream().collect(Collectors.toMap(Review::getId,review->review.getPreferencesList().size()));
 	}
 }
