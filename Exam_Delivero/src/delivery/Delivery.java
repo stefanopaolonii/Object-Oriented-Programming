@@ -1,10 +1,17 @@
 package delivery;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 
 public class Delivery {
+	public enum Status {SUBMITTED,ASSIGNED};
+	List<String> categoriesList= new ArrayList<>();
+	Map<String,Restaurant> restaurantsMap = new HashMap<>();
+	Map<Integer,Order> ordersMap= new HashMap<>();
 	// R1
 	
     /**
@@ -14,6 +21,8 @@ public class Delivery {
      * @throws DeliveryException if the category is already available.
      */
 	public void addCategory (String category) throws DeliveryException {
+		if(categoriesList.contains(category)) throw new DeliveryException();
+		categoriesList.add(category);
 	}
 	
 	/**
@@ -22,7 +31,7 @@ public class Delivery {
 	 * @return list of category names
 	 */
 	public List<String> getCategories() {
-		return null;
+		return categoriesList;
 	}
 	
 	/**
@@ -33,6 +42,8 @@ public class Delivery {
 	 * @throws DeliveryException if the category is not defined.
 	 */
 	public void addRestaurant (String name, String category) throws DeliveryException {
+		if(!categoriesList.contains(category)) throw new DeliveryException();
+		restaurantsMap.put(name, new Restaurant(name, category));
 	}
 	
 	/**
@@ -44,7 +55,7 @@ public class Delivery {
 	 * @return sorted list of restaurant names
 	 */
 	public List<String> getRestaurantsForCategory(String category) {
-        return null;
+        return restaurantsMap.values().stream().filter(restaurant->restaurant.getCategory().equals(category)).map(Restaurant::getName).sorted(String::compareTo).collect(Collectors.toList());
 	}
 	
 	// R2
