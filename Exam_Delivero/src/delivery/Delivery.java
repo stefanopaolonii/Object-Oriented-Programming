@@ -1,18 +1,21 @@
 package delivery;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 
 public class Delivery {
-	public enum Status {SUBMITTED,ASSIGNED};
+	public enum Status {PENDING,ASSIGNED};
 	List<String> categoriesList= new ArrayList<>();
 	Map<String,Restaurant> restaurantsMap = new HashMap<>();
-	Map<Integer,Order> ordersMap= new HashMap<>();
+	Map<Integer,Order> ordersMap= new TreeMap<>();
+	private int orderCounter=0;
 	// R1
 	
     /**
@@ -131,7 +134,10 @@ public class Delivery {
 	 * @return order ID
 	 */
 	public int addOrder(String dishNames[], int quantities[], String customerName, String restaurantName, int deliveryTime, int deliveryDistance) {
-	    return -1;
+		Order newOrder= new Order(++orderCounter, customerName, restaurantName, deliveryTime, deliveryDistance);
+		ordersMap.put(orderCounter, newOrder );
+		for(int i=0;i<dishNames.length;i++) newOrder.addDish(dishNames[i], quantities[i]);
+		return orderCounter;
 	}
 	
 	/**
@@ -150,7 +156,9 @@ public class Delivery {
 	 * @return list of order IDs
 	 */
 	public List<Integer> scheduleDelivery(int deliveryTime, int maxDistance, int maxOrders) {
-        return null;
+        List<Order> searchedOrderList= ordersMap.values().stream().filter(order->order.getDeliveryTime()==deliveryTime && order.getDeliveryDistance()<=maxDistance).limit(maxOrders).collect(Collectors.toList());
+		searchedOrderList.stream().forEach(order->order.setStatus(Status.ASSIGNED));
+		return searchedOrderList.stream().map(Order::getCode).collect(Collectors.toList());
 	}
 	
 	/**
@@ -158,7 +166,7 @@ public class Delivery {
 	 * @return the unassigned orders count
 	 */
 	public int getPendingOrders() {
-        return -1;
+        return (int) ordersMap.values().stream().filter(order->order.getStatus()==Status.PENDING).count();
 	}
 	
 	// R4
