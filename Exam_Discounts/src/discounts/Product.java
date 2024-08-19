@@ -1,24 +1,29 @@
 package discounts;
 
 public class Product {
-    private Category category;
-    private final String id;
-    private double price;
-    public Product(Category category, String id, double price) {
-        this.category = category;
-        this.id = id;
-        this.price = price;
+    private String code;
+    public String getCode() {
+        return code;
     }
+
+    private double price;
+    private Category category;
+
     public Category getCategory() {
         return category;
     }
-    public String getId() {
-        return id;
+
+    public Product(String code, double price, Category category) {
+        this.code = code;
+        this.price = price;
+        this.category=category;
     }
-    public double getPrice() {
+    
+    public double getPrice(){
         return price;
     }
-    public double getDiscountedPrice(){
-        return (price*(100-category.getPercentage()))/100;
+
+    public double getDiscount(){
+        return ((100-category.getDiscount())*price)/ (double)100;
     }
 }

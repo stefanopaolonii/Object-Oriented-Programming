@@ -1,44 +1,54 @@
 package discounts;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Purchase {
-    private  Card card;
-    private Map<Product,Integer> productsMap= new HashMap<>();
-    private final int code;
-    private double totalAmount;
-    private double totalDiscount;
-    public Purchase(Card card, int code) {
+    private Card card;
+    private int pId;
+    private List<Line> lines= new ArrayList<>();
+    public Purchase(int pId,Card card) {
         this.card = card;
-        this.code = code;
-    }
-    public Card getCard() {
-        return card;
-    }
-    public Map<Product, Integer> getProductsMap() {
-        return productsMap;
-    }
-    public int getCode() {
-        return code;
+        this.pId=pId;
     }
 
-    public void addProduct(Product product,int nofunits){
-        productsMap.put(product, nofunits);
-    double amount = nofunits * product.getPrice();
-    if (card == null) {
-        totalAmount += amount;
-    } else {
-        double discount = amount * product.getCategory().getPercentage() / 100.0;
-        totalAmount += amount;
-        totalDiscount += discount;
-        System.out.println("Product: " + product.getId() + ", Amount: " + amount + ", Discount: " + discount + ", Total Discount: " + totalDiscount);
+    public void addLine(Product p, int nofUnit){
+        Line line = new Line(p, nofUnit);
+        lines.add(line);
     }
-}
-    public double getTotalPrice(){
-        if(card!=null) return productsMap.entrySet().stream().mapToDouble(entry->entry.getKey().getPrice()*entry.getValue()).sum();
-        return productsMap.entrySet().stream().mapToDouble(entry->entry.getKey().getDiscountedPrice()*entry.getValue()).sum();
+
+    public double getAmount(){
+        return lines
+            .stream()
+            .mapToDouble(Line::getAmount)
+            .sum()-this.getDiscount();
     }
-    public double getTotatDiscount(){
-        return productsMap.entrySet().stream().mapToDouble(entry->entry.getKey().getPrice()*entry.getValue()).sum()-getTotalPrice();
+
+    public double getDiscount(){
+        if(card==null){
+            return 0.0;
+        }
+        return lines
+            .stream()
+            .mapToDouble(Line::getDiscount)
+            .sum();
+    }
+
+    public int getNofUnits(){
+        return lines
+            .stream()
+            .mapToInt(Line::getNofUnits)
+            .sum();
+    }
+
+    public boolean hasCard(){
+        if(card==null){
+            return false;
+        }
+        return true;
+    }
+
+    public Card getCard(){
+        return card;
     }
 }

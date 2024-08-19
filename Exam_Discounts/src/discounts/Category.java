@@ -1,18 +1,21 @@
 package discounts;
 
+import java.util.*;
+
 public class Category {
-    private final String name;
-    private int percentage;
-    public Category(String name) {
-        this.name = name;
+    private String code;
+    private int discount;
+
+    public Category(String code){
+        this.code=code;
     }
-    public String getName() {
-        return name;
+    public void setDiscount(int discount){
+        this.discount=discount;
     }
-    public int getPercentage() {
-        return percentage;
+    public int getDiscount(){
+        return discount;
     }
-    public void setPercentage(int percentage) {
-        this.percentage = percentage;
+    public String getCode() {
+        return code;
     }
 }

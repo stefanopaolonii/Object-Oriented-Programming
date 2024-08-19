@@ -10,6 +10,7 @@ import org.junit.Test;
 import discounts.*;
 
 public class TestApp {
+
 	Discounts d;
 
 	@Before
@@ -76,7 +77,7 @@ public class TestApp {
 		int pCode1 = d.addPurchase(cId1, "p4:1","p2:3","p3:1"); //with card
 		int pCode2 = d.addPurchase("p4:1","p2:3","p3:1"); //without card
 
-		assertEquals(1, pCode1); 
+		assertEquals(1, pCode1);
 		assertEquals(2, pCode2);
 
 		double purchaseAmount = d.getAmount(pCode1);
@@ -113,7 +114,6 @@ public class TestApp {
 		d.addPurchase("p6:2"); //without card
 
 		SortedMap<Integer, List<String>> map1 = d.productIdsPerNofUnits();
-		assertNotNull("Missing prd ids", map1);
 		assertEquals("{1=[p5], 2=[p4, p6], 3=[p3], 7=[p2]}", map1.toString()); //two units for p4 and p6; p8 not considered
 		
 		SortedMap<Integer, Double> map2 = d.totalPurchasePerCard();  //two cards
@@ -126,4 +126,5 @@ public class TestApp {
 		SortedMap<Integer, Double> map3 = d.totalDiscountPerCard();  //two cards
 		assertEquals("{1=26.6, 2=8.16}", map3.toString());
 	}
+
 }

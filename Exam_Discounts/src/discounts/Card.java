@@ -1,17 +1,19 @@
 package discounts;
 
 public class Card {
-    private final String name;
-    private final int id;
-    public Card(String name, int id) {
-        this.name = name;
-        this.id = id;
+    private String holder;
+    private int code;
+
+    public Card(String holder, int code) {
+        this.holder = holder;
+        this.code = code;
     }
-    public String getName() {
-        return name;
+
+    public String getHolder(){
+        return holder;
     }
-    public int getId() {
-        return id;
+
+    public int getCode(){
+        return code;
     }
-    
 }
