@@ -4,6 +4,7 @@ import java.util.*;
 
 public class Book {
 	Map<String,Topic> topicsMap= new HashMap<>();
+	List<Question> questionsList = new ArrayList<>();
     /**
 	 * Creates a new topic, if it does not exist yet, or returns a reference to the
 	 * corresponding topic.
@@ -19,7 +20,9 @@ public class Book {
 	}
 
 	public Question createQuestion(String question, Topic mainTopic) {
-        return null;
+        Question newQuestion= new Question(question, mainTopic);
+		questionsList.add(newQuestion);
+		return newQuestion;
 	}
 
 	public TheoryChapter createTheoryChapter(String title, int numPages, String text) {

@@ -1,36 +1,43 @@
 package books;
 
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Question {
 	private String question;
 	private Topic mainTopic;
+	private Map<String,Boolean> answersMap= new HashMap<>();
+	public Question(String question, Topic mainTopic) {
+		this.question = question;
+		this.mainTopic = mainTopic;
+	}
+
 	public String getQuestion() {
-		return null;
+		return question;
 	}
 	
 	public Topic getMainTopic() {
-		return null;
+		return mainTopic;
 	}
 
 	public void addAnswer(String answer, boolean correct) {
-		
+		answersMap.put(answer, correct);
 	}
 	
     @Override
     public String toString() {
-        return null;
+        return question+" ("+mainTopic.getKeyword()+")";
     }
 
 	public long numAnswers() {
-	    return -1;
+	    return answersMap.values().stream().count();
 	}
 
 	public Set<String> getCorrectAnswers() {
-		return null;
+		return answersMap.entrySet().stream().filter(entry->entry.getValue()).map(Map.Entry::getKey).collect(Collectors.toSet());
 	}
 
 	public Set<String> getIncorrectAnswers() {
-        return null;
+		return answersMap.entrySet().stream().filter(entry->!entry.getValue()).map(Map.Entry::getKey).collect(Collectors.toSet());
 	}
 }
