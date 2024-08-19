@@ -1,10 +1,9 @@
 package books;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Book {
-
+	Map<String,Topic> topicsMap= new HashMap<>();
     /**
 	 * Creates a new topic, if it does not exist yet, or returns a reference to the
 	 * corresponding topic.
@@ -14,7 +13,9 @@ public class Book {
 	 * @throws BookException
 	 */
 	public Topic getTopic(String keyword) throws BookException {
-	    return null;
+	    if(keyword=="" || keyword==null) throw new BookException();
+		if(!topicsMap.containsKey(keyword)) topicsMap.put(keyword, new Topic(keyword));
+		return topicsMap.get(keyword);
 	}
 
 	public Question createQuestion(String question, Topic mainTopic) {

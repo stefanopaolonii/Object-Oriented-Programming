@@ -1,20 +1,28 @@
 package books;
 
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Topic {
+	private final String keyword;
+	Map<String,Topic> subtopicsMap= new HashMap<>();
+	public Topic(String keyword) {
+		this.keyword = keyword;
+	}
 
 	public String getKeyword() {
-        return null;
+        return keyword;
 	}
 	
 	@Override
 	public String toString() {
-	    return null;
+	    return keyword;
 	}
 
 	public boolean addSubTopic(Topic topic) {
-        return false;
+		if(subtopicsMap.containsKey(topic.getKeyword())) return false;
+        subtopicsMap.put(topic.getKeyword(), topic);
+		return true;
 	}
 
 	/*
@@ -22,6 +30,6 @@ public class Topic {
 	 * affecting any of the Book topic.
 	 */
 	public List<Topic> getSubTopics() {
-        return null;
+        return subtopicsMap.values().stream().sorted(Comparator.comparing(Topic::getKeyword)).collect(Collectors.toList());
 	}
 }

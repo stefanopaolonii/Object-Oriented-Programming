@@ -3,7 +3,8 @@ package books;
 import java.util.Set;
 
 public class Question {
-	
+	private String question;
+	private Topic mainTopic;
 	public String getQuestion() {
 		return null;
 	}

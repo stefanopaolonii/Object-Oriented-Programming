@@ -1,9 +1,17 @@
 package books;
 
-import java.util.List;
+import java.util.*;
 
 
 public class Assignment {
+    private String id;
+    private ExerciseChapter chapter;
+    private Map<Question,List<String>> answersMap= new HashMap<>();
+    
+    public Assignment(String id, ExerciseChapter chapter) {
+        this.id = id;
+        this.chapter = chapter;
+    }
 
     public String getID() {
         return null;

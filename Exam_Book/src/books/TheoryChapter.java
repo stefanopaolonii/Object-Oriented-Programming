@@ -1,10 +1,16 @@
 package books;
 
-import java.util.List;
+import java.util.*;
 
 
-public class TheoryChapter {
+public class TheoryChapter extends Chapter {
+    private String text;
+    private Map<String,Topic> topicsMap= new HashMap<>();
 
+    public TheoryChapter(String title,int numPages,String text){
+        super(title, numPages);
+        this.text=text;
+    }
     public String getText() {
 		return null;
 	}
