@@ -1,6 +1,7 @@
 package books;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Book {
 	Map<String,Topic> topicsMap= new HashMap<>();
@@ -39,11 +40,11 @@ public class Book {
 	}
 
 	public List<Topic> getAllTopics() {
-        return null;
+        return chaptersList.stream().flatMap(chapter->chapter.getTopics().stream()).distinct().sorted(Comparator.comparing(Topic::getKeyword)).collect(Collectors.toList());
 	}
 
 	public boolean checkTopics() {
-        return false;
+        return chaptersList.stream().filter(chapter->chapter instanceof ExerciseChapter).flatMap( exchapter-> exchapter.getTopics().stream()).distinct().allMatch(extopic-> chaptersList.stream().filter(schapter->schapter instanceof TheoryChapter).flatMap(tchapther->tchapther.getTopics().stream()).map(Topic::getKeyword).distinct().collect(Collectors.toList()).contains(extopic.getKeyword()));
 	}
 
 	public Assignment newAssignment(String ID, ExerciseChapter chapter) {
@@ -56,6 +57,10 @@ public class Book {
      * @return
      */
     public Map<Long,List<Question>> questionOptions(){
-        return null;
+        return questionsList.stream().collect(Collectors.groupingBy(question->(long) question.getAnswersMap().size(),Collectors.toList()));
     }
+
+	public List<String> topicPopularity(){
+		return topicsMap.values().stream().collect(Collectors.toMap(Topic::getKeyword,topic->(int)chaptersList.stream().filter(chapter->chapter instanceof TheoryChapter).filter(chapter->chapter.getTopics().stream().anyMatch(chtopic->chtopic.getKeyword().equals(topic.getKeyword()))).count())).entrySet().stream().map(entry->entry.getKey()+" : "+entry.getValue()).collect(Collectors.toList());
+	}
 }

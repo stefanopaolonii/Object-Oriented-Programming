@@ -15,7 +15,9 @@ public class Question {
 	public String getQuestion() {
 		return question;
 	}
-	
+	public Map<String, Boolean> getAnswersMap() {
+		return answersMap;
+	}
 	public Topic getMainTopic() {
 		return mainTopic;
 	}

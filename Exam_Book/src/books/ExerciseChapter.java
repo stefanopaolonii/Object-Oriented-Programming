@@ -12,6 +12,7 @@ public class ExerciseChapter extends Chapter{
     public ExerciseChapter(String title,int numPages){
         super(title, numPages);
     }
+    @Override
     public List<Topic> getTopics() {
         return questionsList.stream().map(Question::getMainTopic).distinct().sorted(Comparator.comparing(Topic::getKeyword)).collect(Collectors.toList());
 	};

@@ -1,5 +1,7 @@
 package books;
 
+import java.util.*;
+
 public class Chapter {
     private String title;
     private int numPages;
@@ -21,5 +23,6 @@ public class Chapter {
     public void setNumPages(int newPages) {
         this.numPages=newPages;
     }
+    public List<Topic> getTopics(){return null;};
     
 }

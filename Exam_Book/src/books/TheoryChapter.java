@@ -19,7 +19,7 @@ public class TheoryChapter extends Chapter {
     public void setText(String newText) {
         this.text=newText;
     }
-
+    @Override
 	public List<Topic> getTopics() {
         return topicsSet.stream().sorted(Comparator.comparing(Topic::getKeyword)).collect(Collectors.toList());
 	}
