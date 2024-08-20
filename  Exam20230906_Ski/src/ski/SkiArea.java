@@ -1,5 +1,7 @@
 package ski;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collector;
@@ -10,6 +12,7 @@ public class SkiArea {
 	private Map<String,LiftType> lifttypesMap= new HashMap<>();
 	private Map<String,Lift> liftsMap= new HashMap<>();
 	private Map<String,Slope> slopesMap= new HashMap<>();
+	private Map<String,Parking> parkingsMap= new HashMap<>();
 	/**
 	 * Creates a new ski area
 	 * @param name name of the new ski area
@@ -157,7 +160,7 @@ public class SkiArea {
      * @param slots	slots available in the parking
      */
     public void createParking(String name, int slots){
-
+		parkingsMap.put(name, new Parking(name, slots));
     }
 
     /**
@@ -166,7 +169,8 @@ public class SkiArea {
      * @return number of slots
      */
 	public int getParkingSlots(String parking) {
-		return -1;
+		if(!parkingsMap.containsKey(parking)) return 0;
+		return parkingsMap.get(parking).getCapacity();
 	}
 
 	/**
@@ -175,7 +179,9 @@ public class SkiArea {
 	 * @param parking	parking name
 	 */
 	public void liftServedByParking(String lift, String parking) {
-
+		if(!parkingsMap.containsKey(parking)) return;
+		if(!liftsMap.containsKey(lift)) return;
+		parkingsMap.get(parking).addLift(liftsMap.get(lift));
 	}
 
 	
@@ -185,7 +191,8 @@ public class SkiArea {
 	 * @return the list of lifts
 	 */
 	public Collection<String> servedLifts(String parking) {
-		return null;
+		if(!parkingsMap.containsKey(parking)) return null;
+		return parkingsMap.get(parking).getLiftsList().stream().map(Lift::getName).collect(Collectors.toList());
 	}
 
 	/**
@@ -197,7 +204,8 @@ public class SkiArea {
 	 * @return true if the parking is proportionate
 	 */
 	public boolean isParkingProportionate(String parkingName) {
-		return false;
+		if(!parkingsMap.containsKey(parkingName)) return false;
+		return (parkingsMap.get(parkingName).getCapacity()/(double)parkingsMap.get(parkingName).getLiftsList().stream().mapToInt(lift->lift.getType().getCapacity()).sum())<30;
 	}
 
 	/**
@@ -216,7 +224,15 @@ public class SkiArea {
 	 * @throws InvalidLiftException in case of duplicate type or non-existent lift type
 	 */
     public void readLifts(String path) throws IOException, InvalidLiftException {
-
+		BufferedReader bufferedReader= new BufferedReader(new FileReader(path));
+		String line;
+		while((line=bufferedReader.readLine())!=null){
+			String[] parts=line.split(":");
+			if(parts[0].contains("T")){
+				liftType(parts[1], parts[2],Integer.parseInt(parts[3].trim()));
+			}else if(parts[0].contains("L")){
+				createLift(parts[1].trim(),parts[2].trim());
+			}
+		}
     }
-
 }
