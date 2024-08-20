@@ -2,12 +2,14 @@ package ski;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 public class SkiArea {
 	private final String name;
 	private Map<String,LiftType> lifttypesMap= new HashMap<>();
 	private Map<String,Lift> liftsMap= new HashMap<>();
+	private Map<String,Slope> slopesMap= new HashMap<>();
 	/**
 	 * Creates a new ski area
 	 * @param name name of the new ski area
@@ -106,7 +108,8 @@ public class SkiArea {
 	 * @throws InvalidLiftException in case the lift has not been defined
 	 */
     public void createSlope(String name, String difficulty, String lift) throws InvalidLiftException {
-
+		if(!liftsMap.containsKey(lift)) throw new InvalidLiftException();
+		slopesMap.put(name, new Slope(name, difficulty, liftsMap.get(lift)));
     }
     
     /**
@@ -115,7 +118,8 @@ public class SkiArea {
      * @return difficulty
      */
 	public String getDifficulty(String slopeName) {
-		return null;
+		if(!slopesMap.containsKey(slopeName)) return null;
+		return slopesMap.get(slopeName).getDifficulty();
 	}
 
 	/**
@@ -124,7 +128,8 @@ public class SkiArea {
 	 * @return starting lift
 	 */
 	public String getStartLift(String slopeName) {
-		return null;
+		if(!slopesMap.containsKey(slopeName)) return null;
+		return slopesMap.get(slopeName).getLift().getName();
 	}
 
 	/**
@@ -133,7 +138,7 @@ public class SkiArea {
 	 * @return list of slopes
 	 */
     public Collection<String> getSlopes(){
-		return null;
+		return slopesMap.values().stream().map(Slope::getName).collect(Collectors.toList());
     }
 
     /**
@@ -143,7 +148,7 @@ public class SkiArea {
      * @return the list of slopes
      */
     public Collection<String> getSlopesFrom(String lift){
-		return null;
+		return slopesMap.values().stream().filter(slope->slope.getLift().getName().equals(lift)).map(Slope::getName).collect(Collectors.toList());
     }
 
     /**
