@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 public class SkiArea {
 	private final String name;
 	private Map<String,LiftType> lifttypesMap= new HashMap<>();
+	private Map<String,Lift> liftsMap= new HashMap<>();
 	/**
 	 * Creates a new ski area
 	 * @param name name of the new ski area
@@ -75,7 +76,8 @@ public class SkiArea {
 	 * @throws InvalidLiftException in case the lift type is not defined
 	 */
     public void createLift(String name, String typeCode) throws InvalidLiftException{
-
+		if(!lifttypesMap.containsKey(typeCode)) throw new InvalidLiftException();
+		liftsMap.put(name, new Lift(name, lifttypesMap.get(typeCode)));
     }
     
 	/**
@@ -84,7 +86,8 @@ public class SkiArea {
 	 * @return type of the lift
 	 */
 	public String getType(String lift) {
-		return null;
+		if(!liftsMap.containsKey(lift)) return null;
+		return liftsMap.get(lift).getType().getCode();
 	}
 
 	/**
@@ -92,7 +95,7 @@ public class SkiArea {
 	 * @return the list of names sorted alphabetically
 	 */
 	public List<String> getLifts(){
-		return null;
+		return liftsMap.values().stream().map(Lift::getName).sorted().collect(Collectors.toList());
     }
 
 	/**
