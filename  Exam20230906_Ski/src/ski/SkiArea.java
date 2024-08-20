@@ -1,23 +1,25 @@
 package ski;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class SkiArea {
-
+	private final String name;
+	private Map<String,LiftType> lifttypesMap= new HashMap<>();
 	/**
 	 * Creates a new ski area
 	 * @param name name of the new ski area
 	 */
 	public SkiArea(String name) {
+		this.name=name;
     }
 
 	/**
 	 * Retrieves the name of the ski area
 	 * @return name
 	 */
-	public String getName() { return null; }
+	public String getName() { return name; }
 
     /**
      * define a new lift type providing the code, the category (Cable Cabin, Chair, Ski-lift)
@@ -29,7 +31,9 @@ public class SkiArea {
      * @throws InvalidLiftException in case of duplicate code or if the capacity is <= 0
      */
     public void liftType(String code, String category, int capacity) throws InvalidLiftException {
-
+		if(lifttypesMap.containsKey(code)) throw new InvalidLiftException();
+		if(capacity<=0) throw new InvalidLiftException();
+		lifttypesMap.put(code, new LiftType(code, category, capacity));
     }
     
     /**
@@ -39,7 +43,8 @@ public class SkiArea {
      * @throws InvalidLiftException if the code has not been defined
      */
     public String getCategory(String typeCode) throws InvalidLiftException {
-		return null;
+		if(!lifttypesMap.containsKey(typeCode)) throw new InvalidLiftException();
+		return lifttypesMap.get(typeCode).getCategory();
     }
 
     /**
@@ -49,7 +54,8 @@ public class SkiArea {
      * @throws InvalidLiftException if the code has not been defined
      */
     public int getCapacity(String typeCode) throws InvalidLiftException {
-        return -1;
+        if(!lifttypesMap.containsKey(typeCode)) throw new InvalidLiftException();
+		return lifttypesMap.get(typeCode).getCapacity();
     }
 
 
@@ -58,7 +64,7 @@ public class SkiArea {
      * @return the list of codes
      */
 	public Collection<String> types() {
-		return null;
+		return lifttypesMap.keySet().stream().collect(Collectors.toList());
 	}
 	
 	/**
