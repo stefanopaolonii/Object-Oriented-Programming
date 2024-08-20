@@ -227,10 +227,17 @@ public class SkiArea {
 		BufferedReader bufferedReader= new BufferedReader(new FileReader(path));
 		String line;
 		while((line=bufferedReader.readLine())!=null){
-			String[] parts=line.split(":");
-			if(parts[0].contains("T")){
-				liftType(parts[1], parts[2],Integer.parseInt(parts[3].trim()));
-			}else if(parts[0].contains("L")){
+			String[] parts=line.split(";");
+			if(parts[0].toUpperCase().contains("T")){
+				if (parts.length != 4) {
+						continue;
+				}
+				liftType(parts[1].trim(), parts[2].trim(),Integer.parseInt(parts[3].trim()));
+			}else if(parts[0].toUpperCase().contains("L")){
+				if (parts.length != 3) {
+						continue;
+				}
+
 				createLift(parts[1].trim(),parts[2].trim());
 			}
 		}
