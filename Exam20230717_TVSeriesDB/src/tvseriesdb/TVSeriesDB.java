@@ -1,11 +1,11 @@
 package tvseriesdb;
 
-import java.util.List;
-import java.util.Map;
-
+import java.util.*;
 
 public class TVSeriesDB {
-
+	private Set<String> servicesSet= new HashSet<>();
+	private Map<String,Series> seriesMap= new HashMap<>();
+	private Map<String,Actor> actorsMap= new HashMap<>();
 	// R1
 	
 	/**
@@ -17,7 +17,8 @@ public class TVSeriesDB {
 	 * @return number of transmission service inserted so far
 	 */
 	public int addTransmissionService(String...tServices) {
-		return -1;
+		servicesSet.addAll(Arrays.asList(tServices));
+		return servicesSet.size();
 	}
 	
 	/**
@@ -32,7 +33,10 @@ public class TVSeriesDB {
 	 * @throws TSException if TV Series is already inserted or transmission service does not exist.
 	 */
 	public int addTVSeries(String title, String tService, String genre) throws TSException {
-		return -1;
+		if(!servicesSet.contains(tService)) throw new TSException();
+		if(seriesMap.containsKey(title)) throw new TSException();
+		seriesMap.put(title, new Series(title, tService, genre));
+		return seriesMap.size();
 	}
 	
 	/**
@@ -46,7 +50,9 @@ public class TVSeriesDB {
 	 * @throws TSException if actor has already been inserted.
 	 */
 	public int addActor(String name, String surname, String nationality) throws TSException {
-		return -1;
+		if(actorsMap.containsKey(name+" "+surname)) throw new TSException();
+		actorsMap.put(name+" "+surname, new Actor(name, surname, nationality));
+		return actorsMap.size();
 	}
 	
 	/**
@@ -59,7 +65,10 @@ public class TVSeriesDB {
 	 * @throws TSException in case of non-existing actor or TV Series does not exist
 	 */
 	public int addCast(String tvSeriesTitle, String...actors) throws TSException {
-		return -1;
+		if(!actorsMap.keySet().containsAll(Arrays.asList(actors))) throw new TSException();
+		if(!seriesMap.containsKey(tvSeriesTitle)) throw new TSException();
+		Arrays.asList(actors).stream().forEach(actor-> seriesMap.get(tvSeriesTitle).addActor(actorsMap.get(actor)));
+		return seriesMap.get(tvSeriesTitle).getCastList().size();
 	}
       
 	// R2
