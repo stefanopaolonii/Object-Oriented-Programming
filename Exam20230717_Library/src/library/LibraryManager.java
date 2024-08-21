@@ -151,6 +151,8 @@ public class LibraryManager {
 	* @param donatedTitles It takes in input book titles in the format "First title,Second title"
 	*/
     public void receiveDonation(String donatedTitles) {
+		String[] books= donatedTitles.split(",");
+		Arrays.asList(books).stream().forEach(title->addBook(title));
     }
     
     // R4: Archive Management
@@ -162,7 +164,7 @@ public class LibraryManager {
 
 	*/
     public Map<String, String> getOngoingRentals() {
-        return null;
+        return readersMap.values().stream().filter(reader->reader.isInrental()).collect(Collectors.toMap(Reader::getId, reader->rentalsMap.values().stream().filter(rental->rental.getReader().equals(reader) && rental.getEndDate()==null).map(rental->rental.getBook().getId()).findFirst().orElse("")));
     }
     
     /**
@@ -170,7 +172,9 @@ public class LibraryManager {
 	* 
 	*/
     public void removeBooks() {
-    }
+		List<Book> toremove=rentalsMap.values().stream().map(Rental::getBook).collect(Collectors.toList());
+		booksMap.values().removeIf(book->!toremove.contains(book));
+	}
     	
     // R5: Stats
     
