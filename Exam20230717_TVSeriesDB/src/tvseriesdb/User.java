@@ -10,7 +10,7 @@ public class User {
     private final String username;
     private String genre;
     private List<Series> likedseriesList= new ArrayList<>();
-    private Map<String,Double> ratingsMap= new HashMap<>();
+    private Map<String,Integer> ratingsMap= new HashMap<>();
     public String getUsername() {
         return username;
     }
@@ -20,10 +20,13 @@ public class User {
     public List<Series> getLikedseriesList() {
         return likedseriesList;
     }
-    public Map<String, Double> getRatingsMap() {
+    public Map<String, Integer> getRatingsMap() {
         return ratingsMap;
     }
     public void addSeries(Series series){
         likedseriesList.add(series);
+    }
+    public void addRating(String series,int score){
+        ratingsMap.put(series,score );
     }
 }

@@ -183,7 +183,11 @@ public class TVSeriesDB {
 	 * @throws TSException	in case of invalid user, score or TV Series
 	 */
 	public double addReview(String username, String tvSeries, int score) throws TSException {
-		return -1.0;
+		if(!usersMap.containsKey(username)) throw new TSException();
+		if(score<0 || score>10) throw new TSException();
+		if(!seriesMap.containsKey(tvSeries)) throw new TSException();
+		usersMap.get(username).addRating(tvSeries, score);
+		return usersMap.values().stream().flatMap(user->user.getRatingsMap().entrySet().stream()).filter(entry-> entry.getKey().equals(tvSeries)).mapToInt(entry->entry.getValue()).average().orElse(0.0);
 	}
 
 	/**
@@ -194,7 +198,9 @@ public class TVSeriesDB {
 	 * @throws TSException	in case of invalid user, score or TV Series
 	 */
 	public double averageRating(String username) throws TSException {
-		return -1.0;
+		if(!usersMap.containsKey(username)) throw new TSException();
+		//return usersMap.get(username).getRatingsMap().entrySet().stream().filter(entry->usersMap.get(username).getLikedseriesList().contains(entry.getKey())).mapToInt(entry->entry.getValue()).average().orElse(0);
+		return usersMap.get(username).getLikedseriesList().stream().mapToInt(series->{Integer rating =usersMap.get(username).getRatingsMap().get(series.getTitle()); if(rating==null)return 0;return rating;}).average().orElse(0);
 	}
 	
 	// R5

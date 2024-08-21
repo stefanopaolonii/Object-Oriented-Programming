@@ -77,10 +77,12 @@ public class TestExample {
 		assertEquals(8.0, tvsdb.addReview("_____roberta", "Loki", 6),0);
 		
 		tvsdb.addReview("_____roberta", "Daredevil", 10);
+		tvsdb.addReview("_____roberta", "The Office", 8);
 		
-		tvsdb.likeTVSeries("FuckingMetalLover", "Daredevil");
+		tvsdb.likeTVSeries("_____roberta", "Daredevil");
+		tvsdb.likeTVSeries("_____roberta", "The Office");
 		
-		assertEquals(9.0, tvsdb.averageRating("FuckingMetalLover"), 0);
+		assertEquals(9.0, tvsdb.averageRating("_____roberta"), 0);
 		
 		//R5
 		
@@ -94,7 +96,6 @@ public class TestExample {
 		List<String> bestActors=tvsdb.bestActors("Netflix");
 		assertEquals("Charlie Cox", bestActors.get(0));
 		assertEquals("Henry Cavill", bestActors.get(1));
-		
 	}
 		
 }
