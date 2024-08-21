@@ -1,5 +1,6 @@
 package med;
 
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -88,7 +89,15 @@ public class MedManager {
 	 * @return the number of slots defined
 	 */
 	public int addDailySchedule(String code, String date, String start, String end, int duration) {
-		return -1;
+		String[] startparts=start.split(":");
+		String[] endparts=end.split(":");
+		int startinminutes=Integer.parseInt(startparts[0])*60+Integer.parseInt(startparts[1]);
+		int endinminutes=Integer.parseInt(endparts[0])*60+Integer.parseInt(endparts[1]);
+		while(startinminutes<endinminutes){
+			doctorsMap.get(code).addSlot(new Slot(date, String.format("%02d:%02d",startinminutes/60,startinminutes%60), String.format("%02d:%02d",(startinminutes+duration)/60,(startinminutes+duration)%60), duration));
+			startinminutes+=duration;
+		}
+		return doctorsMap.get(code).getSlotsList().size();
 	}
 
 	/**
@@ -102,8 +111,9 @@ public class MedManager {
 	 * @return a map doc-id -> list of slots in the schedule
 	 */
 	public Map<String, List<String>> findSlots(String date, String speciality) {
-		return null;
-	}
+		return doctorsMap.values().stream().filter(doctor->!doctor.getSlotsList().isEmpty() && doctor.getSpeciality().equals(speciality)).collect(Collectors.toMap(Doctor::getId, doc-> doc.getSlotsList().stream().filter(slot->slot.getDate().equals(date)).map(slot->slot.getStartTime()+"-"+slot.getEndTime()).collect(Collectors.toList())));
+
+		}
 
 	/**
 	 * Define an appointment for a patient in an existing slot of a doctor's schedule
