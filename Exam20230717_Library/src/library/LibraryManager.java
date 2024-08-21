@@ -185,7 +185,7 @@ public class LibraryManager {
 	* @return the uniqueID of the reader with the highest number of rentals
 	*/
     public String findBookWorm() {
-        return null;
+        return rentalsMap.values().stream().collect(Collectors.groupingBy(rental->rental.getReader(), Collectors.counting())).entrySet().stream().max(Comparator.comparingLong(entry->entry.getValue())).map(entry->entry.getKey().getId()).orElse(null);
     }
     
     /**
@@ -194,7 +194,7 @@ public class LibraryManager {
 	* @return the map linking a title with the number of rentals
 	*/
     public Map<String,Integer> rentalCounts() {
-        return null;
+        return rentalsMap.values().stream().collect(Collectors.groupingBy(rental->rental.getBook().getTitle(),Collectors.collectingAndThen(Collectors.counting(),Long::intValue)));
     }
 
 }
