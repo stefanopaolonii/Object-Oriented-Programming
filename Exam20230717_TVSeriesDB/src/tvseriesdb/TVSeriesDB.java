@@ -1,6 +1,7 @@
 package tvseriesdb;
 
 import java.util.*;
+import java.util.stream.*;
 
 public class TVSeriesDB {
 	private Set<String> servicesSet= new HashSet<>();
@@ -83,7 +84,11 @@ public class TVSeriesDB {
 	 * @throws TSException in case of non-existing TV Series or wrong releaseDate
 	 */
 	public int addSeason(String tvSeriesTitle, int numEpisodes, String releaseDate) throws TSException {
-		return -1;
+		if(!seriesMap.containsKey(tvSeriesTitle)) throw new TSException();
+		Season newSeason= new Season(tvSeriesTitle, numEpisodes, releaseDate);
+		if(seriesMap.get(tvSeriesTitle).getSeasonMap().values().stream().anyMatch(season->season.compareTo(newSeason)>0)) throw new TSException();
+		seriesMap.get(tvSeriesTitle).addSeason(newSeason);
+		return seriesMap.get(tvSeriesTitle).getSeasonMap().size();
 	}
 	
 
@@ -98,7 +103,13 @@ public class TVSeriesDB {
 	 * 			of the episode or exceeding number of episodes inserted
 	 */
 	public int addEpisode(String tvSeriesTitle, int numSeason, String episodeTitle) throws TSException {
-		return -1;
+		if(!seriesMap.containsKey(tvSeriesTitle)) throw new TSException("1");
+		Season searchedSeason=seriesMap.get(tvSeriesTitle).getSeasonMap().get(numSeason);
+		if(searchedSeason==null) throw new TSException("2");
+		if(searchedSeason.getEpisodesList().size()>searchedSeason.getNumEpisodes()) throw new TSException("3");
+		if(searchedSeason.getEpisodesList().contains(episodeTitle)) throw new TSException("4");
+		searchedSeason.addEpisode(episodeTitle);
+		return searchedSeason.getEpisodesList().size();
 	}
 
 	/**
@@ -109,7 +120,7 @@ public class TVSeriesDB {
 	 * 
 	 */
 	public Map<String, List<Integer>> checkMissingEpisodes() {
-		return null;
+		return seriesMap.values().stream().collect(Collectors.toMap(Series::getTitle, series->series.getSeasonMap().entrySet().stream().filter(entry->entry.getValue().getNumEpisodes()!=entry.getValue().getEpisodesList().size()).map(entry->entry.getKey()).collect(Collectors.toList())));
 	}
 
 	// R3
