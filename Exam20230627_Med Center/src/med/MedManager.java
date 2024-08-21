@@ -1,11 +1,11 @@
 package med;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class MedManager {
-
+	private Set<String> specialitiesSet= new HashSet<>();
+	private Map<String,Doctor> doctorsMap= new HashMap<>();
 	/**
 	 * add a set of medical specialities to the list of specialities
 	 * offered by the med centre.
@@ -15,7 +15,7 @@ public class MedManager {
 	 * @param specialities the specialities
 	 */
 	public void addSpecialities(String... specialities) {
-		
+		specialitiesSet.addAll(Arrays.asList(specialities));
 	}
 
 	/**
@@ -24,7 +24,7 @@ public class MedManager {
 	 * @return list of specialities
 	 */
 	public Collection<String> getSpecialities() {
-		return null;
+		return specialitiesSet;
 	}
 	
 	
@@ -38,7 +38,9 @@ public class MedManager {
 	 * @throws MedException in case of duplicate id or non-existing speciality
 	 */
 	public void addDoctor(String id, String name, String surname, String speciality) throws MedException {
-
+		if(doctorsMap.containsKey(id)) throw new MedException();
+		if(!specialitiesSet.contains(speciality)) throw new MedException();
+		doctorsMap.put(id, new Doctor(id, name, surname, speciality));
 	}
 
 	/**
@@ -48,7 +50,7 @@ public class MedManager {
 	 * @return the list of doctor ids
 	 */
 	public Collection<String> getSpecialists(String speciality) {
-		return null;
+		return doctorsMap.values().stream().filter(doctor->doctor.getSpeciality().equals(speciality)).map(Doctor::getId).collect(Collectors.toList());
 	}
 
 	/**
@@ -58,7 +60,8 @@ public class MedManager {
 	 * @return the name
 	 */
 	public String getDocName(String code) {
-		return null;
+		if(!doctorsMap.containsKey(code)) return null;
+		return doctorsMap.get(code).getName();
 	}
 
 	/**
@@ -68,7 +71,8 @@ public class MedManager {
 	 * @return the surname
 	 */
 	public String getDocSurname(String code) {
-		return null;
+		if(!doctorsMap.containsKey(code)) return null;
+		return doctorsMap.get(code).getSurname();
 	}
 
 	/**
