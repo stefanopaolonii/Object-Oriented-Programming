@@ -107,7 +107,7 @@ public class TVSeriesDB {
 		if(!seriesMap.containsKey(tvSeriesTitle)) throw new TSException("1");
 		Season searchedSeason=seriesMap.get(tvSeriesTitle).getSeasonMap().get(numSeason);
 		if(searchedSeason==null) throw new TSException("2");
-		if(searchedSeason.getEpisodesList().size()>searchedSeason.getNumEpisodes()) throw new TSException("3");
+		if(searchedSeason.getEpisodesList().size()>=searchedSeason.getNumEpisodes()) throw new TSException("3");
 		if(searchedSeason.getEpisodesList().contains(episodeTitle)) throw new TSException("4");
 		searchedSeason.addEpisode(episodeTitle);
 		return searchedSeason.getEpisodesList().size();
@@ -121,7 +121,7 @@ public class TVSeriesDB {
 	 * 
 	 */
 	public Map<String, List<Integer>> checkMissingEpisodes() {
-		return seriesMap.values().stream().collect(Collectors.toMap(Series::getTitle, series->series.getSeasonMap().entrySet().stream().filter(entry->entry.getValue().getNumEpisodes()!=entry.getValue().getEpisodesList().size()).map(entry->entry.getKey()).collect(Collectors.toList())));
+		return seriesMap.values().stream().collect(Collectors.toMap(Series::getTitle, series->series.getSeasonMap().entrySet().stream().filter(entry->entry.getValue().getNumEpisodes()!=entry.getValue().getEpisodesList().size()).map(entry->entry.getKey()).collect(Collectors.toList()))).entrySet().stream().filter(entry->!entry.getValue().isEmpty()).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 	}
 
 	// R3
@@ -152,6 +152,7 @@ public class TVSeriesDB {
 	public int likeTVSeries(String username, String tvSeriesTitle) throws TSException {
 		if(!usersMap.containsKey(username)) throw new TSException();
 		if(!seriesMap.containsKey(tvSeriesTitle)) throw new TSException();
+		if(usersMap.get(username).getLikedseriesList().contains(seriesMap.get(tvSeriesTitle))) throw new TSException();
 		usersMap.get(username).addSeries(seriesMap.get(tvSeriesTitle));
 		return usersMap.get(username).getLikedseriesList().size();
 	}
@@ -166,7 +167,7 @@ public class TVSeriesDB {
 	public List<String> suggestTVSeries(String username) throws TSException {
 		User searchedUser= usersMap.get(username);
 		if(searchedUser==null) throw new TSException();
-		List<String> searchedseries=seriesMap.values().stream().filter(series->series.getGenre().equals(searchedUser.getGenre()) && !searchedUser.getLikedseriesList().contains(series.getTitle())).map(Series::getTitle).sorted().collect(Collectors.toList());
+		List<String> searchedseries=seriesMap.values().stream().filter(series->series.getGenre().equals(searchedUser.getGenre()) && !searchedUser.getLikedseriesList().contains(series)).map(Series::getTitle).sorted().collect(Collectors.toList());
 		if(searchedseries.isEmpty()) searchedseries.add("");
 		return searchedseries;
 	}
@@ -187,6 +188,7 @@ public class TVSeriesDB {
 		if(score<0 || score>10) throw new TSException();
 		if(!seriesMap.containsKey(tvSeries)) throw new TSException();
 		usersMap.get(username).addRating(tvSeries, score);
+		seriesMap.get(tvSeries).addRating(username, score);
 		return usersMap.values().stream().flatMap(user->user.getRatingsMap().entrySet().stream()).filter(entry-> entry.getKey().equals(tvSeries)).mapToInt(entry->entry.getValue()).average().orElse(0.0);
 	}
 
@@ -199,7 +201,6 @@ public class TVSeriesDB {
 	 */
 	public double averageRating(String username) throws TSException {
 		if(!usersMap.containsKey(username)) throw new TSException();
-		//return usersMap.get(username).getRatingsMap().entrySet().stream().filter(entry->usersMap.get(username).getLikedseriesList().contains(entry.getKey())).mapToInt(entry->entry.getValue()).average().orElse(0);
 		return usersMap.get(username).getLikedseriesList().stream().mapToInt(series->{Integer rating =usersMap.get(username).getRatingsMap().get(series.getTitle()); if(rating==null)return 0;return rating;}).average().orElse(0);
 	}
 	
@@ -214,9 +215,10 @@ public class TVSeriesDB {
 	 * @throws TSException	in case of invalid user, score or TV Series
 	 */
 	public String mostAwaitedSeason(String currDate) throws TSException {
-		return null;
+		Season tmp= new Season(currDate, 0, currDate);
+		return seriesMap.values().stream().sorted(Comparator.comparingDouble(series->((Series) series).getRatingsMap().values().stream().mapToInt(Integer::intValue).average().orElse(0)).reversed()).map(Series::getLastSeason).filter(Objects::nonNull).filter(season->season.compareTo(tmp)>=0).map(season->season.getTvSeriesTitle()+" "+seriesMap.get(season.getTvSeriesTitle()).getSeasonCounter()).findFirst().orElse("");
 	}
-	
+
 	/**
 	 * Computes the best actors working in tv series of a transmission service passed
 	 * in input. The best actors have worked only in tv series of that transmission service
@@ -226,7 +228,9 @@ public class TVSeriesDB {
 	 * @throws TSException	in case of transmission service not in the DB
 	 */
 	public List<String> bestActors(String transmissionService) throws TSException {
-		return null;
+		if(!servicesSet.contains(transmissionService)) throw new TSException();
+		List<Actor> tmp= seriesMap.values().stream().filter(series-> series.gettService().equals(transmissionService) && series.getRatingsMap().values().stream().mapToInt(Integer::intValue).average().orElse(0)<=8).flatMap(series->series.getCastList().stream()).distinct().collect(Collectors.toList());
+		return seriesMap.values().stream().filter(series->series.gettService().equals(transmissionService)).flatMap(series->series.getCastList().stream()).filter(actor->!tmp.contains(actor)).map(actor->actor.getName()+" "+actor.getSurname()).collect(Collectors.toList());
 	}
 
 	
