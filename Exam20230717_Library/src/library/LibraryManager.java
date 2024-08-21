@@ -138,7 +138,7 @@ public class LibraryManager {
     public SortedMap<String, String> getRentals(String bookID) throws LibException {
 		if(!booksMap.containsKey(bookID)) throw new LibException();
 		SortedMap<String,String> searchedMap= new TreeMap<>();
-		rentalsMap.values().stream().filter(rental->rental.getBook().getId().equals(bookID)).forEach(rental->{if(rental.getEndDate()==null) searchedMap.put(rental.getReader().getId(),rental.getStartDate()+" ONGOING");searchedMap.put(rental.getReader().getId(),rental.getStartDate()+" "+rental.getEndDate());});
+		rentalsMap.values().stream().filter(rental->rental.getBook().getId().equals(bookID)).forEach(rental->{if(rental.getEndDate()==null) searchedMap.put(rental.getReader().getId(),rental.getStartDate()+" ONGOING");else searchedMap.put(rental.getReader().getId(),rental.getStartDate()+" "+rental.getEndDate());});
 		return searchedMap;
 	}
     
@@ -185,7 +185,7 @@ public class LibraryManager {
 	* @return the uniqueID of the reader with the highest number of rentals
 	*/
     public String findBookWorm() {
-        return rentalsMap.values().stream().collect(Collectors.groupingBy(rental->rental.getReader(), Collectors.counting())).entrySet().stream().max(Comparator.comparingLong(entry->entry.getValue())).map(entry->entry.getKey().getId()).orElse(null);
+        return rentalsMap.values().stream().collect(Collectors.groupingBy(rental->rental.getReader().getId(),TreeMap::new,Collectors.counting())).entrySet().stream().max(Comparator.comparingLong(entry->entry.getValue())).map(entry->entry.getKey()).orElse(null);
     }
     
     /**
@@ -194,7 +194,7 @@ public class LibraryManager {
 	* @return the map linking a title with the number of rentals
 	*/
     public Map<String,Integer> rentalCounts() {
-        return rentalsMap.values().stream().collect(Collectors.groupingBy(rental->rental.getBook().getTitle(),Collectors.collectingAndThen(Collectors.counting(),Long::intValue)));
+        return booksMap.values().stream().collect(Collectors.groupingBy(Book::getTitle,Collectors.summingInt(book->(int) rentalsMap.values().stream().filter(rental->rental.getBook().equals(book)).count())));
     }
 
 }
