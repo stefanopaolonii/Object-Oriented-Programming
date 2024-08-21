@@ -1,12 +1,16 @@
 package library;
 
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedMap;
+import java.util.*;
+import java.util.stream.Collectors;;
 
 
 public class LibraryManager {
-	    
+	    private Map<String,Book> booksMap= new TreeMap<>();
+		private Map<String,Reader> readersMap= new HashMap<>();
+		private Map<String,Rental> rentalsMap= new TreeMap<>();
+
+		private int bookCounter=1000;
+		private int readerCounter=1000;
     // R1: Readers and Books 
     
     /**
@@ -19,7 +23,9 @@ public class LibraryManager {
 	 * @return the ID of the book added 
 	 */
     public String addBook(String title) {
-        return null;
+		String id= String.format("%d",bookCounter++);
+		booksMap.put(id, new Book(title, id));
+        return id;
     }
     
     /**
@@ -29,8 +35,8 @@ public class LibraryManager {
 	 * 
 	 * @return a map of the titles liked to the number of available copies
 	 */
-    public SortedMap<String, Integer> getTitles() {    	
-        return null;
+    public SortedMap<String, Integer> getTitles() {
+		return booksMap.values().stream().sorted(Comparator.comparing(Book::getTitle)).collect(Collectors.groupingBy(Book::getTitle,TreeMap::new,Collectors.collectingAndThen(Collectors.counting(), Long::intValue)));
     }
     
     /**
@@ -39,7 +45,7 @@ public class LibraryManager {
 	 * @return a set of the titles liked to the number of available copies
 	 */
     public Set<String> getBooks() {    	    	
-        return null;
+        return booksMap.keySet();
     }
     
     /**
@@ -49,6 +55,8 @@ public class LibraryManager {
 	 * @param surname last name of the reader
 	 */
     public void addReader(String name, String surname) {
+		String id= String.format("%d",readerCounter++);
+		readersMap.put(id, new Reader(name, surname, id));
     }
     
     
@@ -60,7 +68,8 @@ public class LibraryManager {
 	 * @throws LibException if the readerID is not present in the archive
 	 */
     public String getReaderName(String readerID) throws LibException {
-        return null;
+		if(!readersMap.containsKey(readerID)) throw new LibException();
+        return readersMap.get(readerID).toString();
     }    
     
     
@@ -75,7 +84,8 @@ public class LibraryManager {
 	 * @throws LibException  an exception if the book is not present in the archive
 	 */
     public String getAvailableBook(String bookTitle) throws LibException {
-        return null;
+		if(!booksMap.values().stream().anyMatch(book->book.getTitle().equals(bookTitle))) throw new LibException();
+        return booksMap.values().stream().filter(book->book.getTitle().equals(bookTitle) && !book.isInrental()).map(Book::getId).findFirst().orElse("Not available");
     }   
 
     /**
@@ -88,7 +98,14 @@ public class LibraryManager {
 	 * if the reader is already renting a book, or if the book copy is already rented
 	 */
 	public void startRental(String bookID, String readerID, String startingDate) throws LibException {
-    }
+		if(!booksMap.containsKey(bookID)) throw new LibException();
+		if(!readersMap.containsKey(readerID)) throw new LibException();
+		if(readersMap.get(readerID).isInrental()) throw new LibException();
+		if(booksMap.get(bookID).isInrental()) throw new LibException();
+		rentalsMap.put(readerID+bookID, new Rental(readersMap.get(readerID), booksMap.get(bookID), startingDate));
+		booksMap.get(bookID).setInrental(true);
+		readersMap.get(readerID).setInrental(true);
+	}
     
 	/**
 	 * Ends a rental of a specific book copy for a specific reader
@@ -100,6 +117,12 @@ public class LibraryManager {
 	 * if the reader is not renting a book, or if the book copy is not rented
 	 */
     public void endRental(String bookID, String readerID, String endingDate) throws LibException {
+		if(!rentalsMap.containsKey(readerID+bookID)) throw new LibException();
+		if(!booksMap.get(bookID).isInrental()) throw new LibException();
+		if(!readersMap.containsKey(readerID)) throw new LibException();
+		rentalsMap.get(readerID+bookID).setEndDate(endingDate);
+		booksMap.get(bookID).setInrental(false);
+		readersMap.get(readerID).setInrental(false);
     }
     
     
@@ -113,8 +136,11 @@ public class LibraryManager {
 	* if the reader is not renting a book, or if the book copy is not rented
 	*/
     public SortedMap<String, String> getRentals(String bookID) throws LibException {
-        return null;
-    }
+		if(!booksMap.containsKey(bookID)) throw new LibException();
+		SortedMap<String,String> searchedMap= new TreeMap<>();
+		rentalsMap.values().stream().filter(rental->rental.getBook().getId().equals(bookID)).forEach(rental->{if(rental.getEndDate()==null) searchedMap.put(rental.getReader().getId(),rental.getStartDate()+" ONGOING");searchedMap.put(rental.getReader().getId(),rental.getStartDate()+" "+rental.getEndDate());});
+		return searchedMap;
+	}
     
     
     // R3: Book Donations
