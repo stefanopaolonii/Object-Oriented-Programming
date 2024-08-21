@@ -7,6 +7,7 @@ public class TVSeriesDB {
 	private Set<String> servicesSet= new HashSet<>();
 	private Map<String,Series> seriesMap= new HashMap<>();
 	private Map<String,Actor> actorsMap= new HashMap<>();
+	private Map<String,User> usersMap= new HashMap<>();
 	// R1
 	
 	/**
@@ -134,7 +135,9 @@ public class TVSeriesDB {
 	 * @throws TSException in case username is already registered
 	 */
 	public int addUser(String username, String genre) throws TSException {
-		return -1;
+		if(usersMap.containsKey(username)) throw new TSException();
+		usersMap.put(username, new User(username, genre));
+		return usersMap.size();
 	}
 
 	/**
@@ -147,7 +150,10 @@ public class TVSeriesDB {
 	 * @throws TSException in case user is not registered or TV series does not exist
 	 */
 	public int likeTVSeries(String username, String tvSeriesTitle) throws TSException {
-		return -1;
+		if(!usersMap.containsKey(username)) throw new TSException();
+		if(!seriesMap.containsKey(tvSeriesTitle)) throw new TSException();
+		usersMap.get(username).addSeries(seriesMap.get(tvSeriesTitle));
+		return usersMap.get(username).getLikedseriesList().size();
 	}
 	
 	/**
@@ -158,7 +164,11 @@ public class TVSeriesDB {
 	 * @throws TSException if user does not exist
 	 */
 	public List<String> suggestTVSeries(String username) throws TSException {
-		return null;
+		User searchedUser= usersMap.get(username);
+		if(searchedUser==null) throw new TSException();
+		List<String> searchedseries=seriesMap.values().stream().filter(series->series.getGenre().equals(searchedUser.getGenre()) && !searchedUser.getLikedseriesList().contains(series.getTitle())).map(Series::getTitle).sorted().collect(Collectors.toList());
+		if(searchedseries.isEmpty()) searchedseries.add("");
+		return searchedseries;
 	}
 	
 	//R4 
