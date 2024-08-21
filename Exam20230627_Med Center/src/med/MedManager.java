@@ -7,6 +7,10 @@ import java.util.stream.Collectors;
 public class MedManager {
 	private Set<String> specialitiesSet= new HashSet<>();
 	private Map<String,Doctor> doctorsMap= new HashMap<>();
+	private Map<String,Appointment> appointmentsMap= new HashMap<>();
+	private Map<String,Patient> patientsMap= new HashMap<>();
+	private int appointmentCounter=0;
+	private String currentDate;
 	/**
 	 * add a set of medical specialities to the list of specialities
 	 * offered by the med centre.
@@ -128,7 +132,14 @@ public class MedManager {
 	 * @throws MedException	in case of invalid code, date or slot
 	 */
 	public String setAppointment(String ssn, String name, String surname, String code, String date, String slot) throws MedException {
-		return null;
+		if(!doctorsMap.containsKey(code)) throw new MedException();
+		String[] slotparts= slot.split("-");
+		Slot tmpSlot= new Slot(date, slotparts[0], slotparts[1], 0);
+		if(!doctorsMap.get(code).getSlotsList().stream().anyMatch(sslot-> sslot.equals(tmpSlot))) throw new MedException();
+		if(!patientsMap.containsKey(ssn)) patientsMap.put(ssn, new Patient(ssn, name, surname));
+		String id=String.format("A%d", appointmentCounter++);
+		appointmentsMap.put(id, new Appointment(patientsMap.get(ssn), doctorsMap.get(code), id, tmpSlot));
+		return id;
 	}
 
 	/**
@@ -138,7 +149,8 @@ public class MedManager {
 	 * @return doctor code id
 	 */
 	public String getAppointmentDoctor(String idAppointment) {
-		return null;
+		if(!appointmentsMap.containsKey(idAppointment)) return null;
+		return appointmentsMap.get(idAppointment).getDoctor().getId();
 	}
 
 	/**
@@ -148,7 +160,8 @@ public class MedManager {
 	 * @return doctor patient ssn
 	 */
 	public String getAppointmentPatient(String idAppointment) {
-		return null;
+		if(!appointmentsMap.containsKey(idAppointment)) return null;
+		return appointmentsMap.get(idAppointment).getPatient().getSsn();
 	}
 
 	/**
@@ -158,7 +171,8 @@ public class MedManager {
 	 * @return time of appointment
 	 */
 	public String getAppointmentTime(String idAppointment) {
-		return null;
+		if(!appointmentsMap.containsKey(idAppointment)) return null;
+		return appointmentsMap.get(idAppointment).getSlot().getStartTime();
 	}
 
 	/**
@@ -168,7 +182,8 @@ public class MedManager {
 	 * @return date
 	 */
 	public String getAppointmentDate(String idAppointment) {
-		return null;
+		if(!appointmentsMap.containsKey(idAppointment)) return null;
+		return appointmentsMap.get(idAppointment).getSlot().getDate();
 	}
 
 	/**
@@ -181,7 +196,7 @@ public class MedManager {
 	 * @return list of appointments
 	 */
 	public Collection<String> listAppointments(String code, String date) {
-		return null;
+		return appointmentsMap.values().stream().filter(appointment->appointment.getSlot().getDate().equals(date) && appointment.getDoctor().getId().equals(code)).map(appointment->appointment.getSlot().getStartTime()+"="+appointment.getPatient().getSsn()).collect(Collectors.toList());
 	}
 
 	/**
@@ -192,7 +207,8 @@ public class MedManager {
 	 * @return the number of total appointments for the day
 	 */
 	public int setCurrentDate(String date) {
-		return -1;
+		this.currentDate=date;
+		return (int) appointmentsMap.values().stream().filter(appointment->appointment.getSlot().getDate().equals(date)).count();
 	}
 
 	/**
@@ -201,7 +217,8 @@ public class MedManager {
 	 * @param ssn SSN of the patient
 	 */
 	public void accept(String ssn) {
-
+		if(!patientsMap.containsKey(ssn)) return;
+		patientsMap.get(ssn).setAccepted(true);
 	}
 
 	/**
@@ -214,7 +231,7 @@ public class MedManager {
 	 * @return appointment id
 	 */
 	public String nextAppointment(String code) {
-		return null;
+		return appointmentsMap.values().stream().filter(appointment->appointment.getDoctor().getId().equals(code) && appointment.getPatient().isAccepted() && !appointment.isCompleted()).map(Appointment::getId).findFirst().orElse(null);
 	}
 
 	/**
@@ -230,7 +247,13 @@ public class MedManager {
 	 * 						or appointment not for the current day
 	 */
 	public void completeAppointment(String code, String appId)  throws MedException {
-
+		if(!appointmentsMap.containsKey(appId)) throw new MedException();
+		if(!doctorsMap.containsKey(code)) throw new MedException();
+		Appointment searchedapp= appointmentsMap.get(appId);
+		if(!searchedapp.getDoctor().getId().equals(code)) throw new MedException();
+		if(!searchedapp.getPatient().isAccepted()) throw new MedException();
+		if(!searchedapp.getSlot().getDate().equals(currentDate)) throw new MedException();
+		searchedapp.setCompleted(true);
 	}
 
 	/**
@@ -242,7 +265,8 @@ public class MedManager {
 	 * @return	no show rate
 	 */
 	public double showRate(String code, String date) {
-		return -1.0;
+		List<Appointment> searchedapp= appointmentsMap.values().stream().filter(appointment->appointment.getDoctor().getId().equals(code) && appointment.getSlot().getDate().equals(date)).collect(Collectors.toList());
+		return (double)searchedapp.stream().filter(app->app.getPatient().isAccepted()).count()/searchedapp.size();
 	}
 
 	/**
@@ -254,7 +278,7 @@ public class MedManager {
 	 * @return the map id : completeness
 	 */
 	public Map<String, Double> scheduleCompleteness() {
-		return null;
+		return doctorsMap.values().stream().collect(Collectors.toMap(Doctor::getId, doc->appointmentsMap.values().stream().filter(app->app.getDoctor().equals(doc)).count()/(double)doc.getSlotsList().size()));
 	}
 
 

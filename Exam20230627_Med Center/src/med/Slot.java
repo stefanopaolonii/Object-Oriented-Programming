@@ -23,4 +23,18 @@ public class Slot {
     public int getDuration() {
         return duration;
     }
+    @Override
+    public boolean equals(Object obj){
+        if(obj==this) return true;
+        if(obj==null || obj.getClass()!=this.getClass()) return false;
+        Slot other= (Slot) obj;
+        if(this.date.equals(other.date)){
+            if(this.startTime.equals(other.getStartTime()) && this.endTime.equals(other.endTime)) return true;
+        }
+
+        return false;
+    }
+    public String getTime(){
+        return startTime+"-"+endTime;
+    }
 }
