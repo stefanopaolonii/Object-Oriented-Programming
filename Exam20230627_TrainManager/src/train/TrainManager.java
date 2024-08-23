@@ -98,7 +98,24 @@ public class TrainManager {
 	 * @return the available seats by car
 	 */
 	public Map<String, List<String>> findSeats(String begin, String end, String klass) {
-		return carsMap.values().stream().filter(car->car.getKlass().equals(klass)).collect(Collectors.toMap(car->car.getId(),car-> {List<String> allseats= new ArrayList<>(); for(int i=1;i<=car.getRows();i++){for(int j=0;j<=car.getLastSeat()-'A';j++) allseats.add(String.format("%d%c", i,'A'+j));}return allseats;}));
+		return carsMap.values().stream()
+            .filter(car -> car.getKlass().equals(klass))
+            .collect(Collectors.toMap(
+                Car::getId, // ID della carrozza
+                car -> {
+                    Set<String> bookedSeats = bookingsMap.values().stream()
+                        .filter(book -> book.getCar().getId().equals(car.getId())
+                                && stopsList.indexOf(book.getBegin()) <= stopsList.indexOf(begin)
+                                && stopsList.indexOf(book.getEnd()) >= stopsList.indexOf(begin))
+                        .map(Booking::getSeat)
+                        .collect(Collectors.toSet());
+						List<String> allseats= new ArrayList<>();
+						for(int i=1;i<=car.getRows();i++) for(char j='A';j<=car.getLastSeat();j++)  allseats.add(String.format("%d%c", i,j));
+                    return allseats.stream()
+                        .filter(seat -> !bookedSeats.contains(seat))
+                        .collect(Collectors.toList());
+                }
+            ));
 	}
 
 	/**
@@ -119,13 +136,14 @@ public class TrainManager {
 	 */
 	public String bookSeat(String ssn, String name, String surname, 
 						   String begin, String end, String car, String seat) throws TrainException {
+		
 		if(!carsMap.containsKey(car)) throw new TrainException();
 		if(!stopsList.contains(begin)) throw new TrainException();
 		if(!stopsList.contains(end)) throw new TrainException();
 		if(stopsList.indexOf(end)<stopsList.indexOf(begin)) throw new TrainException();
 		String [] seatparts=seat.split("");
 		if(carsMap.get(car).getRows()<Integer.parseInt(seatparts[0])) throw new TrainException();
-		if(seat.charAt(1)>carsMap.get(car).getLastSeat()) throw new TrainException();
+		if(seat.charAt(seat.length()-1)>carsMap.get(car).getLastSeat()) throw new TrainException();
 		if(bookingsMap.values().stream().filter(book->book.getCar().getId().equals(car) && book.getSeat().equals(seat)).anyMatch(book->{int startindex=stopsList.indexOf(book.getBegin()); int endindex=stopsList.indexOf(book.getEnd()); return startindex<stopsList.indexOf(end) && stopsList.indexOf(begin)<endindex;})) throw new TrainException();
 		String code= String.format("B%d",++bookingCounter);
 		bookingsMap.put(code, new Booking(code, ssn, name, surname, begin, end, carsMap.get(car), seat));
