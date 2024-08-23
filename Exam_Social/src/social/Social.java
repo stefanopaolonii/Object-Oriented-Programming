@@ -146,7 +146,7 @@ public class Social {
 	 * @return the code of the person
 	 */
 	public String personWithLargestNumberOfFriends() {
-		return null;
+		return accountsMap.values().stream().max(Comparator.comparingInt(account->account.getFriendsMap().size())).map(Account::getName).orElse(null);
 	}
 
 	/**
@@ -156,7 +156,7 @@ public class Social {
 	 * @return the code of the person
 	 */
 	public String personWithMostFriendsOfFriends() {
-		return null;
+		return accountsMap.values().stream().max(Comparator.comparingInt(account->(int) account.getFriendsMap().values().stream().flatMap(acc->acc.getFriendsMap().values().stream()).count())).map(Account::getId).orElse(null);
 	}
 
 	/**
@@ -165,7 +165,7 @@ public class Social {
 	 * @return the name of the group
 	 */
 	public String largestGroup() {
-		return null;
+		return groupsMap.values().stream().max(Comparator.comparingInt(group->group.getAccountsMap().size())).map(Group::getName).orElse(null);
 	}
 
 	/**
@@ -175,7 +175,7 @@ public class Social {
 	 * @return the code of the person
 	 */
 	public String personInLargestNumberOfGroups() {
-		return null;
+		return accountsMap.values().stream().map(Account::getId).max(Comparator.comparingLong(account->groupsMap.values().stream().filter(group->group.getAccountsMap().containsKey(account)).count())).orElse(null);
 	}
 
 	/**
