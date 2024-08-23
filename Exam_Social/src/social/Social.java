@@ -1,10 +1,11 @@
 package social;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 public class Social {
-
+	private Map<String,Account> accountsMap= new HashMap<>();
 	/**
 	 * Creates a new account for a person
 	 * 
@@ -15,6 +16,8 @@ public class Social {
 	 */
 	public void addPerson(String code, String name, String surname)
 			throws PersonExistsException {
+		if(accountsMap.containsKey(code)) throw new PersonExistsException();
+		accountsMap.put(code, new Account(code, name, surname));
 
 	}
 
@@ -27,7 +30,8 @@ public class Social {
 	 * @throws NoSuchCodeException
 	 */
 	public String getPerson(String code) throws NoSuchCodeException {
-		return null;
+		if(!accountsMap.containsKey(code))throw new NoSuchCodeException();
+		return accountsMap.get(code).toString();
 	}
 
 	/**
@@ -41,7 +45,10 @@ public class Social {
 	 */
 	public void addFriendship(String codePerson1, String codePerson2)
 			throws NoSuchCodeException {
-
+			if(!accountsMap.containsKey(codePerson1)) throw new NoSuchCodeException();
+			if(!accountsMap.containsKey(codePerson2)) throw new NoSuchCodeException();
+			accountsMap.get(codePerson1).addFriend(codePerson2,accountsMap.get(codePerson2));
+			accountsMap.get(codePerson2).addFriend(codePerson1, accountsMap.get(codePerson1));
 	}
 
 	/**
@@ -54,7 +61,8 @@ public class Social {
 	 */
 	public Collection<String> listOfFriends(String codePerson)
 			throws NoSuchCodeException {
-		return null;
+		if(!accountsMap.containsKey(codePerson)) throw new NoSuchCodeException();
+		return accountsMap.get(codePerson).getFriendsMap().keySet();
 	}
 
 	/**
@@ -68,7 +76,8 @@ public class Social {
 	 */
 	public Collection<String> friendsOfFriends(String codePerson)
 			throws NoSuchCodeException {
-		return null;
+		if(!accountsMap.containsKey(codePerson)) throw new NoSuchCodeException();
+		return accountsMap.get(codePerson).getFriendsMap().values().stream().flatMap(account->account.getFriendsMap().values().stream()).map(Account::getId).filter(code->!code.equals(codePerson)).collect(Collectors.toList());
 	}
 
 	/**
@@ -83,7 +92,8 @@ public class Social {
 	 */
 	public Collection<String> friendsOfFriendsNoRepetition(String codePerson)
 			throws NoSuchCodeException {
-		return null;
+		if(!accountsMap.containsKey(codePerson)) throw new NoSuchCodeException();
+		return accountsMap.get(codePerson).getFriendsMap().values().stream().flatMap(account->account.getFriendsMap().values().stream()).map(Account::getId).distinct().filter(code->!code.equals(codePerson)).collect(Collectors.toList());
 	}
 
 	/**
