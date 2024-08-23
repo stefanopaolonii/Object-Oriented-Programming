@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 public class Social {
 	private Map<String,Account> accountsMap= new HashMap<>();
 	private Map<String,Group> groupsMap= new HashMap<>();
+	private int postCounter=0;
 	/**
 	 * Creates a new account for a person
 	 * 
@@ -185,7 +186,10 @@ public class Social {
 	 * @return a unique id of the post
 	 */
     public String post(String author, String text) {
-		return null;
+		if(!accountsMap.containsKey(author)) return null;
+		String code= String.format("POST%d", ++postCounter);
+		accountsMap.get(author).addPost(code, new Post(code, accountsMap.get(author), text,System.currentTimeMillis()));
+		return code;
     }
 
 	/**
@@ -195,7 +199,9 @@ public class Social {
 	 * @return the content of the post
 	 */
     public String getPostContent(String author, String pid) {
-		return null;
+		if(!accountsMap.containsKey(author)) return null;
+		if(!accountsMap.get(author).getPostsMap().containsKey(pid)) return null;
+		return accountsMap.get(author).getPostsMap().get(pid).getText();
     }
 
 	/**
@@ -205,7 +211,9 @@ public class Social {
 	 * @return the timestamp of the post
 	 */
     public long getTimestamp(String author, String pid) {
-		return -1;
+		if(!accountsMap.containsKey(author)) return -1;
+		if(!accountsMap.get(author).getPostsMap().containsKey(pid)) return -1;
+		return accountsMap.get(author).getPostsMap().get(pid).getTimeMillis();
     }
 
 	/**
@@ -217,7 +225,8 @@ public class Social {
 	 * @return the list of posts id
 	 */
     public List<String> getPaginatedUserPosts(String author, int pageNo, int pageLength) {
-		return null;
+		if(!accountsMap.containsKey(author)) return null;
+		return accountsMap.get(author).getPostsMap().values().stream().sorted(Comparator.comparingLong(Post::getTimeMillis).reversed()).skip((pageNo-1)*pageLength).limit(pageLength).map(Post::getId).collect(Collectors.toList());
     }
 
 	/**
@@ -231,6 +240,6 @@ public class Social {
 	 * @return the list of posts key elements
 	 */
 	public List<String> getPaginatedFriendPosts(String author, int pageNo, int pageLength) {
-		return null;
+		return accountsMap.get(author).getFriendsMap().values().stream().flatMap(account->account.getPostsMap().values().stream()).sorted(Comparator.comparingLong(Post::getTimeMillis).reversed()).skip((pageNo-1)*pageLength).limit(pageLength).map(post->post.getAccount().getName()+":"+post.getId()).collect(Collectors.toList());
 	}
 }
