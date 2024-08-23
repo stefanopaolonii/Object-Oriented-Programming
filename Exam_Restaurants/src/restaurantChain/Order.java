@@ -18,5 +18,10 @@ public class Order {
     public boolean isPayed() {
         return payed;
     }
-
+    public void addManu(Menu menu){
+        menusList.add(menu);
+    }
+    public void setPayed(boolean payed) {
+        this.payed = payed;
+    }
 }

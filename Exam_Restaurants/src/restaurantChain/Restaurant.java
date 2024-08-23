@@ -1,6 +1,7 @@
 package restaurantChain;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Restaurant {
 	private final String name;
@@ -29,11 +30,11 @@ public class Restaurant {
 	
 	public int reserve(String name, int persons) throws InvalidName{
 		if(groupsMap.containsKey(name)) throw new InvalidName();
-		if(tables-groupsMap.values().stream().mapToInt(Integer::intValue).sum()<getnoftables(persons)){
+		if(tables-getnoftables(groupsMap.values().stream().mapToInt(Integer::intValue).sum())<getnoftables(persons)){
 			refused+=persons;
 			return 0;
 		}
-		groupsMap.put(name, getnoftables(persons));
+		groupsMap.put(name, persons);
 		return getnoftables(persons);
 	}
 	
@@ -42,27 +43,39 @@ public class Restaurant {
 	}
 	
 	public int getUnusedTables(){
-		return tables-groupsMap.values().stream().mapToInt(Integer::intValue).sum();
+		return tables-getnoftables(groupsMap.values().stream().mapToInt(Integer::intValue).sum());
 	}
 	
 	public boolean order(String name, String... menu) throws InvalidName{
-		return false;
+		if(!groupsMap.containsKey(name)) throw new InvalidName();
+		if(!menusMap.keySet().containsAll(Arrays.asList(menu))) throw new InvalidName();
+		if(Arrays.asList(menu).size()<groupsMap.get(name)) return false;
+		Order neworder= new Order(name);
+		for(String smenu: menu){
+			if(!menusMap.containsKey(smenu)) throw new InvalidName();
+			neworder.addManu(menusMap.get(smenu));
+		}
+		ordersMap.put(name, neworder);
+		return true;
 	}
 	
 	public List<String> getUnordered(){
-		return null;
+		return groupsMap.keySet().stream().filter(name->!ordersMap.values().stream().map(Order::getName).distinct().collect(Collectors.toList()).contains(name)).sorted().collect(Collectors.toList());
 	}
 	
 	public double pay(String name) throws InvalidName{
-		return -1.0;
+		if(!groupsMap.containsKey(name)) throw new InvalidName();
+		if(!ordersMap.values().stream().map(Order::getName).distinct().collect(Collectors.toList()).contains(name)) return 0;
+		ordersMap.get(name).setPayed(true);
+		return ordersMap.get(name).getMenusList().stream().mapToDouble(Menu::getPrice).sum();
 	}
 	
 	public List<String> getUnpaid(){
-		return null;
+		return ordersMap.values().stream().filter(order->!order.isPayed()).map(Order::getName).collect(Collectors.toList());
 	}
 	
 	public double getIncome(){
-		return -1.0;
+		return ordersMap.values().stream().filter(order->order.isPayed()).flatMap(order->order.getMenusList().stream()).mapToDouble(Menu::getPrice).sum();
 	}
 
 }
