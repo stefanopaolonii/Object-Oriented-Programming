@@ -2,25 +2,29 @@ package orari;
 
 
 public class Passaggio {
+  private Fermata fermata;
+  private int ora;
+  private int minuti;
+  public Passaggio(Fermata fermata, int ora, int minuti) {
+    this.fermata = fermata;
+    this.ora = ora;
+    this.minuti = minuti;
+  }
 
   public String getStazione() {
-    // TODO Auto-generated method stub
-    return null;
+    return fermata.getStazione();
   }
 
   public int getOra() {
-    // TODO Auto-generated method stub
-    return 0;
+   return ora;
   }
 
   public int getMinuti() {
-    // TODO Auto-generated method stub
-    return 0;
+    return minuti;
   }
 
   public int ritardo() {
-    // TODO Auto-generated method stub
-    return 0;
+    return (ora*60+minuti)-(fermata.getOre()*60+fermata.getMinuti());
   }
 
 }

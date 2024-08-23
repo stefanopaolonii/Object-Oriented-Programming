@@ -1,11 +1,14 @@
 package orari;
 
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Treno {
   private Percorso percorso;
   private int giorno;
   private int mese;
   private int anno;
+  private List<Passaggio> passaggiList= new ArrayList<>();
   public Treno(Percorso percorso, int giorno, int mese, int anno) {
     this.percorso = percorso;
     this.giorno = giorno;
@@ -31,8 +34,11 @@ public class Treno {
 
   public Passaggio registraPassaggio(String string, int i, int j) 
   	throws StazioneNonValida {
-    // TODO Auto-generated method stub
-    return null;
+    Fermata searched=percorso.getFermate().stream().filter(fermata->fermata.getStazione().equals(string)).findFirst().orElse(null);
+    if(searched==null) throw new StazioneNonValida();
+    Passaggio newPassaggio= new Passaggio(searched, j, i);
+    passaggiList.add(newPassaggio);
+    return newPassaggio;
   }
 
   public boolean arrivato() {
