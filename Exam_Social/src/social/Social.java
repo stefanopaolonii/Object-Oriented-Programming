@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 public class Social {
 	private Map<String,Account> accountsMap= new HashMap<>();
+	private Map<String,Group> groupsMap= new HashMap<>();
 	/**
 	 * Creates a new account for a person
 	 * 
@@ -102,7 +103,7 @@ public class Social {
 	 * @param groupName name of the group
 	 */
 	public void addGroup(String groupName) {
-
+		groupsMap.put(groupName, new Group(groupName));
 	}
 
 	/**
@@ -111,7 +112,7 @@ public class Social {
 	 * @return the collection of group names
 	 */
 	public Collection<String> listOfGroups() {
-		return null;
+		return groupsMap.keySet();
 	}
 
 	/**
@@ -122,7 +123,9 @@ public class Social {
 	 * @throws NoSuchCodeException in case the code or group name do not exist
 	 */
 	public void addPersonToGroup(String codePerson, String groupName) throws NoSuchCodeException {
-
+		if(!accountsMap.containsKey(codePerson)) throw new NoSuchCodeException();
+		if(!groupsMap.containsKey(groupName)) throw new NoSuchCodeException();
+		groupsMap.get(groupName).addAccount(codePerson, accountsMap.get(codePerson));
 	}
 
 	/**
@@ -132,7 +135,8 @@ public class Social {
 	 * @return collection of person codes
 	 */
 	public Collection<String> listOfPeopleInGroup(String groupName) {
-		return null;
+		if(!groupsMap.containsKey(groupName)) return null;
+		return groupsMap.get(groupName).getAccountsMap().keySet();
 	}
 
 	/**
