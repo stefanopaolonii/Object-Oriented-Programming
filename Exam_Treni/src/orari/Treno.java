@@ -2,25 +2,31 @@ package orari;
 
 
 public class Treno {
+  private Percorso percorso;
+  private int giorno;
+  private int mese;
+  private int anno;
+  public Treno(Percorso percorso, int giorno, int mese, int anno) {
+    this.percorso = percorso;
+    this.giorno = giorno;
+    this.mese = mese;
+    this.anno = anno;
+  }
 
   public Percorso getPercorso() {
-    // TODO Auto-generated method stub
-    return null;
+    return percorso;
   }
 
   public int getGiorno() {
-    // TODO Auto-generated method stub
-    return 0;
+    return giorno;
   }
 
   public int getMese() {
-    // TODO Auto-generated method stub
-    return 0;
+    return mese;
   }
 
   public int getAnno() {
-    // TODO Auto-generated method stub
-    return 0;
+    return anno;
   }
 
   public Passaggio registraPassaggio(String string, int i, int j) 
