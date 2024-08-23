@@ -1,28 +1,33 @@
 package orari;
 
-import java.util.List;
+import java.util.*;
 
 
 public class Percorso {
+  private final String id;
+  private final String categoria;
+  private boolean straordinario;
+  
+  public Percorso(String id, String categoria, boolean straordinario) {
+    this.id = id;
+    this.categoria = categoria;
+    this.straordinario = straordinario;
+  }
 
   public String getCodice() {
-    // TODO Auto-generated method stub
-    return null;
+    return id;
   }
 
   public String getCategoria() {
-    // TODO Auto-generated method stub
-    return null;
+    return categoria;
   }
 
   public boolean isStraordinario() {
-    // TODO Auto-generated method stub
-    return false;
+    return straordinario;
   }
 
   public void setStraordinario(boolean b) {
-    // TODO Auto-generated method stub
-    
+    this.straordinario=straordinario;
   }
 
   public Fermata aggiungiFermata(String nomeStazione, int ore, int minuti) {

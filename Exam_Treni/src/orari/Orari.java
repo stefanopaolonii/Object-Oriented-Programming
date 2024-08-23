@@ -1,24 +1,25 @@
 package orari;
 
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 public class Orari {
-
+  private Set<String> categorie= new HashSet<>(Set.of("Intercity", "Eurostar", "Interregionale","Regionale"));
+  private Map<String,Percorso> percorsiMap= new HashMap<>();
   public Percorso creaPercorso(String codice, String categoria) {
-    // TODO Auto-generated method stub
-    return null;
+    if(!categorie.contains(categoria)) return null;
+    percorsiMap.put(codice, new Percorso(codice, categoria, false));
+    return percorsiMap.get(codice);
   }
 
   public Collection getPercorsi() {
-    // TODO Auto-generated method stub
-    return null;
+    return percorsiMap.values().stream().collect(Collectors.toList());
   }
 
   public Percorso getPercorso(String codice) {
-    // TODO Auto-generated method stub
-    return null;
+    if(!percorsiMap.containsKey(codice)) return null;
+    return percorsiMap.get(codice);
   }
 
   public Treno nuovoTreno(String codice, int giorno, int mese, int anno) 
