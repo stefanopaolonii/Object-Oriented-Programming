@@ -9,6 +9,7 @@ public class Booking {
     private final String end;
     private final String car;
     private final String seat;
+    private boolean checked;
     public Booking(String bookingcode, String ssn, String name, String surname, String begin, String end, String car,
             String seat) {
         this.bookingcode = bookingcode;
@@ -19,6 +20,7 @@ public class Booking {
         this.end = end;
         this.car = car;
         this.seat = seat;
+        this.checked=false;
     }
     public String getBookingcode() {
         return bookingcode;
@@ -46,5 +48,11 @@ public class Booking {
     }
     public String getTrip(){
         return begin+"-"+end;
+    }
+    public boolean isChecked() {
+        return checked;
+    }
+    public void setChecked(boolean checked) {
+        this.checked = checked;
     }
 }

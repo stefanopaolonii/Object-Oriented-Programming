@@ -8,6 +8,7 @@ public class TrainManager {
 	private List<String> stopsList= new ArrayList<>();
 	private Map<String,Booking> bookingsMap= new HashMap<>();
 	private int bookingCounter=0;
+	private String lastStop;
 //R1
 	/**
 	 * add a set of travel classes to the list of classes
@@ -198,7 +199,9 @@ public class TrainManager {
 	 * @return the number of total people booked on the train after the stop
 	 */
 	public int setLastStop(String stop) {
-		return -1;
+		if(!stopsList.contains(stop)) return -1;
+		this.lastStop=stop;
+		return (int)bookingsMap.values().stream().filter(book->stopsList.indexOf(book.getEnd())>stopsList.indexOf(lastStop) && stopsList.indexOf(book.getBegin())<=stopsList.indexOf(lastStop)).count();
 	}
 
 
@@ -215,7 +218,7 @@ public class TrainManager {
 	 * @return booking id
 	 */
 	public String checkSeat(String car, String seat) {
-		return null;
+		return bookingsMap.values().stream().filter(book->book.getCar().equals(car) && book.getSeat().equals(seat)).filter(book->stopsList.indexOf(book.getBegin())<=stopsList.indexOf(lastStop) && stopsList.indexOf(book.getEnd())>stopsList.indexOf(lastStop)).map(Booking::getBookingcode).findFirst().orElse(null);
 	}
 
 
