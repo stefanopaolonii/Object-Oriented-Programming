@@ -126,9 +126,9 @@ public class TrainManager {
 		String [] seatparts=seat.split("");
 		if(carsMap.get(car).getRows()<Integer.parseInt(seatparts[0])) throw new TrainException();
 		if(seat.charAt(1)>carsMap.get(car).getLastSeat()) throw new TrainException();
-		if(bookingsMap.values().stream().filter(book->book.getCar().equals(car) && book.getSeat().equals(seat)).anyMatch(book->{int startindex=stopsList.indexOf(book.getBegin()); int endindex=stopsList.indexOf(book.getEnd()); return startindex<stopsList.indexOf(end) && stopsList.indexOf(begin)<endindex;})) throw new TrainException();
+		if(bookingsMap.values().stream().filter(book->book.getCar().getId().equals(car) && book.getSeat().equals(seat)).anyMatch(book->{int startindex=stopsList.indexOf(book.getBegin()); int endindex=stopsList.indexOf(book.getEnd()); return startindex<stopsList.indexOf(end) && stopsList.indexOf(begin)<endindex;})) throw new TrainException();
 		String code= String.format("B%d",++bookingCounter);
-		bookingsMap.put(code, new Booking(code, ssn, name, surname, begin, end, car, seat));
+		bookingsMap.put(code, new Booking(code, ssn, name, surname, begin, end, carsMap.get(car), seat));
 		return code;
 	}
 
@@ -140,7 +140,7 @@ public class TrainManager {
 	 */
 	public String getBookingCar(String booking) {
 		if(!bookingsMap.containsKey(booking)) return null;
-		return bookingsMap.get(booking).getCar();
+		return bookingsMap.get(booking).getCar().getId();
 	}
 
 	/**
@@ -187,7 +187,7 @@ public class TrainManager {
 	 * @return list of bookings
 	 */
 	public Collection<String> listBookings(String car, String seat) {
-		return bookingsMap.values().stream().filter(book->book.getCar().equals(car) && book.getSeat().equals(seat)).sorted(Comparator.comparingInt(book->stopsList.indexOf(book.getBegin()))).map(book->book.getTrip()+":"+book.getSsn()).collect(Collectors.toList());
+		return bookingsMap.values().stream().filter(book->book.getCar().getId().equals(car) && book.getSeat().equals(seat)).sorted(Comparator.comparingInt(book->stopsList.indexOf(book.getBegin()))).map(book->book.getTrip()+":"+book.getSsn()).collect(Collectors.toList());
 	}
 
 	/**
@@ -218,7 +218,9 @@ public class TrainManager {
 	 * @return booking id
 	 */
 	public String checkSeat(String car, String seat) {
-		return bookingsMap.values().stream().filter(book->book.getCar().equals(car) && book.getSeat().equals(seat)).filter(book->stopsList.indexOf(book.getBegin())<=stopsList.indexOf(lastStop) && stopsList.indexOf(book.getEnd())>stopsList.indexOf(lastStop)).map(Booking::getBookingcode).findFirst().orElse(null);
+		String id=bookingsMap.values().stream().filter(book->book.getCar().getId().equals(car) && book.getSeat().equals(seat)).filter(book->stopsList.indexOf(book.getBegin())<=stopsList.indexOf(lastStop) && stopsList.indexOf(book.getEnd())>stopsList.indexOf(lastStop)).map(Booking::getBookingcode).findFirst().orElse(null);
+		if(id!=null) bookingsMap.get(id).setChecked(true);
+		return id; 
 	}
 
 
@@ -231,7 +233,7 @@ public class TrainManager {
 	 * @return	fill ratio
 	 */
 	public double showFillRatio(String klass) {
-		return -1.0;
+		return bookingsMap.values().stream().filter(book->book.getCar().getKlass().equals(klass)).map(book->book.getCar()+":"+book.getSeat()).distinct().count()/(double) carsMap.values().stream().filter(car->car.getKlass().equals(klass)).mapToInt(Car::getNseats).sum();
 	}
 
 	/**
@@ -242,9 +244,8 @@ public class TrainManager {
 	 * @return the map class : check count
 	 */
 	public Map<String, Long> checkCoverage() {
-		
-		return null;
-	}
+		return carsMap.values().stream().map(Car::getKlass).distinct().collect(Collectors.toMap(klass->klass,klass->bookingsMap.values().stream().filter(book->book.getCar().getKlass().equals(klass) && book.isChecked()).count()));
+	} 
 
 	/**
 	 * computes the occupation ratio for all the seat of the given class and for each segment of the train path.
@@ -258,7 +259,12 @@ public class TrainManager {
 	 * @return	occupation ratio
 	 */
 	public double showOccupationRatio(String klass) {
-		return -1.0;
+		int totalnumber=0;
+		for(int i=0;i<stopsList.size();i++){
+			final int index=i;
+			totalnumber+=(int)bookingsMap.values().stream().filter(book->book.getCar().getKlass().equals(klass)  &&   index>=stopsList.indexOf(book.getBegin()) && stopsList.indexOf(book.getEnd())<=index).count();
+		}
+		return totalnumber/(double)((stopsList.size()-1)*carsMap.values().stream().filter(car->car.getKlass().equals(klass)).mapToInt(Car::getNseats).sum());
 	}
 
 }

@@ -7,10 +7,10 @@ public class Booking {
     private final String surname;
     private final String begin;
     private final String end;
-    private final String car;
+    private Car car;
     private final String seat;
     private boolean checked;
-    public Booking(String bookingcode, String ssn, String name, String surname, String begin, String end, String car,
+    public Booking(String bookingcode, String ssn, String name, String surname, String begin, String end, Car car,
             String seat) {
         this.bookingcode = bookingcode;
         this.ssn = ssn;
@@ -40,7 +40,7 @@ public class Booking {
     public String getEnd() {
         return end;
     }
-    public String getCar() {
+    public Car getCar() {
         return car;
     }
     public String getSeat() {
