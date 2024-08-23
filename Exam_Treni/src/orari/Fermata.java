@@ -2,20 +2,25 @@ package orari;
 
 
 public class Fermata {
+  private final String stazione;
+  private int ora;
+  private int minuti;
+  public Fermata(String stazione, int ora, int minuti) {
+    this.stazione = stazione;
+    this.ora = ora;
+    this.minuti = minuti;
+  }
 
   public String getStazione() {
-    // TODO Auto-generated method stub
-    return null;
+    return stazione;
   }
 
   public int getOre() {
-    // TODO Auto-generated method stub
-    return 0;
+    return ora;
   }
 
   public int getMinuti() {
-    // TODO Auto-generated method stub
-    return 0;
+    return minuti;
   }
 
 }

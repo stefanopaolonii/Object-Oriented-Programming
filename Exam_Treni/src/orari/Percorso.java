@@ -1,13 +1,14 @@
 package orari;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 public class Percorso {
   private final String id;
   private final String categoria;
   private boolean straordinario;
-  
+  private List<Fermata> fermateList= new ArrayList<>();
   public Percorso(String id, String categoria, boolean straordinario) {
     this.id = id;
     this.categoria = categoria;
@@ -27,17 +28,17 @@ public class Percorso {
   }
 
   public void setStraordinario(boolean b) {
-    this.straordinario=straordinario;
+    this.straordinario=b;
   }
 
   public Fermata aggiungiFermata(String nomeStazione, int ore, int minuti) {
-    // TODO Auto-generated method stub
-    return null;
+    Fermata newfFermata= new Fermata(nomeStazione, ore, minuti);
+    fermateList.add(newfFermata);
+    return newfFermata;
   }
 
-  public List getFermate() {
-    // TODO Auto-generated method stub
-    return null;
+  public List<Fermata> getFermate() {
+    return fermateList.stream().sorted(Comparator.comparingInt(Fermata::getOre).thenComparing(Fermata::getMinuti)).collect(Collectors.toList());
   }
 
   public int ritardoMassimo() {
