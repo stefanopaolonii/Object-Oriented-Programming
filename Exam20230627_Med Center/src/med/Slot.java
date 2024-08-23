@@ -37,4 +37,5 @@ public class Slot {
     public String getTime(){
         return startTime+"-"+endTime;
     }
+    
 }
