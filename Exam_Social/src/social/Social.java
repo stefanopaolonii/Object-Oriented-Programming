@@ -147,7 +147,7 @@ public class Social {
 	 * @return the code of the person
 	 */
 	public String personWithLargestNumberOfFriends() {
-		return accountsMap.values().stream().max(Comparator.comparingInt(account->account.getFriendsMap().size())).map(Account::getName).orElse(null);
+		return accountsMap.values().stream().max(Comparator.comparingInt(account->account.getFriendsMap().size())).map(Account::getId).orElse(null);
 	}
 
 	/**
@@ -240,6 +240,6 @@ public class Social {
 	 * @return the list of posts key elements
 	 */
 	public List<String> getPaginatedFriendPosts(String author, int pageNo, int pageLength) {
-		return accountsMap.get(author).getFriendsMap().values().stream().flatMap(account->account.getPostsMap().values().stream()).sorted(Comparator.comparingLong(Post::getTimeMillis).reversed()).skip((pageNo-1)*pageLength).limit(pageLength).map(post->post.getAccount().getName()+":"+post.getId()).collect(Collectors.toList());
+		return accountsMap.get(author).getFriendsMap().values().stream().distinct().flatMap(account->account.getPostsMap().values().stream()).sorted(Comparator.comparingLong(Post::getTimeMillis).reversed()).skip((pageNo-1)*pageLength).limit(pageLength).map(post->post.getAccount().getId()+":"+post.getId()).collect(Collectors.toList());
 	}
 }
