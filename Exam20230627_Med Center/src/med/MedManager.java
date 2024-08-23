@@ -95,13 +95,15 @@ public class MedManager {
 	public int addDailySchedule(String code, String date, String start, String end, int duration) {
 		String[] startparts=start.split(":");
 		String[] endparts=end.split(":");
+		int counter=0;
 		int startinminutes=Integer.parseInt(startparts[0])*60+Integer.parseInt(startparts[1]);
 		int endinminutes=Integer.parseInt(endparts[0])*60+Integer.parseInt(endparts[1]);
 		while(startinminutes<endinminutes){
 			doctorsMap.get(code).addSlot(new Slot(date, String.format("%02d:%02d",startinminutes/60,startinminutes%60), String.format("%02d:%02d",(startinminutes+duration)/60,(startinminutes+duration)%60), duration));
 			startinminutes+=duration;
+			counter++;
 		}
-		return doctorsMap.get(code).getSlotsList().size();
+		return counter;
 	}
 
 	/**
@@ -231,7 +233,7 @@ public class MedManager {
 	 * @return appointment id
 	 */
 	public String nextAppointment(String code) {
-		return appointmentsMap.values().stream().filter(appointment->appointment.getDoctor().getId().equals(code) && appointment.getPatient().isAccepted() && !appointment.isCompleted()).map(Appointment::getId).findFirst().orElse(null);
+		return appointmentsMap.values().stream().filter(appointment->appointment.getDoctor().getId().equals(code) && appointment.getSlot().getDate().equals(currentDate) && appointment.getPatient().isAccepted() && !appointment.isCompleted()).map(Appointment::getId).sorted().findFirst().orElse(null);
 	}
 
 	/**
