@@ -56,6 +56,7 @@ public class TestExample {
 		assertEquals(3, numSegments);
 		
 		Map<String,List<String>> seats = train.findSeats("Vercelli","Milan Centrale","Normal");
+		System.out.println(seats);
 		assertNotNull(seats);
 		assertEquals(2,seats.size());
 		assertTrue(seats.containsKey(code));

@@ -5,6 +5,7 @@ import java.util.stream.*;;
 public class TrainManager {
 	private Set<String> classesSet= new HashSet<>();
 	private Map<String,Car> carsMap= new HashMap<>();
+	private List<String> stopsList= new ArrayList<>();
 //R1
 	/**
 	 * add a set of travel classes to the list of classes
@@ -76,7 +77,8 @@ public class TrainManager {
 	 * @return the number of segments defined
 	 */
 	public int defineStops(String... stops) {
-		return -1;
+		stopsList.addAll(Arrays.asList(stops));
+		return stopsList.size()-1;
 	}
 	
 	/**
@@ -93,7 +95,7 @@ public class TrainManager {
 	 * @return the available seats by car
 	 */
 	public Map<String, List<String>> findSeats(String begin, String end, String klass) {
-		return null;
+		return carsMap.values().stream().filter(car->car.getKlass().equals(klass)).collect(Collectors.toMap(car->car.getId(),car-> {List<String> allseats= new ArrayList<>(); for(int i=1;i<=car.getRows();i++){for(int j=0;j<=car.getLastSeat()-'A';j++) allseats.add(String.format("%d%c", i,'A'+j));}return allseats;}));
 	}
 
 	/**
