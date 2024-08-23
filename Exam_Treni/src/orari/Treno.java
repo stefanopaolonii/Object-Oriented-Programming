@@ -42,18 +42,16 @@ public class Treno {
   }
 
   public boolean arrivato() {
-    // TODO Auto-generated method stub
-    return false;
+    return passaggiList.stream().map(Passaggio::getStazione).collect(Collectors.toList()).contains(percorso.getFermate().get(percorso.getFermate().size()-1).getStazione());
   }
 
   public int ritardoMassimo() {
-    // TODO Auto-generated method stub
-    return 0;
+    return passaggiList.stream().max(Comparator.comparingInt(Passaggio::ritardo)).map(Passaggio::ritardo).orElse(-1);
   }
 
   public int ritardoFinale() {
-    // TODO Auto-generated method stub
-    return 0;
+    if(passaggiList.isEmpty()) return -1;
+    return passaggiList.get(passaggiList.size()-1).ritardo();
   }
 
 }

@@ -9,6 +9,7 @@ public class Percorso {
   private final String categoria;
   private boolean straordinario;
   private List<Fermata> fermateList= new ArrayList<>();
+  private List<Treno> treniList= new ArrayList<>();
   public Percorso(String id, String categoria, boolean straordinario) {
     this.id = id;
     this.categoria = categoria;
@@ -41,14 +42,16 @@ public class Percorso {
     return fermateList.stream().sorted(Comparator.comparingInt(Fermata::getOre).thenComparing(Fermata::getMinuti)).collect(Collectors.toList());
   }
 
+  public void addTreno(Treno treno){
+    treniList.add(treno);
+  }
+
   public int ritardoMassimo() {
-    // TODO Auto-generated method stub
-    return 0;
+    return treniList.stream().max(Comparator.comparingInt(Treno::ritardoFinale)).map(Treno::ritardoFinale).orElse(-1);
   }
 
   public int ritardoMedio() {
-    // TODO Auto-generated method stub
-    return 0;
+    return (int) treniList.stream().mapToInt(Treno::ritardoFinale).average().orElse(0);
   }
 
 }

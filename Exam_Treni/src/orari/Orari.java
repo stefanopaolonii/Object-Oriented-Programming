@@ -28,6 +28,7 @@ public class Orari {
     if(!percorsiMap.containsKey(codice)) throw new PercorsoNonValido();
     Treno newTreno= new Treno(percorsiMap.get(codice), giorno, mese, anno);
     treniList.add(newTreno);
+    percorsiMap.get(codice).addTreno(newTreno);
     return newTreno;
   }
 
