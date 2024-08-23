@@ -6,6 +6,8 @@ public class TrainManager {
 	private Set<String> classesSet= new HashSet<>();
 	private Map<String,Car> carsMap= new HashMap<>();
 	private List<String> stopsList= new ArrayList<>();
+	private Map<String,Booking> bookingsMap= new HashMap<>();
+	private int bookingCounter=0;
 //R1
 	/**
 	 * add a set of travel classes to the list of classes
@@ -116,7 +118,17 @@ public class TrainManager {
 	 */
 	public String bookSeat(String ssn, String name, String surname, 
 						   String begin, String end, String car, String seat) throws TrainException {
-		return null;
+		if(!carsMap.containsKey(car)) throw new TrainException();
+		if(!stopsList.contains(begin)) throw new TrainException();
+		if(!stopsList.contains(end)) throw new TrainException();
+		if(stopsList.indexOf(end)<stopsList.indexOf(begin)) throw new TrainException();
+		String [] seatparts=seat.split("");
+		if(carsMap.get(car).getRows()<Integer.parseInt(seatparts[0])) throw new TrainException();
+		if(seat.charAt(1)>carsMap.get(car).getLastSeat()) throw new TrainException();
+		if(bookingsMap.values().stream().filter(book->book.getCar().equals(car) && book.getSeat().equals(seat)).anyMatch(book->{int startindex=stopsList.indexOf(book.getBegin()); int endindex=stopsList.indexOf(book.getEnd()); return startindex<stopsList.indexOf(end) && stopsList.indexOf(begin)<endindex;})) throw new TrainException();
+		String code= String.format("B%d",++bookingCounter);
+		bookingsMap.put(code, new Booking(code, ssn, name, surname, begin, end, car, seat));
+		return code;
 	}
 
 	/**
@@ -126,7 +138,8 @@ public class TrainManager {
 	 * @return car id
 	 */
 	public String getBookingCar(String booking) {
-		return null;
+		if(!bookingsMap.containsKey(booking)) return null;
+		return bookingsMap.get(booking).getCar();
 	}
 
 	/**
@@ -136,7 +149,8 @@ public class TrainManager {
 	 * @return  booked person's SSN
 	 */
 	public String getBookingPassenger(String bookingID) {
-		return null;
+		if(!bookingsMap.containsKey(bookingID)) return null;
+		return bookingsMap.get(bookingID).getSsn();
 	}
 
 	/**
@@ -146,7 +160,8 @@ public class TrainManager {
 	 * @return the seat
 	 */
 	public String getBookingSeat(String bookingID) {
-		return null;
+		if(!bookingsMap.containsKey(bookingID)) return null;
+		return bookingsMap.get(bookingID).getSeat();
 	}
 
 	/**
@@ -158,7 +173,8 @@ public class TrainManager {
 	 * @return trip
 	 */
 	public String getBookingTrip(String bookingID) {
-		return null;
+		if(!bookingsMap.containsKey(bookingID)) return null;
+		return bookingsMap.get(bookingID).getTrip();
 	}
 
 	/**
@@ -170,7 +186,7 @@ public class TrainManager {
 	 * @return list of bookings
 	 */
 	public Collection<String> listBookings(String car, String seat) {
-		return null;
+		return bookingsMap.values().stream().filter(book->book.getCar().equals(car) && book.getSeat().equals(seat)).sorted(Comparator.comparingInt(book->stopsList.indexOf(book.getBegin()))).map(book->book.getTrip()+":"+book.getSsn()).collect(Collectors.toList());
 	}
 
 	/**
