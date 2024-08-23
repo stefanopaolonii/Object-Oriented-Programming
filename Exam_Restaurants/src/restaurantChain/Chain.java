@@ -1,6 +1,7 @@
 package restaurantChain;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Chain {	
 	private Map<String,Restaurant> restaurantsMap= new HashMap<>();
@@ -15,14 +16,14 @@ public class Chain {
 	}
 	
 	public List<Restaurant> sortByIncome(){
-		return null;
+		return restaurantsMap.values().stream().sorted(Comparator.comparingDouble(Restaurant::getIncome).reversed()).collect(Collectors.toList());
 	}
 	
 	public List<Restaurant> sortByRefused(){
-		return null;
+		return restaurantsMap.values().stream().sorted(Comparator.comparingInt(Restaurant::getRefused)).collect(Collectors.toList());
 	}
 	
 	public List<Restaurant> sortByUnusedTables(){
-		return null;
+		return restaurantsMap.values().stream().sorted(Comparator.comparingInt(Restaurant::getUnusedTables)).collect(Collectors.toList());
 	}
 }
