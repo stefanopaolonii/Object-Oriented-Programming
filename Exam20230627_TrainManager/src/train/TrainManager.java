@@ -1,11 +1,10 @@
 package train;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
+import java.util.*;
+import java.util.stream.*;;
 public class TrainManager {
-
+	private Set<String> classesSet= new HashSet<>();
+	private Map<String,Car> carsMap= new HashMap<>();
 //R1
 	/**
 	 * add a set of travel classes to the list of classes
@@ -16,7 +15,7 @@ public class TrainManager {
 	 * @param classes the classes
 	 */
 	public void addClasses(String... classes) {
-
+		classesSet.addAll(Arrays.asList(classes));
 	}
 
 	/**
@@ -25,7 +24,7 @@ public class TrainManager {
 	 * @return list of classes
 	 */
 	public Collection<String> getClasses() {
-		return null;
+		return classesSet;
 	}
 	
 	/**
@@ -41,7 +40,10 @@ public class TrainManager {
 	 * @throws TrainException in case of duplicate id or non-existing class
 	 */
 	public int addCar(String id, int rows, char lastSeat, String klass) throws TrainException {
-		return -1;
+		if(carsMap.containsKey(id)) throw new TrainException();
+		if(!classesSet.contains(klass)) throw new TrainException();
+		carsMap.put(id,new Car(id, rows, lastSeat, klass));
+		return carsMap.get(id).getNseats();
 	}
 
 	/**
@@ -51,7 +53,7 @@ public class TrainManager {
 	 * @return the list of car ids
 	 */
 	public Collection<String> getCarsByClass(String klass) {
-		return null;
+		return carsMap.values().stream().filter(car->car.getKlass().equals(klass)).map(Car::getId).collect(Collectors.toList());
 	}
 
 	/**
@@ -61,7 +63,8 @@ public class TrainManager {
 	 * @return number of seats
 	 */
 	public int getNumSeats(String id) {
-		return -1;
+		if(!carsMap.containsKey(id)) return 0;
+		return carsMap.get(id).getNseats();
 	}
 
 	/**
