@@ -192,7 +192,8 @@ public class MeetServer {
 	 * @return the map data -> slot preferences
 	 */
 	public Map<String, List<String>> meetingPreferences(String meetingId) {
-		return null;
+		if(!meetingsMap.containsKey(meetingId)) return null;
+        return meetingsMap.get(meetingId).getSlotsList().stream().collect(Collectors.toMap(slot->slot, slot->meetingsMap.get(meetingId).getPreferencesList().stream().map(Preference::getSlot).filter(sslot->sslot.equals(slot)).count())).entrySet().stream().collect(Collectors.groupingBy(entry->entry.getKey().getDate(),Collectors.mapping(entry->{if(entry.getValue()==0) return null; return entry.getKey().toString()+"="+entry.getValue();}, Collectors.toList()))).entrySet().stream().collect(Collectors.toMap(entry->entry.getKey(), entry->entry.getValue().stream().filter(string->string!=null).collect(Collectors.toList())));
 	}
 
 
@@ -203,7 +204,7 @@ public class MeetServer {
 	 * @return the map id : preferences -> count
 	 */
 	public Map<String, Integer> preferenceCount() {
-		return null;
+		return meetingsMap.values().stream().collect(Collectors.toMap(meet->meet.getId(),meet->meet.getPreferencesList().size()));
 	}
 
 	
