@@ -1,12 +1,14 @@
 package meet;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 
 public class MeetServer {
-
+    private Set<String> categoriesSet= new HashSet<>();
+    private Map<String,Meeting> meetingsMap= new HashMap<>();
+    private int meetingCounter=0;
 	/**
 	 * adds a set of meeting categories to the list of categories
 	 * The method can be invoked multiple times.
@@ -15,6 +17,7 @@ public class MeetServer {
 	 * @param categories the meeting categories
 	 */
 	public void addCategories(String... categories) {
+        categoriesSet.addAll(Arrays.asList(categories));
 	}
 
 	/**
@@ -23,7 +26,7 @@ public class MeetServer {
 	 * @return list of categories
 	 */
 	public Collection<String> getCategories() {
-		return null;
+		return categoriesSet;
 	}
 	
 	
@@ -37,7 +40,10 @@ public class MeetServer {
 	 * @throws MeetException in case of non-existing category
 	 */
 	public String addMeeting(String title, String topic, String category) throws MeetException {
-		return null;
+		if(!categoriesSet.contains(category)) throw new MeetException();
+        String id=String.format("M%d", ++meetingCounter);
+        meetingsMap.put(id, new Meeting(id, title, topic, category));
+        return id;
 	}
 
 	/**
@@ -47,7 +53,7 @@ public class MeetServer {
 	 * @return list of meeting ids
 	 */
 	public Collection<String> getMeetings(String category) {
-		return null;
+		return meetingsMap.values().stream().filter(meet->meet.getCategory().equals(category)).map(Meeting::getId).collect(Collectors.toList());
 	}
 
 	/**
@@ -57,7 +63,8 @@ public class MeetServer {
 	 * @return the title
 	 */
 	public String getMeetingTitle(String meetingId) {
-		return null;
+        if(!meetingsMap.containsKey(meetingId)) return null;
+		return meetingsMap.get(meetingId).getTitle();
 	}
 
 	/**
@@ -67,7 +74,8 @@ public class MeetServer {
 	 * @return the topic of the meeting
 	 */
 	public String getMeetingTopic(String meetingId) {
-		return null;
+		if(!meetingsMap.containsKey(meetingId)) return null;
+		return meetingsMap.get(meetingId).getTopic();
 	}
 
 	// R2
