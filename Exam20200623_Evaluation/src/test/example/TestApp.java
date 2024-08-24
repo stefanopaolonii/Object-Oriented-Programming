@@ -17,7 +17,7 @@ public void test() throws EvaluationsException {
 	    ev.addPointsForLevels (20, 10, 14, 6); 
 	    fail("Did not detect points not decreasing"); 
 	} catch(Exception ex){} //ok
-	assertEquals (ev.getPointsOfLevel(1), 14);
+	assertEquals (ev.getPointsOfLevel(2), 14);
 	
 	ev.addJournal ("j1a", "d1", 1); ev.addJournal ("j2x", "d2", 2);
 	ev.addJournal ("j3a", "d3", 3); ev.addJournal ("j4a", "d4", 4);

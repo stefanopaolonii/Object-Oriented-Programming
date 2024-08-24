@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 public class Evaluations {
     private Map<Integer,Integer> levelsMap= new HashMap<>();
     private Map<String,Journal> journalsMap= new HashMap<>();
-    private int levelCounter=1;
+    private int levelCounter=0;
     private Map<String,Group> groupsMap= new HashMap<>();
     //R1
     /**
@@ -25,9 +25,9 @@ public class Evaluations {
         int max=points[0];
         for(int i=1;i<points.length;i++){
             if(points[i]>max) throw new EvaluationsException();
-            levelsMap.put(levelCounter++, points[i]);
             max=points[i];
         }
+        for(int i=0;i<points.length;i++) levelsMap.put(++levelCounter, points[i]);
     }
 
     /**
@@ -137,7 +137,7 @@ public class Evaluations {
     public void addPaper (String title, String journalName, String... authorNames) throws EvaluationsException {
         if(!journalsMap.containsKey(journalName)) throw new EvaluationsException();
         if(authorNames.length==0) throw new EvaluationsException();
-        journalsMap.get(journalName).addPaper(new Paper(title, journalName,authorNames));
+        journalsMap.get(journalName).addPaper(new Paper(title, journalsMap.get(journalName),authorNames));
     }
 
 
@@ -168,7 +168,7 @@ public class Evaluations {
      * @return total points
      */
     public int getPointsOfAGivenAuthor (String memberName) {
-        return -1;
+        return Math.round((int)journalsMap.values().stream().flatMap(journal->journal.getPapersList().stream()).filter(paper->paper.getAuthrosSet().contains(memberName)).mapToDouble(paper->levelsMap.get(paper.getJournal().getLevel())/(double) paper.getAuthrosSet().size()).sum());
     }
 
     /**
@@ -177,7 +177,7 @@ public class Evaluations {
      * @return the total points
      */
     public int evaluate() {
-        return -1;
+        return (int) journalsMap.values().stream().flatMap(journal->journal.getPapersList().stream()).mapToDouble(paper->levelsMap.get(paper.getJournal().getLevel())).sum();
     }
 
 
