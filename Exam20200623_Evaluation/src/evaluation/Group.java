@@ -6,8 +6,9 @@ public class Group {
     private final String name;
     private Set<String> disciplinesSet= new HashSet<>();
     private Set<String> membersSet= new HashSet<>();
-    public Group(String name) {
+    public Group(String name,String ...disciplines) {
         this.name = name;
+        disciplinesSet.addAll(Arrays.asList(disciplines));
     }
     public String getName() {
         return name;
@@ -18,5 +19,7 @@ public class Group {
     public Set<String> getMembersSet() {
         return membersSet;
     }
-    
+    public void addMembers(String ...members){
+        membersSet.addAll(Arrays.asList(members));
+    }
 }

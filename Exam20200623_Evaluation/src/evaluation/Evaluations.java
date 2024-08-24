@@ -9,8 +9,9 @@ import java.util.stream.Collectors;
  */
 public class Evaluations {
     private Map<Integer,Integer> levelsMap= new HashMap<>();
-    private List<Journal> journalsList= new ArrayList<>();
+    private Map<String,Journal> journalsMap= new HashMap<>();
     private int levelCounter=1;
+    private Map<String,Group> groupsMap= new HashMap<>();
     //R1
     /**
      * Define number of levels and relative points.
@@ -51,7 +52,7 @@ public class Evaluations {
      */
     public void addJournal (String name, String discipline, int level) throws EvaluationsException {
         if(!levelsMap.containsKey(level)) throw new EvaluationsException();
-        journalsList.add(new Journal(name, discipline, level));
+        journalsMap.put(name,new Journal(name, discipline, level));
     }
 
     /**
@@ -60,7 +61,7 @@ public class Evaluations {
      * @return journals count
      */
     public int countJournals() {
-        return journalsList.size();
+        return journalsMap.size();
     }
 
     /**
@@ -70,7 +71,7 @@ public class Evaluations {
      * @return list of journals (sorted alphabetically)
      */
     public List<String> getJournalNamesOfAGivenDiscipline(String discipline) {
-        return journalsList.stream().filter(journal->journal.getDiscipline().equals(discipline)).map(Journal::getName).sorted().collect(Collectors.toList());
+        return journalsMap.values().stream().filter(journal->journal.getDiscipline().equals(discipline)).map(Journal::getName).sorted().collect(Collectors.toList());
     }
 
     //R2
@@ -82,6 +83,8 @@ public class Evaluations {
      * @throws EvaluationsException thrown in case of duplicate name
      */
     public void addGroup (String name, String... disciplines) throws EvaluationsException {
+        if(groupsMap.containsKey(name)) throw new EvaluationsException();
+        groupsMap.put(name, new Group(name,disciplines));
     }
 
     /**
@@ -92,6 +95,8 @@ public class Evaluations {
      * @throws EvaluationsException thrown if name not previously defined.
      */
     public void setMembers (String groupName, String... memberNames) throws EvaluationsException {
+        if(!groupsMap.containsKey(groupName)) throw new EvaluationsException();
+        groupsMap.get(groupName).addMembers(memberNames);
     }
 
     /**
@@ -102,7 +107,8 @@ public class Evaluations {
      * @return list of members
      */
     public List<String >getMembers(String groupName){
-        return null;
+        if(!groupsMap.containsKey(groupName)) return null;
+        return groupsMap.get(groupName).getMembersSet().stream().sorted().collect(Collectors.toList());
     }
 
     /**
@@ -112,7 +118,7 @@ public class Evaluations {
      * @return list of group names sorted alphabetically
      */
     public List<String> getGroupNamesOfAGivenDiscipline(String discipline) {
-        return null;
+        return groupsMap.values().stream().filter(group->group.getDisciplinesSet().contains(discipline)).map(Group::getName).collect(Collectors.toList());
     }
 
     //R3
@@ -129,6 +135,9 @@ public class Evaluations {
      * @throws EvaluationsException thrown if journal not defined or no author provided
      */
     public void addPaper (String title, String journalName, String... authorNames) throws EvaluationsException {
+        if(!journalsMap.containsKey(journalName)) throw new EvaluationsException();
+        if(authorNames.length==0) throw new EvaluationsException();
+        journalsMap.get(journalName).addPaper(new Paper(title, journalName,authorNames));
     }
 
 
@@ -140,7 +149,7 @@ public class Evaluations {
      * @return list of titles sorted alphabetically
      */
     public List<String> getTitlesOfAGivenAuthor (String memberName) {
-        return null;
+        return journalsMap.values().stream().flatMap(journal->journal.getPapersList().stream()).filter(paper->paper.getAuthrosSet().contains(memberName)).map(Paper::getTitle).sorted().collect(Collectors.toList());
     }
 
 
