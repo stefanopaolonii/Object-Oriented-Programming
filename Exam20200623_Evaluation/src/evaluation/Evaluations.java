@@ -1,5 +1,6 @@
 package evaluation;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 /**
@@ -7,7 +8,9 @@ import java.util.*;
  *
  */
 public class Evaluations {
-
+    private Map<Integer,Integer> levelsMap= new HashMap<>();
+    private List<Journal> journalsList= new ArrayList<>();
+    private int levelCounter=1;
     //R1
     /**
      * Define number of levels and relative points.
@@ -18,6 +21,12 @@ public class Evaluations {
      * @throws EvaluationsException thrown if points are not decreasing
      */
     public void addPointsForLevels (int... points) throws EvaluationsException {
+        int max=points[0];
+        for(int i=1;i<points.length;i++){
+            if(points[i]>max) throw new EvaluationsException();
+            levelsMap.put(levelCounter++, points[i]);
+            max=points[i];
+        }
     }
 
     /**
@@ -27,7 +36,7 @@ public class Evaluations {
      * @return points for the level
      */
     public int getPointsOfLevel (int level) {
-        return -1;
+        return levelsMap.get(level);
     }
 
     /**
@@ -41,6 +50,8 @@ public class Evaluations {
      * @throws EvaluationsException thrown if the specified level does not exist
      */
     public void addJournal (String name, String discipline, int level) throws EvaluationsException {
+        if(!levelsMap.containsKey(level)) throw new EvaluationsException();
+        journalsList.add(new Journal(name, discipline, level));
     }
 
     /**
@@ -49,7 +60,7 @@ public class Evaluations {
      * @return journals count
      */
     public int countJournals() {
-        return -1;
+        return journalsList.size();
     }
 
     /**
@@ -59,7 +70,7 @@ public class Evaluations {
      * @return list of journals (sorted alphabetically)
      */
     public List<String> getJournalNamesOfAGivenDiscipline(String discipline) {
-        return null;
+        return journalsList.stream().filter(journal->journal.getDiscipline().equals(discipline)).map(Journal::getName).sorted().collect(Collectors.toList());
     }
 
     //R2
