@@ -33,4 +33,11 @@ public class Slot {
         if(date.compareTo(other.getDate())!=0) return false;
         return start.compareTo(other.getEnd())<0 && other.getStart().compareTo(end)<0;
     }
+    @Override
+    public boolean equals(Object other){
+        if(this==other) return true;
+        if(other!=null && other.getClass()!=this.getClass()) return false;
+        Slot slot2= (Slot) other;
+        return date.compareTo(slot2.getDate())==0 && start.compareTo(slot2.getStart())==0 && end.compareTo(slot2.getEnd())==0;
+    }
 }

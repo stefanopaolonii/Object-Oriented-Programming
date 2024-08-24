@@ -119,8 +119,9 @@ public class MeetServer {
 	 * @param meetingId	is of the meeting
 	 */
 	public void openPoll(String meetingId) {
-
-	}
+        if(!meetingsMap.containsKey(meetingId)) return;
+        meetingsMap.get(meetingId).setPoolopen(true);
+	}   
 
 
 	/**
@@ -137,7 +138,13 @@ public class MeetServer {
 	 * @throws MeetException	in case of invalid id or slot
 	 */
 	public int selectPreference(String email, String name, String surname, String meetingId, String date, String slot) throws MeetException {
-		return -1;
+		if(!meetingsMap.containsKey(meetingId)) throw new MeetException();
+        if(!meetingsMap.get(meetingId).isPoolopen()) throw new MeetException();
+        String [] parts=slot.split("-");
+        Slot tmpslot=new Slot(date, parts[0], parts[1]);
+        if(!meetingsMap.get(meetingId).getSlotsList().stream().anyMatch(sslot->sslot.equals(tmpslot))) throw new MeetException();
+        meetingsMap.get(meetingId).addPreference(new Preference(email, name, surname, meetingId, tmpslot));
+        return (int) meetingsMap.get(meetingId).getPreferencesList().stream().map(Preference::getSlot).filter(sslot->sslot.equals(tmpslot)).count();
 	}
 
 	/**
@@ -150,7 +157,8 @@ public class MeetServer {
 	 * @return list of preferences for the meeting
 	 */
 	public Collection<String> listPreferences(String meetingId) {
-		return null;
+		if(!meetingsMap.containsKey(meetingId)) return null;
+        return meetingsMap.get(meetingId).getPreferencesList().stream().map(preference->preference.getSlot().getDate()+"T"+preference.getSlot().toString()+"="+preference.getEmail()).collect(Collectors.toList());
 	}
 
 	/**

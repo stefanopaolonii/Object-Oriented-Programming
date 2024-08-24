@@ -44,5 +44,8 @@ public class Meeting {
     public void addPreference(Preference preference){
         preferencesList.add(preference);
     }
+    public void setPoolopen(boolean poolopen) {
+        this.poolopen = poolopen;
+    }
 
 }
