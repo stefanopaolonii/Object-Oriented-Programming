@@ -1,5 +1,6 @@
 package evaluation;
 import java.util.*;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 
@@ -191,7 +192,7 @@ public class Evaluations {
      * @return the map associating group name to points
      */
     public SortedMap<String, Integer> pointsForGroup() {
-        return null;
+        return groupsMap.values().stream().collect(Collectors.toMap(group->group.getName(),group->group.getMembersSet().stream().mapToInt(member->getPointsOfAGivenAuthor(member)).sum(),(existing,replecement)->existing,TreeMap::new));
     }
 
     /**
@@ -203,7 +204,8 @@ public class Evaluations {
      * @return the map linking the number of point to the list of authors
      */
     public SortedMap<Integer, List<String>> getAuthorNamesPerPoints () {
-        return null;
+        return journalsMap.values().stream().flatMap(journal->journal.getPapersList().stream().flatMap(paper->paper.getAuthrosSet().stream())).distinct().collect(Collectors.groupingBy(author->getPointsOfAGivenAuthor(author),() -> new TreeMap<Integer,List<String>>(Comparator.reverseOrder()),Collectors.mapping(author->author, Collectors.toList())));
+        
     }
 
 
