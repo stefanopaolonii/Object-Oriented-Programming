@@ -26,10 +26,11 @@ public class Slot {
         String[] parts=time.split(":");
         return Integer.parseInt(parts[0])*60+Integer.parseInt(parts[1]);
     }
-    public int slotinH(){
-        return (getinM(end)-getinM(start))/60;
+    public double slotinH(){
+        return (getinM(end)-getinM(start))/(double) 60;
     }
     public boolean overlap(Slot other){
+        if(date.compareTo(other.getDate())!=0) return false;
         return start.compareTo(other.getEnd())<0 && other.getStart().compareTo(end)<0;
     }
 }

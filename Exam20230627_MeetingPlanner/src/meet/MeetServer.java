@@ -92,7 +92,11 @@ public class MeetServer {
 	 * @throws MeetException in case of slot overlap or wrong meeting id
 	 */
 	public double addOption(String meetingId, String date, String start, String end) throws MeetException {
-		return -1.0;
+		if(!meetingsMap.containsKey(meetingId)) throw new MeetException();
+        Slot newSlot= new Slot(date, start, end);
+        if(meetingsMap.get(meetingId).getSlotsList().stream().anyMatch(slot->slot.overlap(newSlot))) throw new MeetException();
+        meetingsMap.get(meetingId).addSlot(newSlot);
+        return newSlot.slotinH();
 	}
 
 	/**
@@ -105,7 +109,8 @@ public class MeetServer {
 	 * @return a map date -> list of slots
 	 */
 	public Map<String, List<String>> showSlots(String meetingId) {
-		return null;
+		if(!meetingsMap.containsKey(meetingId)) return null;
+        return meetingsMap.get(meetingId).getSlotsList().stream().collect(Collectors.groupingBy(Slot::getDate,Collectors.mapping(Slot::toString, Collectors.toList())));
 	}
 
 	/**
