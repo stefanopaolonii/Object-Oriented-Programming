@@ -174,7 +174,6 @@ public class MeetServer {
 	public Collection<String> closePoll(String meetingId) {
 		if(!meetingsMap.containsKey(meetingId)) return null;
         meetingsMap.get(meetingId).setPoolopen(false);
-        System.out.println(meetingsMap.get(meetingId).getPreferencesList().stream().map(Preference::getSlot).collect(Collectors.groupingBy(slot->slot.getDate()+"T"+slot.toString(),Collectors.counting())).entrySet().stream().map(entry->entry.getKey()+"="+entry.getValue()).collect(Collectors.toList()));
         List<String> tmp= new ArrayList<>();
         tmp.add(meetingsMap.get(meetingId).getPreferencesList().stream().map(Preference::getSlot).collect(Collectors.groupingBy(slot->slot.getDate()+"T"+slot.toString(),Collectors.counting())).entrySet().stream().sorted(Comparator.comparingLong(entry->((Entry<String, Long>) entry).getValue()).reversed()).map(entry->entry.getKey()+"="+entry.getValue()).findFirst().orElse(null));
         return tmp;
