@@ -62,10 +62,10 @@ public class HandleApplications {
 	}
 	
 	public SortedMap<String, Long> skill_nApplicants() {
-		return null;
+		return skillsMap.values().stream().collect(Collectors.toMap(skill->skill.getName(),skill-> applicantsMap.values().stream().filter(applicant->applicant.getSkillsMap().keySet().contains(skill.getName())).count(),(e1,e2)->e1,TreeMap::new));
 	}
 	public String maxPosition() {
-		return null;
+		return positionsMap.values().stream().max(Comparator.comparing((Position position)->position.getApplicants().size())).map(Position::getName).orElse(null);
 	}
 }
 
