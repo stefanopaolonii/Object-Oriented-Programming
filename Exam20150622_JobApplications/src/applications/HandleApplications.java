@@ -17,7 +17,9 @@ public class HandleApplications {
 	public void addPosition(String name, String... skillNames) throws ApplicationException {
 		if(positionsMap.containsKey(name)) throw new ApplicationException();
 		if(!skillsMap.keySet().containsAll(Arrays.asList(skillNames))) throw new ApplicationException();
-		positionsMap.put(name, new Position(name, skillNames));
+		Position newPosition=new Position(name, skillNames);
+		positionsMap.put(name, newPosition);
+		Arrays.asList(skillNames).forEach(skill-> skillsMap.get(skill).addPosition(newPosition));
 	}
 	public Skill getSkill(String name) {return skillsMap.get(name);}
 	public Position getPosition(String name) {return positionsMap.get(name);}
@@ -30,7 +32,7 @@ public class HandleApplications {
 			int level=Integer.parseInt(parts[1]);
 			if(!skillsMap.containsKey(parts[0])) throw new ApplicationException();
 			if(level<1 || level>10) throw new ApplicationException();
-			newApplicant.addSkill(skill, level);
+			newApplicant.addSkill(parts[0], level);
 		}
 		applicantsMap.put(name, newApplicant);
 	}
@@ -45,7 +47,7 @@ public class HandleApplications {
 	public void enterApplication(String applicantName, String positionName) throws ApplicationException {
 		if(!applicantsMap.containsKey(applicantName)) throw new ApplicationException();
 		if(!positionsMap.containsKey(positionName)) throw new ApplicationException();
-		if(!positionsMap.get(positionName).getSkillsList().containsAll(applicantsMap.get(applicantName).getSkillsMap().keySet())) throw new ApplicationException();
+		if(!positionsMap.get(positionName).getSkillsList().containsAll(positionsMap.get(positionName).getSkillsList())) throw new ApplicationException();
 		if(positionsMap.values().stream().anyMatch(position->position.getApplicants().contains(applicantName))) throw new ApplicationException();
 		positionsMap.get(positionName).addApplicant(applicantsMap.get(applicantName));
 	}
@@ -55,9 +57,9 @@ public class HandleApplications {
 		if(!positionsMap.containsKey(positionName)) throw new ApplicationException();
 		Position searchedPosition= positionsMap.get(positionName);
 		if(!searchedPosition.getApplicants().contains(applicantName)) throw new ApplicationException();
-		if(!searchedPosition.getWinner().isEmpty()) throw new ApplicationException();
+		if(searchedPosition.getWinner()!=null) throw new ApplicationException();
 		int positionskilllevel=applicantsMap.get(applicantName).getSkillsMap().entrySet().stream().filter(entry->searchedPosition.getSkillsList().contains(entry.getKey())).mapToInt(Map.Entry::getValue).sum();
-		if(positionskilllevel<=searchedPosition.getSkillsList().size()*6) throw new ApplicationException();
+		if(positionskilllevel<searchedPosition.getSkillsList().size()*6) throw new ApplicationException();
 		return positionskilllevel;
 	}
 	

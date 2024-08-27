@@ -16,4 +16,7 @@ public class Skill {
 	public List<Position> getPositions() {
 		return positionsList;
 	}
+	public void addPosition(Position position){
+		positionsList.add(position);
+	}
 }

@@ -89,11 +89,11 @@ public class Test {
     
     
     
-    
     /**
      * This function serves the only purpose of checking whether
      * your entered the required personal information.
      */
+	 /* 
     private static void loadStudentInfo() {
         Properties p = new Properties();
         try{
@@ -118,6 +118,5 @@ public class Test {
     }
     static{
         loadStudentInfo(); // this is to remember you to fill in the Student.txt file
-    }
+    */
 }
-
