@@ -1,0 +1,178 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>Requisiti</title>
+<style type="text/css">
+<!--
+body {
+	margin: 0.5cm;
+	/*
+	font-size: 13px;
+	*/
+	}
+p   {
+    margin-top: 0.1em;
+    margin-bottom: 0.5em;
+    }
+b   {
+	font-family: monospace;
+	color: MidnightBlue;
+	background: #f8f8f8;
+	border-radius: 2pt;
+	padding: 1pt;
+/*
+    font-size=85%;
+	border: 1pt dotted silver;
+*/
+	}
+	
+i   {
+	color: Navy;
+	font-family: monospace;
+	}
+	
+h1  {
+	font-family: sans-serif;
+	text-align: center;
+    line-height: 1.1em;
+	}
+	
+h2  {
+    float: left;
+    margin-top: 0;
+    padding: 5px 15px 5px 0px;
+    line-height: 0.8em;
+	color: RoyalBlue;
+	font-family: sans-serif;
+	border-top: 1px dotted gray;
+	}
+table {
+	float: right;
+	margin: 20px;
+	border-collapse:collapse;
+	border-bottom: 1px solid Navy;
+	border-top: 1px solid Navy;
+	}
+td, th  {
+	padding: 1px 5px 1px 5px;
+	}
+tr:nth-child(even) {
+    background-color: PowderBlue;
+    margin: 1pt solid PowderBlue;
+}
+-->
+</style>
+</head>
+<body>
+<h1>Gestione Corse Trail</h1>
+
+Sviluppare il nucleo di un programma per la gestione di una corsa trail.
+Le classi del programma si trovano nel package <b>trail</b> e il main di prova nel package <b>main</b>. 
+La classe di facciata del programma &egrave; <b>Trail</b>.<br>
+<p>
+&Egrave; disponibile la <a href="http://softeng.polito.it/courses/docs/api/index.html" target="api">documentazione JDK</a> su server locale.
+</p>
+
+<h2>R1. Corridori</h2>
+<p>
+I partecipanti possono essere inseriti tramite il metodo <b>newRunner()</b> che riceve come parametri
+nome e cognome e restituisce un numero di pettorale. I numeri sono assegnati in maniera progressiva a partire da 1.
+<br>
+&Egrave; possibile accedere ad un corridore tramite il metodo <b>getRunner()</b>, presente in due versioni; 
+la prima variante accetta il numero di pettorale e restitusice un oggetto di classe <b>Runner</b>;
+la seconda variante accetta un cognome e restituisce una collezione di corridori 
+(tutti quelli aventi il cognome dato, ordinati per pettorale crescente).
+<br>
+L'elenco completo dei partecipanti ordinati per numero di pettorale si ottiene tramite il metodo <b>getRunners()</b>.
+Mentre quello ordinato alfabeticamente per cognome e nome si ottiene con il metodo <b>getRunnersByName()</b>, 
+in caso di omonimia viene presentato prima il corridore con numero pettorale inferiore.  
+<p> 
+La classe <i>Runner</i> permette di accedere alle informazioni sul corridore, pettorale, nome e cognome, 
+attraverso i relativi metodi getter.
+<p>
+
+
+<h2>R2. Percorso</h2>
+<p>
+Il percorso della gara viene definito tramite una serie di posizioni di controllo.
+<br>
+Le posizioni sono definite tramite il metodo <b>addLocation()</b> che riceve come parametro
+il nome della location (univoco).
+<br>
+Le posizioni devono essere inserite in ordine a partire dalla prima, che corrisponde alla partenza,
+all'ultima che corrisponde all'arrivo.
+<p>
+&Egrave; possibile conoscere le informazioni su una posizione tramite il metodo
+<b>getLocation()</b> che riceve il nome e restituisce un oggetto di tipo <b>Location</b>.
+Tutto il percorso &egrave; reperibile tramite il metodo <b>getPath()</b> che restituisce
+la lista ordinata delle posizioni.
+<br>
+La classe <i>Location</i> fornisce i metodi getter per conoscere il nome ed il numero d'ordine 
+della posizione (con base 0).
+
+
+<h2>R3. Addetti</h2>
+<p>
+Il percorso &egrave; presidiato da degli incaricati dell'organizzazione della gara.
+<br>
+Gli incaricati vengono registrati tramite il metodo <b>newDelegate()</b> che riceve come parametri
+nome, cognome, e codice fiscale della persona.
+<br>
+Il metodo <b>getDelegates</b> restituisce un elenco di delegati (nella forma <i>"Cognome, Nome, CF"</i>)
+ordinati alfabeticamente. 
+<br>
+Gli incaricati possono essere assegnati alle posizioni lungo il percorso con il metodo
+<b>assignDelegate()</b> che riceve come parametri il nome della posizione ed il codice fiscale
+del delegato. &Egrave; possibile che una posizione abbia pi&ugrave; delegati e che un delegato
+sia assegnato a pi&ugrave; posizioni.<br>
+In caso di codice fiscale o nome della posizione errati il metodo lancia una <b>TrailException</b>.
+<p>
+Data una posizione &egrave; possibile conoscere i delegati assegnati tramite il metodo
+<b>getDelegates()</b> che accetta il nome della posizione restituisce l'elenco dei delegati
+(col formato precedentemente indicato) ordinati alfabeticamente.
+
+
+<h2>R4. Controlli</h2>
+<p>
+Gli addetti hanno il compito di registrare il passaggio di un corridore presso una posizione.
+<br>
+La registrazione avviene tramite il metodo <b>recordPassage()</b> che accetta come parametri
+il codice fiscale del delegato, il nome della posizione e il numero di pettorale del corridore.
+<br>
+Il metodo deve verificare l'esistenza del delegato, della posizione e del numero di pettorale,
+in caso di errore genera una <i>TrailException</i>. In caso positivo il sistema memorizza 
+come orario del passaggio l'ora di sistema corrente (ottenuta tramite <i>System.currentTimeMillis()</i>)
+e restituisce tale tempo.
+<p>
+Per ogni corridore &egrave; possibile conosce l'orario di passaggio presso ciascun punto del percorso
+tramite il metodo <b>getPassTime()</b> che accetta il nome della posizione ed il numero di pettorale
+e restituisce il tempo del passaggio o -1 in caso non sia stato registrato alcun passaggio del
+corridore presso il punto specificato.<br>
+Se il nome della posizione o il pettorale non sono corretti viene generata una <i>TrailException</i>.
+
+
+<h2>R5. Statistiche</h2>
+<p>
+Per conoscere l'ordine di passaggio presso una specifica posizione si utilizza
+il metodo <b>getRanking()</b> che accetta come parametro il nome di una posizione
+e restituisce un elenco di runner ordinati per tempo di passaggio crescente,
+per primo il corridore che &egrave; passato per primo.
+<p>
+Inoltre, tramite il metodo <b>getRanking()</b> senza parametri, &egrave; possibile conoscere la 
+classifica provvisoria totale che &egrave;
+costituita tenendo conto della posizione pi&ugrave; avanzata cui sono giunti i corridori e del 
+relativo tempo passaggio.
+<table>
+<tr><th>Pettorale<th>Ultima posizione<th>Tempo
+<tr><td>1<td>La Thuile<td>14:20
+<tr><td>2<td>Valgrisanche<td>19:10
+<tr><td>3<td>La Thuile<td>14:10
+<tr><td>4<td>Courmayeur<td>10:05
+</table>
+<p>
+Ad esempio, se il percorso &egrave; costituito da tre posizioni (Courmayeur, La Thuile e Valgrisanche) nell'ordine,
+ed i passaggi sono stati quelli riportati in tabella, 
+la graduatoria sarebbe 2, 3, 1, 4.
+
+</body>
+</html>
