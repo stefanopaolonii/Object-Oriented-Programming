@@ -51,7 +51,14 @@ public class HandleApplications {
 	}
 	
 	public int setWinner(String applicantName, String positionName) throws ApplicationException {
-		return 0;
+		if(!applicantsMap.containsKey(applicantName)) throw new ApplicationException();
+		if(!positionsMap.containsKey(positionName)) throw new ApplicationException();
+		Position searchedPosition= positionsMap.get(positionName);
+		if(!searchedPosition.getApplicants().contains(applicantName)) throw new ApplicationException();
+		if(!searchedPosition.getWinner().isEmpty()) throw new ApplicationException();
+		int positionskilllevel=applicantsMap.get(applicantName).getSkillsMap().entrySet().stream().filter(entry->searchedPosition.getSkillsList().contains(entry.getKey())).mapToInt(Map.Entry::getValue).sum();
+		if(positionskilllevel<=searchedPosition.getSkillsList().size()*6) throw new ApplicationException();
+		return positionskilllevel;
 	}
 	
 	public SortedMap<String, Long> skill_nApplicants() {
