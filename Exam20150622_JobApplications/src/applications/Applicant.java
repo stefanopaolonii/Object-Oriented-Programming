@@ -14,4 +14,7 @@ public class Applicant {
     public Map<String, Integer> getSkillsMap() {
         return skillsMap;
     }
+    public void addSkill(String skillname,int level){
+        skillsMap.put(skillname, level);
+    }
 }
