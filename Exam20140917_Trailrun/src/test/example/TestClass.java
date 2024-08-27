@@ -18,7 +18,7 @@ public class TestClass {
         for(Runner r : trail.getRunners()){
             System.out.println("\t" + r.getSurname() + " " + r.getName() + " (" + r.getBibNumber() + ")");
         }
-        
+
         trail.addLocation("Courmayeur");
         trail.addLocation("La Thuile");
         trail.addLocation("Valgrisanche");
