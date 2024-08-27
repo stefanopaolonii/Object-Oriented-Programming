@@ -21,9 +21,17 @@ public class Position {
 	public List<String> getApplicants() {
 		return applicantsMap.keySet().stream().sorted().collect(Collectors.toList());
 	}
-	
+
 	public String getWinner() {
 		if(winner==null) return null;
 		return winner.getName(); 
+	}
+
+	public List<String> getSkillsList() {
+		return skillsList;
+	}
+
+	public void addApplicant(Applicant applicant){
+		applicantsMap.put(applicant.getName(), applicant);
 	}
 }

@@ -1,6 +1,7 @@
 package applications;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class HandleApplications {
 	private Map<String,Skill> skillsMap= new HashMap<>();
@@ -42,7 +43,11 @@ public class HandleApplications {
 	}
 	
 	public void enterApplication(String applicantName, String positionName) throws ApplicationException {
-		
+		if(!applicantsMap.containsKey(applicantName)) throw new ApplicationException();
+		if(!positionsMap.containsKey(positionName)) throw new ApplicationException();
+		if(!positionsMap.get(positionName).getSkillsList().containsAll(applicantsMap.get(applicantName).getSkillsMap().keySet())) throw new ApplicationException();
+		if(positionsMap.values().stream().anyMatch(position->position.getApplicants().contains(applicantName))) throw new ApplicationException();
+		positionsMap.get(positionName).addApplicant(applicantsMap.get(applicantName));
 	}
 	
 	public int setWinner(String applicantName, String positionName) throws ApplicationException {
