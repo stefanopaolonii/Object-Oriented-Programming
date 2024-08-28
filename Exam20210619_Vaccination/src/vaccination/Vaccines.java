@@ -3,15 +3,16 @@ package vaccination;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.function.BiConsumer;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 public class Vaccines {
 	public final static int CURRENT_YEAR=java.time.LocalDate.now().getYear();
-
+	private Map<String,Person> personMap= new HashMap<>();
+	private List<String> intervalList= new ArrayList<>();
+	private Map<String,Hub> hubMap= new HashMap<>();
+	private Map<Integer,Integer> hoursMap= new TreeMap<>();
 	
 // R1
 
@@ -27,7 +28,9 @@ public class Vaccines {
 	 * @return {@code false} if ssn is duplicate, 
 	 */
 	public boolean addPerson(String first, String last, String ssn, int year) {
-		return false;
+		if(personMap.containsKey(ssn)) return false;
+		personMap.put(ssn, new Person(ssn, first, last, year));
+		return true;
 	}
 	
 	/**
@@ -36,7 +39,7 @@ public class Vaccines {
 	 * @return person count
 	 */
 	public int countPeople() {
-		return -1;
+		return personMap.size();
 	}
 	
 	/**
@@ -48,7 +51,8 @@ public class Vaccines {
 	 * @return info about the person
 	 */
 	public String getPerson(String ssn) {
-		return null;
+		if(!personMap.containsKey(ssn)) return null;
+		return personMap.get(ssn).toString();
 	}
 	
 	
@@ -59,7 +63,8 @@ public class Vaccines {
 	 * @return age of person (in years)
 	 */
 	public int getAge(String ssn) {
-		return -1;
+		if(!personMap.containsKey(ssn)) return -1;
+		return CURRENT_YEAR-personMap.get(ssn).getYear();
 	}
 
 	
@@ -75,6 +80,12 @@ public class Vaccines {
 	 * @param breaks the array of breaks
 	 */
 	public void setAgeIntervals(int... breaks) {
+		int initial=0;
+		for(int value: breaks){
+			intervalList.add(String.format("[%d,%d)", initial,value));
+			initial=value;
+		}
+		intervalList.add(String.format("[%d,+)", initial));
 	}
 	
 	
@@ -88,7 +99,7 @@ public class Vaccines {
 	 * @return labels of the age intervals
 	 */
 	public Collection<String> getAgeIntervals(){
-		return null;
+		return intervalList;
 	}
 	
 	
@@ -102,7 +113,16 @@ public class Vaccines {
 	 * @return collection of SSN of person in the age interval
 	 */
 	public Collection<String> getInInterval(String interval){
-		return null;
+		String[] parts=interval.split(",");
+		int initial;
+		final int finali;
+		initial=Integer.parseInt(parts[0].replaceFirst("[",""));
+		if(!parts[1].trim().equals("+")){
+			finali = Integer.parseInt(parts[1].replaceFirst(")",""));
+		}else{
+			finali=0;
+		}
+		return personMap.values().stream().map(Person::getSsn).filter(ssn->getAge(ssn)>=initial && (parts[1].trim().equals("+") || getAge(ssn)<=finali)).collect(Collectors.toList());
 	}
 	
 	// R2
@@ -113,6 +133,8 @@ public class Vaccines {
 	 * @throws VaccineException in case of duplicate name
 	 */
 	public void defineHub(String name) throws VaccineException {
+		if(hubMap.containsKey(name)) throw new VaccineException();
+		hubMap.put(name, new Hub(name));
 	}
 	
 	/**
@@ -121,7 +143,7 @@ public class Vaccines {
 	 * @return hub names
 	 */
 	public Collection<String> getHubs() {
-		return null;
+		return hubMap.keySet();
 	}
 
 	/**
@@ -136,6 +158,9 @@ public class Vaccines {
 	 * @throws VaccineException in case of undefined hub, or any number of personnel not greater than 0.
 	 */
 	public void setStaff(String name, int doctors, int nurses, int other) throws VaccineException {
+		if(!hubMap.containsKey(name)) throw new VaccineException();
+		if(doctors<=0 || nurses<=0 || other<=0) throw new VaccineException();
+		hubMap.get(name).setStaff(doctors, nurses, other);
 	}
 	
 	
@@ -151,7 +176,10 @@ public class Vaccines {
 	 * @throws VaccineException in case of undefined or hub without staff
 	 */
 	public int estimateHourlyCapacity(String hubName)  throws VaccineException {
-		return -1;
+		if(!hubMap.containsKey(hubName)) throw new VaccineException();
+		Hub searchedHub= hubMap.get(hubName);
+		if(searchedHub.getDoctors()==0) throw new VaccineException();
+		return searchedHub.getDoctors()*10+searchedHub.getNurses()*12+searchedHub.getOther()*20;
 	}
 	
 	// R3
@@ -169,11 +197,25 @@ public class Vaccines {
 	 * @throws VaccineException in case of error in the header
 	 */
 	public long loadPeople(Reader people) throws IOException, VaccineException {
-		//Hint:
 		BufferedReader br = new BufferedReader(people);
+		int lineCounter=0;
+		try{
+			String line;
+			while((line=br.readLine())!=null){
+				String[] lineparts= line.split(",");
+				if(lineCounter==0 & (!lineparts[0].equals("SSN") || !lineparts[1].equals("LAST") || !lineparts[2].equals("FIRST") || !lineparts[0].equals("YEAR"))) throw new VaccineException();
+				if(lineCounter==0) continue;
+				if(lineparts.length!=4) continue;
+				if(personMap.containsKey(lineparts[0])) continue;
+				addPerson(lineparts[0], lineparts[1], lineparts[2], Integer.parseInt(lineparts[3]));
+				lineCounter++;
+			}
+		}catch(IOException e){
+			e.getLocalizedMessage();
+		}
 
 		br.close();
-		return -1;
+		return lineCounter;
 	}
 	
 	// R4
@@ -186,6 +228,11 @@ public class Vaccines {
 	 * @throws VaccineException if there are not exactly 7 elements or if the sum of all hours is less than 0 ore greater than 24*7.
 	 */
 	public void setHours(int... hours) throws VaccineException {
+		if(hours.length!=7) throw new VaccineException();
+		for(int value:hours) if(value>12) throw new VaccineException();
+		for(int i=0;i<hours.length;i++){
+			hoursMap.put(i, hours[i]);
+		}
 	}
 	
 	/**
@@ -202,7 +249,12 @@ public class Vaccines {
 	 * @return the list hours for each day of the week
 	 */
 	public List<List<String>> getHours(){
-		return null;
+		return hoursMap.values().stream().map(hour->{List<String> dayslot= new ArrayList<>(); int currtime=timeinMin("09:00"); while(currtime<=timeinMin("09:00")+hour*60){ dayslot.add(String.format("%02d:%02d",currtime));}return dayslot;}).collect(Collectors.toList());
+	}
+
+	private int timeinMin(String time){
+		String[] parts=time.split(":");
+		return Integer.parseInt(parts[0])*60+Integer.parseInt(parts[1]);
 	}
 
 	/**
@@ -213,8 +265,14 @@ public class Vaccines {
 	 *  
 	 * @return
 	 */
-	public int getDailyAvailable(String hubName, int day){
-		return -1;
+	public int getDailyAvailable(String hubName, int day) {
+		if(day<0 || day>7) return -1;
+		try{
+			return estimateHourlyCapacity(hubName)*hoursMap.get(day);
+		}catch(VaccineException ve){
+			return -1;
+		}
+		
 	}
 
 	/**
@@ -229,7 +287,7 @@ public class Vaccines {
 	 * @return
 	 */
 	public Map<String,List<Integer>> getAvailable(){
-		return null;
+		return hubMap.values().stream().collect(Collectors.toMap(Hub::getName, hub-> hoursMap.values().stream().map(hour->getDailyAvailable(hub.getName(), hour)).collect(Collectors.toList())));
 	}
 	
 	/**
@@ -249,7 +307,27 @@ public class Vaccines {
 	 * @return the list of daily allocations
 	 */
 	public List<String> allocate(String hubName, int day){
-		return null;
+		int n=getDailyAvailable(hubName, day);
+		List<Person> allocatedPerson;
+		List<String> totalAllocated= new ArrayList<>();
+		for(String interval: intervalList.stream().sorted((s1,s2)-> s2.compareTo(s1)).collect(Collectors.toList())){
+			allocatedPerson=getInInterval(interval).stream().map(ssn->personMap.get(ssn)).filter(person->!person.isAllocated()).limit((long) (n*0.4)).collect(Collectors.toList());
+			for(Person person:allocatedPerson){
+				person.setAllocated(true);
+				person.allocate(hubName, day);
+				totalAllocated.add(person.getSsn());
+			}
+			n-=allocatedPerson.size();
+		}
+		if(n!=0){
+			allocatedPerson=personMap.values().stream().filter(person->!person.isAllocated()).sorted(Comparator.comparingInt((Person person)-> getAge(person.getSsn())).reversed()).limit(n).collect(Collectors.toList());
+			for(Person person:allocatedPerson){
+				person.setAllocated(true);
+				person.allocate(hubName, day);
+				totalAllocated.add(person.getSsn());
+			}
+		}
+		return totalAllocated;
 	}
 	
 	/**
@@ -258,6 +336,7 @@ public class Vaccines {
 	 * 
 	 */
 	public void clearAllocation() {
+		personMap.values().stream().forEach(person->person.setAllocated(false));
 	}
 	
 	/**
@@ -332,7 +411,7 @@ public class Vaccines {
 	 * 
 	 * @param listener the listener for load errors
 	 */
-	public void setLoadListener(BiConsumer<Integer,String> listener) {
-	}
+	/*public void setLoadListener(BiConsumer<Integer,String> listener) {
+	}*/
 
 }
