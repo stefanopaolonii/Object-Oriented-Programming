@@ -1,12 +1,12 @@
 package abbigliamento;
 
 public class Colore {
-
+	private final String name;
 	public Colore(String nome) {
-		// TODO Auto-generated constructor stub
+		this.name=nome;
 	}
 
 	public String getNome(){
-		return null;
+		return name;
 	}
 }

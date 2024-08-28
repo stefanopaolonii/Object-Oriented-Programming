@@ -1,17 +1,19 @@
 package abbigliamento;
 
 public class Materiale {
-
-
-	public Materiale(String nome, double cpsto) {		
-		// TODO Auto-generated constructor stub
+	private final String nome;
+	private final double cpsto;
+	
+	public Materiale(String nome, double cpsto) {
+		this.nome = nome;
+		this.cpsto = cpsto;
 	}
 
 	public String getNome(){
-		return null;
+		return nome;
 	}
 
 	public double getCosto(){
-		return 0.0;
+		return cpsto;
 	}
 }

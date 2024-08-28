@@ -1,27 +1,34 @@
 package abbigliamento;
 
-import java.util.Collection;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Collezione {
+	private String name;
+	private List<Capo> capoList= new ArrayList<>();
+	public Collezione(String name) {
+		this.name = name;
+	}
 
 	public void add(Capo capo) {
-		// TODO Auto-generated method stub
+		capoList.add(capo);
 		
 	}
 
 	public Collection trova(Colore colore) {
-		// TODO Auto-generated method stub
-		return null;
+		return capoList.stream().filter(capo->capo.getColore().getNome().equals(colore.getNome())).collect(Collectors.toList());
 	}
 
-	public Collection trova(Materiale materiale) {
-		// TODO Auto-generated method stub
-		return null;
+	public Collection<Capo>  trova(Materiale materiale) {
+		return capoList.stream().filter(capo->capo.getMateriale().getNome().equals(materiale.getNome())).collect(Collectors.toList());
 	}
 
-	public Collection trova(Modello modello) {
-		// TODO Auto-generated method stub
-		return null;
+	public Collection<Capo>  trova(Modello modello) {
+		return capoList.stream().filter(capo->capo.getModello().getNome().equals(modello.getNome())).collect(Collectors.toList());
 	}
+	public List<Capo> getCapoList() {
+		return capoList;
+	}
+
 
 }
