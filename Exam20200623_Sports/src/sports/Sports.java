@@ -75,6 +75,8 @@ public class Sports {
      * @throws SportsException thrown in case of duplicate name
      */
     public void addProduct(String name, String activityName, String categoryName) throws SportsException {
+        if(productsMap.containsKey(name)) throw new SportsException("");
+        productsMap.put(name, new Product(name, activityName, categoriesMap.get(categoryName)));
     }
 
     /**
@@ -85,7 +87,7 @@ public class Sports {
      * @return list of products
      */
     public List<String> getProductsForCategory(String categoryName){
-        return null;
+        return productsMap.values().stream().filter(product->product.getCategory().getName().equals(categoryName)).map(Product::getName).sorted().collect(Collectors.toList());
     }
 
     /**
@@ -96,7 +98,7 @@ public class Sports {
      * @return list of products
      */
     public List<String> getProductsForActivity(String activityName){
-        return null;
+        return productsMap.values().stream().filter(product->product.getActivity().equals(activityName)).map(Product::getName).sorted().collect(Collectors.toList());
     }
 
     /**
@@ -108,7 +110,7 @@ public class Sports {
      * @return list of products
      */
     public List<String> getProducts(String activityName, String... categoryNames){
-        return null;
+        return productsMap.values().stream().filter(product->product.getActivity().equals(activityName) && Arrays.asList(categoryNames).contains(product.getCategory().getName())).map(Product::getName).sorted().collect(Collectors.toList());
     }
 
     //    //R3
