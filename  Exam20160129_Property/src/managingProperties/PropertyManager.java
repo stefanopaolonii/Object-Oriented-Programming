@@ -8,6 +8,8 @@ public class PropertyManager {
 	private Map<String,Integer> buildingsMap= new HashMap<>();
 	private Map<String,Owner> ownersMap= new HashMap<>();
 	private Map<String,Profession> professionsMap= new HashMap<>();
+	private Map<Integer,Request> requestsMap= new HashMap<>();
+	private int requestCounter=0;
 	/**
 	 * Add a new building 
 	 */
@@ -54,18 +56,25 @@ public class PropertyManager {
 	}
 
 	public int addRequest(String owner, String apartment, String profession) throws PropertyException {
-		
-		return 0;
+		if(!ownersMap.containsKey(owner)) throw new PropertyException();
+		if(!professionsMap.containsKey(profession)) throw new PropertyException();
+		if(!ownersMap.get(owner).getApartmentsMap().containsKey(apartment)) throw new PropertyException();
+		requestCounter++;
+		requestsMap.put(requestCounter, new Request(requestCounter, ownersMap.get(owner), ownersMap.get(owner).getApartmentsMap().get(apartment), professionsMap.get(profession)));
+		return requestCounter;
 	}
 
 	public void assign(int requestN, String professional) throws PropertyException {
-		
-		
+		if(!requestsMap.containsKey(requestN)) throw new PropertyException();
+		Request searchedRequest= requestsMap.get(requestN);
+		if(searchedRequest.getStatus()!=Status.PENDING)throw new PropertyException();
+		if(!searchedRequest.getProfession().getProfessionalList().contains(professional)) throw new PropertyException();
+		searchedRequest.setStatus(Status.ASSIGNED);
+		searchedRequest.setProfessionalId(professional);
 	}
 
 	public List<Integer> getAssignedRequests() {
-		
-		return null;
+		return requestsMap.values().stream().sorted(Comparator.comparingInt(Request::getId)).map(Request::getId).collect(Collectors.toList());
 	}
 
 	
