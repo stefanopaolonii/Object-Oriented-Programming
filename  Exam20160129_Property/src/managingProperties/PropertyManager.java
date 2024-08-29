@@ -39,7 +39,10 @@ public class PropertyManager {
 	}
 
 	public void addProfessionals(String profession, String... professionals) throws PropertyException {
-				
+			if(professionsMap.containsKey(profession)) throw new PropertyException();
+			List<String> professionalsList=professionsMap.values().stream().flatMap(prof->prof.getProfessionalList().stream()).collect(Collectors.toList());
+			for(String professional:professionals) if(professionalsList.contains(professional)) throw new PropertyException();
+			professionsMap.put(profession, new Profession(profession, professionals));
 	}
 
 	/**
@@ -47,8 +50,7 @@ public class PropertyManager {
 	 *
 	 */
 	public SortedMap<String, Integer> getProfessions() {
-		
-		return null;
+		return professionsMap.values().stream().collect(Collectors.toMap(Profession::getName,profession->profession.getProfessionalList().size(),(e1,e2)->e1,TreeMap::new));
 	}
 
 	public int addRequest(String owner, String apartment, String profession) throws PropertyException {
