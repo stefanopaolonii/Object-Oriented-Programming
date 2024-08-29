@@ -1,5 +1,6 @@
 package sports;
 import java.util.*;
+import java.util.stream.Collectors;
 
  
 /**
@@ -7,7 +8,9 @@ import java.util.*;
  *
  */
 public class Sports {
-
+    private List<String> activitiesList= new ArrayList<>();
+    private Map<String,Category> categoriesMap= new HashMap<>();
+    private Map<String,Product> productsMap= new HashMap<>();
     //R1
     /**
      * Define the activities types treated in the portal.
@@ -17,6 +20,8 @@ public class Sports {
      * @throws SportsException thrown if no activity is provided
      */
     public void defineActivities (String... activities) throws SportsException {
+        if(activities.length==0) throw new SportsException("");
+        activitiesList.addAll(Arrays.asList(activities));
     }
 
     /**
@@ -25,7 +30,8 @@ public class Sports {
      * @return activities names sorted alphabetically
      */
     public List<String> getActivities() {
-        return null;
+        Collections.sort(activitiesList);
+        return activitiesList;
     }
 
 
@@ -37,6 +43,8 @@ public class Sports {
      * @throws SportsException thrown if any of the specified activity does not exist
      */
     public void addCategory(String name, String... linkedActivities) throws SportsException {
+        if(!activitiesList.containsAll(Arrays.asList(linkedActivities))) throw new SportsException("");
+        categoriesMap.put(name, new Category(name, linkedActivities));
     }
 
     /**
@@ -45,7 +53,7 @@ public class Sports {
      * @return categories count
      */
     public int countCategories() {
-        return -1;
+        return categoriesMap.size();
     }
 
     /**
@@ -55,7 +63,7 @@ public class Sports {
      * @return list of categories (sorted alphabetically)
      */
     public List<String> getCategoriesForActivity(String activity) {
-        return null;
+        return categoriesMap.values().stream().filter(category->category.getLinkedActivities().contains(activity)).map(Category::getName).sorted().collect(Collectors.toList());
     }
 
     //R2
