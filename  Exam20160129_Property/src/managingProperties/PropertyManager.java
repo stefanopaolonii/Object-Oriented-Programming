@@ -74,7 +74,7 @@ public class PropertyManager {
 	}
 
 	public List<Integer> getAssignedRequests() {
-		return requestsMap.values().stream().sorted(Comparator.comparingInt(Request::getId)).map(Request::getId).collect(Collectors.toList());
+		return requestsMap.values().stream().filter(rq->rq.getStatus()==Status.ASSIGNED).sorted(Comparator.comparingInt(Request::getId)).map(Request::getId).collect(Collectors.toList());
 	}
 
 	
@@ -93,8 +93,7 @@ public class PropertyManager {
 	 * 
 	 */
 	public List<Integer> getCompletedRequests() {
-		
-		return null;
+		return requestsMap.values().stream().filter(rq->rq.getStatus()==Status.COMPLETED).sorted(Comparator.comparingInt(Request::getId)).map(Request::getId).collect(Collectors.toList());
 	}
 	
 	/**
@@ -102,8 +101,7 @@ public class PropertyManager {
 	 * 
 	 */
 	public SortedMap<String, Integer> getCharges() {
-		
-		return null;
+		return requestsMap.values().stream().filter(rq->rq.getStatus()==Status.COMPLETED).collect(Collectors.groupingBy(rq->rq.getOwner().getOwner(),TreeMap::new,Collectors.summingInt(Request::getAmount)));
 	}
 
 	/**
@@ -112,8 +110,7 @@ public class PropertyManager {
 	 * 
 	 */
 	public SortedMap<String, Map<String, Integer>> getChargesOfBuildings() {
-		
-		return null;
+		return requestsMap.values().stream().filter(rq->rq.getStatus()==Status.COMPLETED).collect(Collectors.groupingBy(rq->rq.getApartment().getBuilding(),TreeMap::new,Collectors.groupingBy(rq->rq.getProfession().getName(),TreeMap::new,Collectors.summingInt(Request::getAmount))));
 	}
 
 }
