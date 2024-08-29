@@ -1,20 +1,33 @@
 package managingProperties;
 
-import java.util.List;
-import java.util.Map;
-import java.util.SortedMap;
+import java.util.*;
+import java.util.stream.*;
 
 public class PropertyManager {
-
+	public enum Status{PENDING,ASSIGNED,COMPLETED};
+	private Map<String,Integer> buildingsMap= new HashMap<>();
+	private Map<String,Owner> ownersMap= new HashMap<>();
+	private Map<String,Profession> professionsMap= new HashMap<>();
 	/**
 	 * Add a new building 
 	 */
 	public void addBuilding(String building, int n) throws PropertyException {
+		if(buildingsMap.containsKey(building)) throw new PropertyException();
+		if(n<1 || n>100) throw new PropertyException();
+		buildingsMap.put(building, n);
 	}
 
 	public void addOwner(String owner, String... apartments) throws PropertyException {
-		
-		
+		if(ownersMap.containsKey(owner)) throw new PropertyException();
+		Owner newOwner= new Owner(owner);
+		for(String apartment:apartments){
+			String[] parts=apartment.split(":");
+			if(!buildingsMap.containsKey(parts[0])) throw new PropertyException();
+			int n=buildingsMap.get(parts[0]);
+			if(Integer.parseInt(parts[1])<1 && Integer.parseInt(parts[1])>n) throw new PropertyException();
+			newOwner.addApartment(new Apartment(parts[0], Integer.parseInt(parts[1]), apartment));
+		}
+		ownersMap.put(owner, newOwner);
 	}
 
 	/**
@@ -22,8 +35,7 @@ public class PropertyManager {
 	 * 
 	 */
 	public SortedMap<Integer, List<String>> getBuildings() {
-		
-		return null;
+		return buildingsMap.entrySet().stream().collect(Collectors.groupingBy(Map.Entry::getValue,TreeMap::new,Collectors.mapping(Map.Entry::getKey, Collectors.toList())));
 	}
 
 	public void addProfessionals(String profession, String... professionals) throws PropertyException {
