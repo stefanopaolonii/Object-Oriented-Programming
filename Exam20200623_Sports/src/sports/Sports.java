@@ -124,6 +124,10 @@ public class Sports {
      * @throws SportsException thrown numStars is not correct
      */
     public void addRating(String productName, String userName, int numStars, String comment) throws SportsException {
+        if(!productsMap.containsKey(productName)) throw new SportsException("");
+        if(numStars<0 || numStars>5) throw new SportsException("");
+        Product searched= productsMap.get(productName);
+        searched.addRating(new Rating(searched, userName, numStars, comment));
     }
 
 
@@ -136,7 +140,8 @@ public class Sports {
      * @return list of ratings sorted by stars
      */
     public List<String> getRatingsForProduct(String productName) {
-        return null;
+        if(!productsMap.containsKey(productName)) return null;
+        return productsMap.get(productName).getRatingList().stream().sorted(Comparator.comparingInt(Rating::getNumStars).reversed()).map(Rating::toString).collect(Collectors.toList());
     }
 
 

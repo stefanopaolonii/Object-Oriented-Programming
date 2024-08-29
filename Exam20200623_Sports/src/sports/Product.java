@@ -1,9 +1,12 @@
 package sports;
 
+import java.util.*;
+
 public class Product {
     private final String name;
     private final String activity;
-    private final String category;
+    private final Category category;
+    private List<Rating> ratingList= new ArrayList<>();
     public Product(String name, String activity, Category category) {
         this.name = name;
         this.activity = activity;
@@ -17,5 +20,11 @@ public class Product {
     }
     public Category getCategory() {
         return category;
+    }
+    public List<Rating> getRatingList() {
+        return ratingList;
+    }
+    public void addRating(Rating rating){
+        ratingList.add(rating);
     }
 }

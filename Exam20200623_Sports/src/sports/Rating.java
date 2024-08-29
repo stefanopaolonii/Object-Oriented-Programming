@@ -23,4 +23,8 @@ public class Rating {
     public String getComment() {
         return comment;
     }
+    @Override
+    public String toString(){
+        return numStars+":"+comment;
+    }
 }
