@@ -18,6 +18,9 @@ public class Vaccines {
 	
 // R1
 
+	public Vaccines() {
+	}
+
 	/**
 	 * Add a new person to the vaccination system.
 	 * 
@@ -41,6 +44,7 @@ public class Vaccines {
 	 * @return person count
 	 */
 	public int countPeople() {
+		System.out.println(personMap.size());
 		return personMap.size();
 	}
 	
@@ -115,18 +119,22 @@ public class Vaccines {
 	 * @return collection of SSN of person in the age interval
 	 */
 	public Collection<String> getInInterval(String interval){
-		String[] parts=interval.split(",");
-		int initial;
-		final int finali;
-		initial=Integer.parseInt(parts[0].replace("[","").trim());
-		if(!parts[1].trim().equals("+)")){
-			finali = Integer.parseInt(parts[1].replace(")","").trim());
-		}else{
-			finali=Integer.MAX_VALUE;
-		}
-		return personMap.values().stream().map(Person::getSsn).filter(ssn->getAge(ssn)>=initial &&  getAge(ssn)<finali).collect(Collectors.toList());
+		List<Integer> intervalValue=getintInterval(interval);
+		return personMap.values().stream().map(Person::getSsn).filter(ssn->getAge(ssn)>=intervalValue.get(0) &&  getAge(ssn)<intervalValue.get(1)).collect(Collectors.toList());
 	}
 	
+	private List<Integer> getintInterval(String interval){
+		List<Integer> list= new ArrayList<>();
+		String[] parts=interval.split(",");
+		list.add(Integer.parseInt(parts[0].replace("[","").trim()));
+		if(!parts[1].trim().equals("+)")){
+			list.add(Integer.parseInt(parts[1].replace(")","").trim()));
+		}else{
+			list.add(Integer.MAX_VALUE);
+		}
+		return list;
+	}
+
 	// R2
 	/**
 	 * Define a vaccination hub
@@ -199,6 +207,7 @@ public class Vaccines {
 	 * @throws VaccineException in case of error in the header
 	 */
 	public long loadPeople(Reader people) throws IOException, VaccineException {
+		System.out.println(personMap.size());
 		BufferedReader br = new BufferedReader(people);
 		int lineCounter=0;
 		try{
@@ -206,13 +215,18 @@ public class Vaccines {
 			if(line==null || !line.equals("SSN,LAST,FIRST,YEAR")) throw new VaccineException();
 			while((line=br.readLine())!=null){
 				String[] lineparts= line.split(",");
-				if(lineparts.length==4) if(this.addPerson(lineparts[0], lineparts[1], lineparts[2], Integer.parseInt(lineparts[3]))) lineCounter++;
+				try{
+					if(lineparts.length==4) if(this.addPerson(lineparts[0], lineparts[1], lineparts[2], Integer.parseInt(lineparts[3]))) lineCounter++;
+				}catch(NumberFormatException e){
+					System.out.println("Numberformate");
+				}
 			}
 		}catch(IOException e){
 			e.printStackTrace();
 		}
 
 		br.close();
+		System.out.println(lineCounter);
 		return lineCounter;
 	}
 	
@@ -368,7 +382,7 @@ public class Vaccines {
 	 * @return proportion of allocated people
 	 */
 	public double propAllocated() {
-		return -1.0;
+		return personMap.values().stream().filter(person->person.isAllocated()).count()/(double)personMap.size();
 	}
 	
 	/**
@@ -382,7 +396,7 @@ public class Vaccines {
 	 * @return proportion of allocated people by age interval
 	 */
 	public Map<String,Double> propAllocatedAge(){
-		return null;
+		return intervalList.stream().collect(Collectors.toMap(interval->interval, interval->{List<Integer> intervalValue=getintInterval(interval);List<Person> agelist=personMap.values().stream().filter(person->getAge(person.getSsn())>=intervalValue.get(0) && getAge(person.getSsn())<intervalValue.get(1)).collect(Collectors.toList()); return agelist.stream().filter(person->person.isAllocated()).count()/(double)agelist.size();}));
 	}
 
 	/**
@@ -396,7 +410,7 @@ public class Vaccines {
 	 * @return
 	 */
 	public Map<String,Double> distributionAllocated(){
-		return null;
+		return intervalList.stream().collect(Collectors.toMap(interval->interval, interval->{List<Integer> intervalValue=getintInterval(interval);List<Person> agelist=personMap.values().stream().filter(person->getAge(person.getSsn())>=intervalValue.get(0) && getAge(person.getSsn())<intervalValue.get(1)).collect(Collectors.toList()); return agelist.size()/(double)personMap.values().stream().filter(person->person.isAllocated()).count();}));
 	}
 
 	// R6

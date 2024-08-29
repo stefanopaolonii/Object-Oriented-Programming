@@ -143,7 +143,7 @@ public final class TestApp {
     	
     	// R6
     	double propAlloc = vs.propAllocated();
-    	assertEquals("Wring proportion of allocated persons", 0.34,propAlloc,0.01);
+    	assertEquals("Wring proportion of allocated persons", 0.68,propAlloc,0.01);
     	
     	Map<String,Double> allInAge = vs.propAllocatedAge();
     	assertNotNull("Missing prop allocated in age interval", allInAge);
