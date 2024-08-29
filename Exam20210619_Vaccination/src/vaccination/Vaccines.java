@@ -6,9 +6,11 @@ import java.io.Reader;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import org.junit.platform.engine.support.discovery.SelectorResolver.Match;
+
 
 public class Vaccines {
-	public final static int CURRENT_YEAR=java.time.LocalDate.now().getYear();
+	public final static int CURRENT_YEAR=2021;
 	private Map<String,Person> personMap= new HashMap<>();
 	private List<String> intervalList= new ArrayList<>();
 	private Map<String,Hub> hubMap= new HashMap<>();
@@ -116,13 +118,13 @@ public class Vaccines {
 		String[] parts=interval.split(",");
 		int initial;
 		final int finali;
-		initial=Integer.parseInt(parts[0].replaceFirst("[",""));
-		if(!parts[1].trim().equals("+")){
-			finali = Integer.parseInt(parts[1].replaceFirst(")",""));
+		initial=Integer.parseInt(parts[0].replace("[","").trim());
+		if(!parts[1].trim().equals("+)")){
+			finali = Integer.parseInt(parts[1].replace(")","").trim());
 		}else{
-			finali=0;
+			finali=Integer.MAX_VALUE;
 		}
-		return personMap.values().stream().map(Person::getSsn).filter(ssn->getAge(ssn)>=initial && (parts[1].trim().equals("+") || getAge(ssn)<=finali)).collect(Collectors.toList());
+		return personMap.values().stream().map(Person::getSsn).filter(ssn->getAge(ssn)>=initial &&  getAge(ssn)<finali).collect(Collectors.toList());
 	}
 	
 	// R2
@@ -179,7 +181,7 @@ public class Vaccines {
 		if(!hubMap.containsKey(hubName)) throw new VaccineException();
 		Hub searchedHub= hubMap.get(hubName);
 		if(searchedHub.getDoctors()==0) throw new VaccineException();
-		return searchedHub.getDoctors()*10+searchedHub.getNurses()*12+searchedHub.getOther()*20;
+		return Math.min(searchedHub.getDoctors()*10, Math.min(searchedHub.getNurses()*12, searchedHub.getOther()*20));
 	}
 	
 	// R3
@@ -200,18 +202,14 @@ public class Vaccines {
 		BufferedReader br = new BufferedReader(people);
 		int lineCounter=0;
 		try{
-			String line;
+			String line=br.readLine();
+			if(line==null || !line.equals("SSN,LAST,FIRST,YEAR")) throw new VaccineException();
 			while((line=br.readLine())!=null){
 				String[] lineparts= line.split(",");
-				if(lineCounter==0 & (!lineparts[0].equals("SSN") || !lineparts[1].equals("LAST") || !lineparts[2].equals("FIRST") || !lineparts[0].equals("YEAR"))) throw new VaccineException();
-				if(lineCounter==0) continue;
-				if(lineparts.length!=4) continue;
-				if(personMap.containsKey(lineparts[0])) continue;
-				addPerson(lineparts[0], lineparts[1], lineparts[2], Integer.parseInt(lineparts[3]));
-				lineCounter++;
+				if(lineparts.length==4) if(this.addPerson(lineparts[0], lineparts[1], lineparts[2], Integer.parseInt(lineparts[3]))) lineCounter++;
 			}
 		}catch(IOException e){
-			e.getLocalizedMessage();
+			e.printStackTrace();
 		}
 
 		br.close();
@@ -287,7 +285,7 @@ public class Vaccines {
 	 * @return
 	 */
 	public Map<String,List<Integer>> getAvailable(){
-		return hubMap.values().stream().collect(Collectors.toMap(Hub::getName, hub-> hoursMap.values().stream().map(hour->getDailyAvailable(hub.getName(), hour)).collect(Collectors.toList())));
+		return hubMap.values().stream().collect(Collectors.toMap(Hub::getName, hub-> { try{double capacity=estimateHourlyCapacity(hub.getName()); return hoursMap.values().stream().map(hour->hour*(int)capacity).collect(Collectors.toList());}catch(VaccineException ve){System.out.println(ve); return Collections.emptyList();}}));
 	}
 	
 	/**
@@ -358,7 +356,7 @@ public class Vaccines {
 	 * @return the list of daily allocations
 	 */
 	public List<Map<String,List<String>>> weekAllocate(){
-		return null;
+		return hoursMap.entrySet().stream().map(entry->hubMap.values().stream().collect(Collectors.toMap(Hub::getName,hub->this.allocate(hub.getName(), entry.getKey())))).collect(Collectors.toList());
 	}
 	
 	// R5
