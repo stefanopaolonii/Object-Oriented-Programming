@@ -79,7 +79,12 @@ public class PropertyManager {
 
 	
 	public void charge(int requestN, int amount) throws PropertyException {
-		
+		if(!requestsMap.containsKey(requestN)) throw new PropertyException();
+		Request searchedRequest= requestsMap.get(requestN);
+		if(searchedRequest.getStatus()!=Status.ASSIGNED) throw new PropertyException();
+		if(amount<0 || amount>1000) throw new PropertyException();
+		searchedRequest.setAmount(amount);
+		searchedRequest.setStatus(Status.COMPLETED);
 		
 	}
 
