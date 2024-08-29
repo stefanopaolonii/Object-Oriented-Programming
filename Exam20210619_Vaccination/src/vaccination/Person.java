@@ -7,7 +7,6 @@ public class Person {
     private final String first;
     private final String last;
     private final int year;
-    private boolean allocated;
     private String hubname;
     private int day;
     public Person(String ssn, String first, String last, int year) {
@@ -15,7 +14,6 @@ public class Person {
         this.first = first;
         this.last = last;
         this.year = year;
-        this.allocated=false;
     }
     public String getSsn() {
         return ssn;
@@ -32,12 +30,6 @@ public class Person {
     @Override
     public String toString(){
         return ssn+","+first+","+last;
-    }
-    public boolean isAllocated() {
-        return allocated;
-    }
-    public void setAllocated(boolean allocated) {
-        this.allocated = allocated;
     }
     public void allocate(String hubname,int day){
         this.hubname=hubname;

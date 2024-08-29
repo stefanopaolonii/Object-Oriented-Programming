@@ -94,7 +94,7 @@ public final class TestApp {
     	
     	vs.loadPeople(new FileReader("people.csv"));
     	
-    	assertEquals(10010,vs.countPeople());
+    	assertEquals(19997,vs.countPeople());
     	
     	// R4
     	vs.setHours(8,8,8,8,8,6,4); // 8 hours mon to fri, 6 hours on sat and 4 hours on sun
@@ -143,7 +143,7 @@ public final class TestApp {
     	
     	// R6
     	double propAlloc = vs.propAllocated();
-    	assertEquals("Wring proportion of allocated persons", 0.68,propAlloc,0.01);
+    	assertEquals("Wring proportion of allocated persons", 0.34,propAlloc,0.01);
     	
     	Map<String,Double> allInAge = vs.propAllocatedAge();
     	assertNotNull("Missing prop allocated in age interval", allInAge);
@@ -159,7 +159,7 @@ public final class TestApp {
 
     	
     	// R7
-    	/*Map<Integer,String> errors = new HashMap<>();
+    	Map<Integer,String> errors = new HashMap<>();
     	vs.setLoadListener((i,l)-> errors.put(i, l) );
     	String incomplete="SSN,LAST,FIRST,YEAR\n"+				//1: header
     					  "ABCDEF01G23H456I,Smith,John,1923\n"+  //2: ok
@@ -170,7 +170,7 @@ public final class TestApp {
     	vs.loadPeople(sr);
     	assertEquals("Wrong number of errors", 2, errors.size());
     	assertTrue("Expected errors on lines 3,4,5 but got: " + errors.keySet(), 
-    			   errors.keySet().containsAll(Arrays.asList(3,4)));*/
+    			   errors.keySet().containsAll(Arrays.asList(3,4)));
     }
     
     

@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.*;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 import org.junit.platform.engine.support.discovery.SelectorResolver.Match;
@@ -15,6 +16,8 @@ public class Vaccines {
 	private List<String> intervalList= new ArrayList<>();
 	private Map<String,Hub> hubMap= new HashMap<>();
 	private Map<Integer,Integer> hoursMap= new TreeMap<>();
+	private BiConsumer<Integer,String> listener= null;
+	private Set<Person> allocatedSet= new HashSet<>();
 	
 // R1
 
@@ -44,7 +47,6 @@ public class Vaccines {
 	 * @return person count
 	 */
 	public int countPeople() {
-		System.out.println(personMap.size());
 		return personMap.size();
 	}
 	
@@ -207,16 +209,25 @@ public class Vaccines {
 	 * @throws VaccineException in case of error in the header
 	 */
 	public long loadPeople(Reader people) throws IOException, VaccineException {
-		System.out.println(personMap.size());
 		BufferedReader br = new BufferedReader(people);
 		int lineCounter=0;
+		int count=1;
 		try{
 			String line=br.readLine();
-			if(line==null || !line.equals("SSN,LAST,FIRST,YEAR")) throw new VaccineException();
+			if(line==null || !line.equals("SSN,LAST,FIRST,YEAR")) {
+				if(this.listener!=null) this.listener.accept(count, line);
+				throw new VaccineException();
+			}
 			while((line=br.readLine())!=null){
+				count++;
 				String[] lineparts= line.split(",");
 				try{
-					if(lineparts.length==4) if(this.addPerson(lineparts[0], lineparts[1], lineparts[2], Integer.parseInt(lineparts[3]))) lineCounter++;
+					if(lineparts.length!=4) {
+						if(this.listener!=null) this.listener.accept(count, line); 
+						continue;
+					}
+					if(this.addPerson(lineparts[2], lineparts[1], lineparts[0], Integer.parseInt(lineparts[3]))) lineCounter++;
+					else if(this.listener!=null) this.listener.accept(count, line);
 				}catch(NumberFormatException e){
 					System.out.println("Numberformate");
 				}
@@ -226,8 +237,7 @@ public class Vaccines {
 		}
 
 		br.close();
-		System.out.println(lineCounter);
-		return lineCounter;
+		return count;
 	}
 	
 	// R4
@@ -261,7 +271,7 @@ public class Vaccines {
 	 * @return the list hours for each day of the week
 	 */
 	public List<List<String>> getHours(){
-		return hoursMap.values().stream().map(hour->{List<String> dayslot= new ArrayList<>(); int currtime=timeinMin("09:00"); while(currtime<=timeinMin("09:00")+hour*60){ dayslot.add(String.format("%02d:%02d",currtime));}return dayslot;}).collect(Collectors.toList());
+		return hoursMap.values().stream().map(hour->{List<String> dayslot= new ArrayList<>(); int currtime=timeinMin("09:00"); while(currtime<timeinMin("09:00")+hour*60){ dayslot.add(String.format("%02d:%02d",currtime/60,currtime%60));currtime+=15;}return dayslot;}).collect(Collectors.toList());
 	}
 
 	private int timeinMin(String time){
@@ -323,18 +333,18 @@ public class Vaccines {
 		List<Person> allocatedPerson;
 		List<String> totalAllocated= new ArrayList<>();
 		for(String interval: intervalList.stream().sorted((s1,s2)-> s2.compareTo(s1)).collect(Collectors.toList())){
-			allocatedPerson=getInInterval(interval).stream().map(ssn->personMap.get(ssn)).filter(person->!person.isAllocated()).limit((long) (n*0.4)).collect(Collectors.toList());
+			allocatedPerson=getInInterval(interval).stream().map(ssn->personMap.get(ssn)).filter(person->!allocatedSet.contains(person)).limit((long) (n*0.4)).collect(Collectors.toList());
 			for(Person person:allocatedPerson){
-				person.setAllocated(true);
+				allocatedSet.add(person);
 				person.allocate(hubName, day);
 				totalAllocated.add(person.getSsn());
 			}
 			n-=allocatedPerson.size();
 		}
 		if(n!=0){
-			allocatedPerson=personMap.values().stream().filter(person->!person.isAllocated()).sorted(Comparator.comparingInt((Person person)-> getAge(person.getSsn())).reversed()).limit(n).collect(Collectors.toList());
+			allocatedPerson=personMap.values().stream().filter(person->!allocatedSet.contains(person)).sorted(Comparator.comparingInt((Person person)-> getAge(person.getSsn())).reversed()).limit(n).collect(Collectors.toList());
 			for(Person person:allocatedPerson){
-				person.setAllocated(true);
+				allocatedSet.add(person);
 				person.allocate(hubName, day);
 				totalAllocated.add(person.getSsn());
 			}
@@ -348,7 +358,7 @@ public class Vaccines {
 	 * 
 	 */
 	public void clearAllocation() {
-		personMap.values().stream().forEach(person->person.setAllocated(false));
+		this.allocatedSet.clear();
 	}
 	
 	/**
@@ -382,7 +392,7 @@ public class Vaccines {
 	 * @return proportion of allocated people
 	 */
 	public double propAllocated() {
-		return personMap.values().stream().filter(person->person.isAllocated()).count()/(double)personMap.size();
+		return allocatedSet.size()/(double)personMap.size();
 	}
 	
 	/**
@@ -396,7 +406,7 @@ public class Vaccines {
 	 * @return proportion of allocated people by age interval
 	 */
 	public Map<String,Double> propAllocatedAge(){
-		return intervalList.stream().collect(Collectors.toMap(interval->interval, interval->{List<Integer> intervalValue=getintInterval(interval);List<Person> agelist=personMap.values().stream().filter(person->getAge(person.getSsn())>=intervalValue.get(0) && getAge(person.getSsn())<intervalValue.get(1)).collect(Collectors.toList()); return agelist.stream().filter(person->person.isAllocated()).count()/(double)agelist.size();}));
+		return intervalList.stream().collect(Collectors.toMap(interval->interval, interval->{List<String> agelist=new ArrayList<>(getInInterval(interval)); return (double) agelist.stream().filter(person->allocatedSet.contains(personMap.get(person))).count()/ personMap.size();}));
 	}
 
 	/**
@@ -410,7 +420,7 @@ public class Vaccines {
 	 * @return
 	 */
 	public Map<String,Double> distributionAllocated(){
-		return intervalList.stream().collect(Collectors.toMap(interval->interval, interval->{List<Integer> intervalValue=getintInterval(interval);List<Person> agelist=personMap.values().stream().filter(person->getAge(person.getSsn())>=intervalValue.get(0) && getAge(person.getSsn())<intervalValue.get(1)).collect(Collectors.toList()); return agelist.size()/(double)personMap.values().stream().filter(person->person.isAllocated()).count();}));
+		return intervalList.stream().collect(Collectors.toMap(interval->interval, interval->{List<String> ininterval=new ArrayList<>(getInInterval(interval)); return (double)ininterval.stream().filter(ssn->allocatedSet.stream().map(Person::getSsn).collect(Collectors.toSet()).contains(ssn)).count()/allocatedSet.size();}));
 	}
 
 	// R6
@@ -423,7 +433,8 @@ public class Vaccines {
 	 * 
 	 * @param listener the listener for load errors
 	 */
-	/*public void setLoadListener(BiConsumer<Integer,String> listener) {
-	}*/
+	public void setLoadListener(BiConsumer<Integer,String> listener) {
+		this.listener=listener;
+	}
 
 }
