@@ -10,6 +10,9 @@ public class PropertyManager {
 	private Map<String,Profession> professionsMap= new HashMap<>();
 	private Map<Integer,Request> requestsMap= new HashMap<>();
 	private int requestCounter=0;
+	public PropertyManager() {
+	}
+
 	/**
 	 * Add a new building 
 	 */
