@@ -177,7 +177,7 @@ public class Sports {
      * @return the map associating activity name to average stars
      */
     public SortedMap<String, Double> starsPerActivity() {
-        return null;
+        return productsMap.values().stream().collect(Collectors.groupingBy(Product::getActivity,TreeMap::new,Collectors.collectingAndThen(Collectors.averagingDouble(product->product.getRatingList().stream().mapToInt(Rating::getNumStars).average().orElse(0.0)), Double::valueOf))).entrySet().stream().filter(entry->entry.getValue()>0.0).collect(Collectors.toMap(Map.Entry::getKey,Map.Entry::getValue,(e1,e2)->e1,TreeMap::new));
     }
 
     /**
@@ -189,7 +189,7 @@ public class Sports {
      * @return the map linking the average stars to the list of products
      */
     public SortedMap<Double, List<String>> getProductsPerStars () {
-        return null;
+        return productsMap.values().stream().filter(product->product.getRatingList().size()>0).collect(Collectors.groupingBy(product->(double)product.getRatingList().stream().mapToInt(Rating::getNumStars).average().orElse(0.0),()-> new TreeMap<>(Collections.reverseOrder()),Collectors.mapping(Product::getName, Collectors.toList())));
     }
 
 }
