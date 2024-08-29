@@ -154,7 +154,8 @@ public class Sports {
      * @return average rating
      */
     public double getStarsOfProduct (String productName) {
-        return -1.0;
+        if(!productsMap.containsKey(productName)) return -1.0;
+        return productsMap.get(productName).getRatingList().stream().mapToInt(Rating::getNumStars).average().orElse(0.0);
     }
 
     /**
@@ -163,7 +164,7 @@ public class Sports {
      * @return average stars
      */
     public double averageStars() {
-        return -1.0;
+        return productsMap.values().stream().flatMap(product->product.getRatingList().stream()).mapToInt(Rating::getNumStars).average().orElse(0.0);
 
     }
 
