@@ -22,7 +22,7 @@ public class Fit {
 	// R1 
 	
 	public void addGymn (String name) throws FitException {
-		if(!gymsMap.containsKey(name)) throw new FitException();
+		if(gymsMap.containsKey(name)) throw new FitException();
 		gymsMap.put(name, new Gym(name));
 	}
 	
@@ -41,8 +41,8 @@ public class Fit {
 		Gym searchedGym= gymsMap.get(gymnname);
 		Set<String> gymslots= searchedGym.getLessonMap().keySet();
 		List<String> slotsList=Arrays.asList(slots.split(","));
-		for(String slot:slots.split(",")){
-			String[] parts=slot.split(".");
+		for(String slot:slotsList){
+			String[] parts=slot.split("\\.");
 			int day=Integer.parseInt(parts[0]);
 			int hour=Integer.parseInt(parts[1]);
 			if(day<1 || day>7) throw new FitException();
@@ -54,7 +54,8 @@ public class Fit {
 	
 	//R3
 	public int addCustomer(String name) {
-		customersMap.put(customerCounter, new Customer(++customerCounter, name));
+		customerCounter++;
+		customersMap.put(customerCounter, new Customer(customerCounter, name));
 		return customerCounter;
 	}
 	
@@ -91,15 +92,15 @@ public class Fit {
 	public void addLessonGiven (String gymnname, int day, int slot, String instructor) throws FitException{
 		String dslot=String.format("%d.%d", day,slot);
 		if(!gymsMap.containsKey(gymnname)) throw new FitException();
-		
-		if(!gymsMap.get(gymnname).getLessonMap().containsKey(dslot)) throw new FitException();
-		if(!gymsMap.get(gymnname).getLessonMap().get(dslot).getAllowedinstructorsSet().contains(instructor)) throw new FitException();
-		gymsMap.get(gymnname).getLessonMap().get(dslot).setInstructors(instructor);
+		Gym searchedGym= gymsMap.get(gymnname);
+		if(!searchedGym.getLessonMap().containsKey(dslot)) throw new FitException();
+		if(!searchedGym.getLessonMap().get(dslot).getAllowedinstructorsSet().contains(instructor)) throw new FitException();
+		searchedGym.getLessonMap().get(dslot).setInstructors(instructor);
 	}
 	
 	public int getNumLessonsGiven (String gymnname, String instructor) throws FitException {
 		if(!gymsMap.containsKey(gymnname)) throw new FitException();
-	    return (int) gymsMap.get(gymnname).getLessonMap().values().stream().filter(lesson->lesson.getInstructors().equals(instructor)).count();
+	    return (int) gymsMap.get(gymnname).getLessonMap().values().stream().filter(lesson-> lesson.getInstructors()!=null && lesson.getInstructors().equals(instructor)).count();
 	}
 	//R6
 	

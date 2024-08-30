@@ -16,7 +16,7 @@ public class Lesson {
         this.activity = activity;
         this.maxattendees = maxattendees;
         this.slot=slot;
-        this.allowedinstructorsSet.addAll(allowedinstructorsSet);
+        this.allowedinstructorsSet.addAll(Arrays.asList(allowedinstructors));
     }
 
     public String getGymname() {
