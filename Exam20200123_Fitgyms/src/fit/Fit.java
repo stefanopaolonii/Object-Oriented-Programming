@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 public class Fit {
     private Map<String,Gym> gymsMap= new HashMap<>();
 	private Map<Integer,Customer> customersMap= new HashMap<>();
-	private customerCounter=0;
+	private int customerCounter=0;
     public static int MONDAY    = 1;
     public static int TUESDAY   = 2;
     public static int WEDNESDAY = 3;
@@ -52,11 +52,13 @@ public class Fit {
 	
 	//R3
 	public int addCustomer(String name) {
-		return -1;
+		customersMap.put(customerCounter, new Customer(++customerCounter, name));
+		return customerCounter;
 	}
 	
 	public String getCustomer (int customerid) throws FitException{
-	    return null;
+		if(!customersMap.containsKey(customerid)) throw new FitException();
+	    return customersMap.get(customerid).getName();
 	}
 	
 	//R4
