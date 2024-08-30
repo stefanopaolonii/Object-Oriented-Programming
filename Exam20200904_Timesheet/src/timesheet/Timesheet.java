@@ -33,7 +33,7 @@ public class Timesheet {
 		if(day<=0) throw new TimesheetException();
 		int firstday=1;
 		if(weekDay!=-1) firstday=weekDay;
-	    return ((day-1)%7) +firstday;
+	    return ((firstday+day-1)%7);
 	}
 	
 	// R2
