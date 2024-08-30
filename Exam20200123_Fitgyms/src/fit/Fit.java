@@ -1,10 +1,13 @@
 package fit;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 public class Fit {
-    
+    private Map<String,Gym> gymsMap= new HashMap<>();
+	private Map<Integer,Customer> customersMap= new HashMap<>();
+	private customerCounter=0;
     public static int MONDAY    = 1;
     public static int TUESDAY   = 2;
     public static int WEDNESDAY = 3;
@@ -19,11 +22,12 @@ public class Fit {
 	// R1 
 	
 	public void addGymn (String name) throws FitException {
-
+		if(!gymsMap.containsKey(name)) throw new FitException();
+		gymsMap.put(name, new Gym(name));
 	}
 	
 	public int getNumGymns() {
-		return -1;
+		return gymsMap.size();
 	}
 	
 	//R2
@@ -33,7 +37,17 @@ public class Fit {
 	                        int maxattendees, 
 	                        String slots, 
 	                        String ...allowedinstructors) throws FitException{
-	    
+		if(!gymsMap.containsKey(gymnname)) throw new FitException();
+		Set<String> gymslots= gymsMap.get(gymnname).getLessonsList().stream().flatMap(lesson->lesson.getSlotsSet().stream()).collect(Collectors.toSet());
+		for(String slot:slots.split(",")){
+			String[] parts=slot.split(".");
+			int day=Integer.parseInt(parts[0]);
+			int hour=Integer.parseInt(parts[1]);
+			if(day<1 || day>7) throw new FitException();
+			if(hour<8 || hour>20) throw new FitException();
+			if(gymslots.contains(slot)) throw new FitException();
+		}
+		gymsMap.get(gymnname).addLesson(new Lesson(gymnname, activity, maxattendees, slots, allowedinstructors));
 	}
 	
 	//R3
