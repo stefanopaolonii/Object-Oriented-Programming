@@ -89,11 +89,17 @@ public class Fit {
 	//R5
 	
 	public void addLessonGiven (String gymnname, int day, int slot, String instructor) throws FitException{
-
+		String dslot=String.format("%d.%d", day,slot);
+		if(!gymsMap.containsKey(gymnname)) throw new FitException();
+		
+		if(!gymsMap.get(gymnname).getLessonMap().containsKey(dslot)) throw new FitException();
+		if(!gymsMap.get(gymnname).getLessonMap().get(dslot).getAllowedinstructorsSet().contains(instructor)) throw new FitException();
+		gymsMap.get(gymnname).getLessonMap().get(dslot).setInstructors(instructor);
 	}
 	
 	public int getNumLessonsGiven (String gymnname, String instructor) throws FitException {
-	    return -1;
+		if(!gymsMap.containsKey(gymnname)) throw new FitException();
+	    return (int) gymsMap.get(gymnname).getLessonMap().values().stream().filter(lesson->lesson.getInstructors().equals(instructor)).count();
 	}
 	//R6
 	
