@@ -89,14 +89,30 @@ public class Timesheet {
 	
 	// R4
 	public void addReport(String workerID, String projectName, String activityName, int day, int workedHours) throws TimesheetException {
+		if(!workersMap.containsKey(workerID)) throw new TimesheetException();
+		if(day<=0 || holidaysSet.contains(day)) throw new TimesheetException();
+		if(workedHours<0) throw new TimesheetException();
+		Worker searchedwWorker=workersMap.get(workerID);
+		if(workedHours>searchedwWorker.getProfile().getHoursMap().get(getWeekDay(day))) throw new TimesheetException();
+		if(!projectsMap.containsKey(projectName)) throw new TimesheetException();
+		Project searchedProject=projectsMap.get(projectName);
+		if(!searchedProject.getActivityMap().containsKey(activityName)) throw new TimesheetException();
+		if(searchedProject.getWorkedHours()+workedHours>searchedProject.getMaxHours()) throw new TimesheetException();
+		Activity searchedActivity= searchedProject.getActivityMap().get(activityName);
+		if(searchedActivity.getStatus()==Status.COMPLETE) throw new TimesheetException();
+		reportsList.add(new Report(searchedwWorker, searchedProject, searchedActivity, day, workedHours));
+		searchedProject.setWorkedHours(searchedProject.getWorkedHours()+workedHours);
 	}
 	
 	public int getProjectHours(String projectName) throws TimesheetException {
-        return -1;
+        if(!projectsMap.containsKey(projectName)) throw new TimesheetException();
+		return projectsMap.get(projectName).getWorkedHours();
 	}
 	
 	public int getWorkedHoursPerDay(String workerID, int day) throws TimesheetException {
-        return -1;
+		if(!workersMap.containsKey(workerID)) throw new TimesheetException();
+		if(day<=0) throw new TimesheetException();
+        return reportsList.stream().filter(report->report.getWorker().getId().equals(workerID) && report.getDay()==day).mapToInt(Report::getWorkedHours).sum();
 	}
 	
 	// R5

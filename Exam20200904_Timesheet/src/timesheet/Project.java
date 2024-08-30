@@ -6,6 +6,7 @@ public class Project {
     private final String name;
     private int maxHours;
     private Map<String,Activity> activityMap= new HashMap<>();
+    private int workedHours=0;
     public Project(String name, int maxHours) {
         this.name = name;
         this.maxHours = maxHours;
@@ -24,5 +25,11 @@ public class Project {
     }
     public void addActivity(Activity activity){
         activityMap.put(activity.getName(), activity);
+    }
+    public int getWorkedHours() {
+        return workedHours;
+    }
+    public void setWorkedHours(int workedHours) {
+        this.workedHours = workedHours;
     }
 }

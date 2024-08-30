@@ -23,4 +23,8 @@ public class Worker {
     public Profile getProfile() {
         return profile;
     }
+    @Override
+    public String toString(){
+        return name+" "+surname+" ("+profile.toString()+")";
+    }
 }
