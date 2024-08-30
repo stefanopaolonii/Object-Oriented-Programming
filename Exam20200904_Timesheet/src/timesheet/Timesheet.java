@@ -64,19 +64,27 @@ public class Timesheet {
 
 	// R3
 	public String createProfile(int... workHours) throws TimesheetException {
-        return null;
+		if(workHours.length!=7) throw new TimesheetException();
+		String code=String.format("P%d",++profileCounter);
+		profilesMap.put(code, new Profile(code, workHours));
+        return code;
 	}
 	
 	public String getProfile(String profileID) throws TimesheetException {
-        return null;
+		if(!profilesMap.containsKey(profileID)) throw new TimesheetException();
+        return profilesMap.get(profileID).toString();
 	}
 	
 	public String createWorker(String name, String surname, String profileID) throws TimesheetException {
-        return null;
+		if(!profilesMap.containsKey(profileID)) throw new TimesheetException();
+		String code=String.format("W%d", ++workerCounter);
+		workersMap.put(code, new Worker(code, name, surname, profilesMap.get(profileID)));
+        return code;
 	}
 	
 	public String getWorker(String workerID) throws TimesheetException {
-        return null;
+		if(!workersMap.containsKey(workerID)) throw new TimesheetException();
+        return workersMap.get(workerID).toString();
 	}
 	
 	// R4
