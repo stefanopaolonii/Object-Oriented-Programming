@@ -13,7 +13,6 @@ public class Ticket {
     private State state;
     private String username;
     private String solution; 
-    
     private String description;
     public Ticket(int id, User user, Component component, Severity severity, String description) {
         this.id = id;
@@ -41,7 +40,7 @@ public class Ticket {
     }
 
     public String getDescription(){
-        return description;
+        return solution;
     }
     
     public Severity getSeverity() {

@@ -5,9 +5,11 @@ import java.util.*;
 public class Component {
     private final String name;
     private Map<String,Component> componentsMap = new HashMap<>();
+    private Component parent;
     
-    public Component(String name) {
+    public Component(String name,Component parent) {
         this.name = name;
+        this.parent=parent;
     }
 
     public String getName() {
@@ -19,4 +21,8 @@ public class Component {
     public void addSubcomponent(Component component){
         componentsMap.put(component.getName(), component);
     }
+    public Component getParent() {
+        return parent;
+    }
+
 }

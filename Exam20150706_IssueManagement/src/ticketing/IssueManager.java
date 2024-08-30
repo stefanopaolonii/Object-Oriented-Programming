@@ -1,7 +1,6 @@
 package ticketing;
 
 import java.util.*;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import ticketing.Ticket.State;
@@ -11,6 +10,9 @@ public class IssueManager {
     private Map<String,Component> componentsMap= new HashMap<>();
     private Map<Integer,Ticket> ticketsMap= new HashMap<>();
     private int ticketCounter=0;
+    public IssueManager() {
+    }
+
     /**
      * Eumeration of valid user classes
      */
@@ -65,7 +67,7 @@ public class IssueManager {
      */
     public void defineComponent(String name) throws TicketException {
         if(componentsMap.containsKey(name)) throw new TicketException();
-        componentsMap.put(name, new Component(name));
+        componentsMap.put(name, new Component(name,null));
     }
     
     /**
@@ -77,20 +79,20 @@ public class IssueManager {
      *                          if a sub-component of the same parent exists with the same name
      */
     public void defineSubComponent(String name, String parentPath) throws TicketException {
-        Component parent=getParent(parentPath);
+        Component parent=getComponent(parentPath);
         if(parent.getComponentsMap().keySet().contains(name)) throw new TicketException();
-        parent.addSubcomponent(new Component(name));
+        parent.addSubcomponent(new Component(name,parent));
     }
 
-    private Component getParent(String parentPath) throws TicketException{
-        String[] parts=parentPath.split("/");
+    private Component getComponent(String path) throws TicketException{
+        String[] parts=path.split("/");
         if(!componentsMap.containsKey(parts[1])) throw new TicketException();
-        Component parent=componentsMap.get(parts[1]);
+        Component searchedComponent=componentsMap.get(parts[1]);
         for(int i=2;i<parts.length;i++){
-            if(!parent.getComponentsMap().containsKey(parts[i])) throw new TicketException();
-            parent=parent.getComponentsMap().get(parts[i]);
+            if(!searchedComponent.getComponentsMap().containsKey(parts[i])) throw new TicketException();
+            searchedComponent=searchedComponent.getComponentsMap().get(parts[i]);
         }
-        return parent;
+        return searchedComponent;
     }
     
     /**
@@ -102,7 +104,7 @@ public class IssueManager {
     public Set<String> getSubComponents(String path){
         Component parent;
         try{
-            parent=getParent(path);
+            parent=getComponent(path);
         }catch(TicketException te){
             return null;
         }
@@ -116,13 +118,14 @@ public class IssueManager {
      * @return name of the parent
      */
     public String getParentComponent(String path){
-        Component parent;
+        Component searchedComponent;
         try{
-            parent=getParent(path);
+            searchedComponent=getComponent(path);
         }catch(TicketException te){
             return null;
         }
-        return parent.getName();
+        if(searchedComponent.getParent()==null) return null;
+        return searchedComponent.getParent().getName();
     }
 
     /**
@@ -140,7 +143,7 @@ public class IssueManager {
      */
     public int openTicket(String username, String componentPath, String description, Ticket.Severity severity) throws TicketException {
         if(!usersMap.containsKey(username)) throw new TicketException();
-        Component component = getParent(componentPath);
+        Component component = getComponent(componentPath);
         User user= usersMap.get(username);
         if(!user.getClasses().contains(UserClass.Reporter)) throw new TicketException();
         ticketCounter++;
