@@ -1,6 +1,7 @@
 package ticketing;
 
 import java.util.*;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import ticketing.Ticket.State;
@@ -209,7 +210,7 @@ public class IssueManager {
      * @return a map with the severity and the corresponding count 
      */
     public SortedMap<Ticket.Severity,Long> countBySeverityOfState(Ticket.State state){
-        return null;
+        return ticketsMap.values().stream().filter(ticket-> state==null || ticket.getState()==state).collect(Collectors.groupingBy(Ticket::getSeverity,TreeMap::new,Collectors.counting()));
     }
 
     /**
@@ -222,7 +223,7 @@ public class IssueManager {
      * @return A list of strings with the top maintainers.
      */
     public List<String> topMaintainers(){
-        return null;
+        return usersMap.values().stream().sorted(Comparator.comparingInt((User user)->user.getClosedticketMap().size()).reversed().thenComparing(user->user.getUsername())).map(user->user.getUsername()+":"+user.getClosedticketMap().size()).collect(Collectors.toList());
     }
 
 }
