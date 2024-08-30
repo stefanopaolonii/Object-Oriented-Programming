@@ -1,6 +1,7 @@
 package timesheet;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Timesheet {
 	public enum Status{OPEN,COMPLETE};
@@ -36,20 +37,29 @@ public class Timesheet {
 	
 	// R2
 	public void createProject(String projectName, int maxHours) throws TimesheetException {
+		if(maxHours<0) throw new TimesheetException();
+		projectsMap.put(projectName, new Project(projectName, maxHours));
 	}
 	
 	public List<String> getProjects() {
-        return null;
+        return projectsMap.values().stream().sorted(Comparator.comparingInt(Project::getMaxHours).reversed().thenComparing(Project::getName)).map(Project::getName).collect(Collectors.toList());
 	}
 	
 	public void createActivity(String projectName, String activityName) throws TimesheetException {
+		if(!projectsMap.containsKey(projectName)) throw new TimesheetException();
+		projectsMap.get(projectName).addActivity(new Activity(activityName));
 	}
 	
 	public void closeActivity(String projectName, String activityName) throws TimesheetException {
+		if(!projectsMap.containsKey(projectName)) throw new TimesheetException();
+		Project searchedProject= projectsMap.get(projectName);
+		if(!searchedProject.getActivityMap().containsKey(activityName)) throw new TimesheetException();
+		searchedProject.getActivityMap().get(activityName).setStatus(Status.COMPLETE);
 	}
 	
 	public List<String> getOpenActivities(String projectName) throws TimesheetException {
-        return null;
+		if(!projectsMap.containsKey(projectName)) throw new TimesheetException();
+        return projectsMap.get(projectName).getActivityMap().values().stream().map(Activity::getName).sorted().collect(Collectors.toList());
 	}
 
 	// R3
