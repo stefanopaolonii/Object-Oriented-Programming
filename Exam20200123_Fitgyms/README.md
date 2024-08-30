@@ -2,12 +2,11 @@
 
 Sviluppare un sistema che permetta di gestire il sistema delle prenotazioni per la catena di palestre Fit.
 
-Tutte le classi si trovano nel package <b>it.polito.oop.fit</b>. La classe principale
+Tutte le classi si trovano nel package <b>fit</b>. La classe principale
 &eacute; <b>Fit</b>. La classe <b>TestApp</b> nel package example contiene un esempio di utilizzo della classe.
 Le eccezioni sono lanciate mediante la classe <b>FitException</b>.
 
-La <a href="https://oop.polito.it/api/index.html" target="api" target="_blank">JDK documentation</a>  
-si trova sul server locale.
+La <a href="https://oop.polito.it/api/index.html" target="api" target="_blank">JDK documentation</a>  si trova sul server locale.
 
 
 ## R1: Palestre
