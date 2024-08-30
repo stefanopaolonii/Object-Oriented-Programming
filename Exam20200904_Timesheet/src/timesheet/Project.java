@@ -32,4 +32,8 @@ public class Project {
     public void setWorkedHours(int workedHours) {
         this.workedHours = workedHours;
     }
+    @Override
+    public String toString(){
+        return name+": "+maxHours;
+    }
 }

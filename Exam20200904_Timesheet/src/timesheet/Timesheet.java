@@ -43,7 +43,7 @@ public class Timesheet {
 	}
 	
 	public List<String> getProjects() {
-        return projectsMap.values().stream().sorted(Comparator.comparingInt(Project::getMaxHours).reversed().thenComparing(Project::getName)).map(Project::getName).collect(Collectors.toList());
+        return projectsMap.values().stream().sorted(Comparator.comparingInt(Project::getMaxHours).reversed().thenComparing(Project::getName)).map(Project::toString).collect(Collectors.toList());
 	}
 	
 	public void createActivity(String projectName, String activityName) throws TimesheetException {
@@ -60,7 +60,7 @@ public class Timesheet {
 	
 	public List<String> getOpenActivities(String projectName) throws TimesheetException {
 		if(!projectsMap.containsKey(projectName)) throw new TimesheetException();
-        return projectsMap.get(projectName).getActivityMap().values().stream().map(Activity::getName).sorted().collect(Collectors.toList());
+        return projectsMap.get(projectName).getActivityMap().values().stream().filter(activity->activity.getStatus()==Status.OPEN).map(Activity::getName).sorted().collect(Collectors.toList());
 	}
 
 	// R3
