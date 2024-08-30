@@ -6,16 +6,16 @@ public class Lesson {
     private String gymname;
     private String activity;
     private int maxattendees;
-    private Set<String> slotsSet= new HashSet<>();
+    private String slot;
     private Set<String> allowedinstructorsSet= new HashSet<>();
     private List<Customer> customersList= new ArrayList<>();
     private String instructors;
 
-    public Lesson(String gymname, String activity, int maxattendees,String slots,String...allowedinstructors) {
+    public Lesson(String gymname, String activity, int maxattendees,String slot,String...allowedinstructors) {
         this.gymname = gymname;
         this.activity = activity;
         this.maxattendees = maxattendees;
-        this.slotsSet.addAll(Arrays.asList(slots.split(",")));
+        this.slot=slot;
         this.allowedinstructorsSet.addAll(allowedinstructorsSet);
     }
 
@@ -28,8 +28,8 @@ public class Lesson {
     public int getMaxattendees() {
         return maxattendees;
     }
-    public Set<String> getSlotsSet() {
-        return slotsSet;
+    public String getSlot() {
+        return slot;
     }
     public Set<String> getAllowedinstructorsSet() {
         return allowedinstructorsSet;

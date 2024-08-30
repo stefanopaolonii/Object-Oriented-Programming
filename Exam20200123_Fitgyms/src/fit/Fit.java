@@ -38,7 +38,9 @@ public class Fit {
 	                        String slots, 
 	                        String ...allowedinstructors) throws FitException{
 		if(!gymsMap.containsKey(gymnname)) throw new FitException();
-		Set<String> gymslots= gymsMap.get(gymnname).getLessonsList().stream().flatMap(lesson->lesson.getSlotsSet().stream()).collect(Collectors.toSet());
+		Gym searchedGym= gymsMap.get(gymnname);
+		Set<String> gymslots= searchedGym.getLessonMap().keySet();
+		List<String> slotsList=Arrays.asList(slots.split(","));
 		for(String slot:slots.split(",")){
 			String[] parts=slot.split(".");
 			int day=Integer.parseInt(parts[0]);
@@ -47,7 +49,7 @@ public class Fit {
 			if(hour<8 || hour>20) throw new FitException();
 			if(gymslots.contains(slot)) throw new FitException();
 		}
-		gymsMap.get(gymnname).addLesson(new Lesson(gymnname, activity, maxattendees, slots, allowedinstructors));
+		slotsList.stream().forEach(slot-> searchedGym.addLesson(slot, new Lesson(gymnname, activity, maxattendees, slot, allowedinstructors)));
 	}
 	
 	//R3
@@ -64,11 +66,23 @@ public class Fit {
 	//R4
 	
 	public void placeReservation(int customerid, String gymnname, int day, int slot) throws FitException{
-
+		if(!customersMap.containsKey(customerid)) throw new FitException();
+		if(!gymsMap.containsKey(gymnname)) throw new FitException();
+		if(day<1 || day>7) throw new FitException();
+		if(slot<8 || slot>20) throw new FitException();
+		Customer searchedCustomer= customersMap.get(customerid);
+		Gym searchedGym= gymsMap.get(gymnname);
+		if(!searchedGym.getLessonMap().containsKey(String.format("%d.%d", day,slot))) throw new FitException();
+		Lesson searchedLesson= searchedGym.getLessonMap().get(String.format("%d.%d", day,slot));
+		if(searchedLesson.getMaxattendees()<=searchedLesson.getCustomersList().size()) throw new FitException();
+		if(searchedLesson.getCustomersList().stream().map(Customer::getId).collect(Collectors.toList()).contains(customerid)) throw new FitException();
+		searchedLesson.addCustomer(searchedCustomer);
+		searchedCustomer.addLesson(searchedLesson); 
 	}
 	
 	public int getNumLessons(int customerid) {
-		return -1;
+		if(!customersMap.containsKey(customerid)) return 0;
+		return customersMap.get(customerid).getLessonsList().size();
 	}
 	
 	
