@@ -60,7 +60,8 @@ public class IssueManager {
      * @throws TicketException if a component with the same name already exists
      */
     public void defineComponent(String name) throws TicketException {
-        
+        if(componentsMap.containsKey(name)) throw new TicketException();
+        componentsMap.put(name, new Component(name));
     }
     
     /**
@@ -72,7 +73,20 @@ public class IssueManager {
      *                          if a sub-component of the same parent exists with the same name
      */
     public void defineSubComponent(String name, String parentPath) throws TicketException {
-        
+        Component parent=getParent(parentPath);
+        if(parent.getComponentsMap().keySet().contains(name)) throw new TicketException();
+        parent.addSubcomponent(new Component(name));
+    }
+
+    private Component getParent(String parentPath) throws TicketException{
+        String[] parts=parentPath.split("/");
+        if(!componentsMap.containsKey(parts[1])) throw new TicketException();
+        Component parent=componentsMap.get(parts[1]);
+        for(int i=2;i<parts.length;i++){
+            if(!parent.getComponentsMap().containsKey(parts[i])) throw new TicketException();
+            parent=parent.getComponentsMap().get(parts[i]);
+        }
+        return parent;
     }
     
     /**
@@ -82,7 +96,13 @@ public class IssueManager {
      * @return set of children sub-components
      */
     public Set<String> getSubComponents(String path){
-        return null;
+        Component parent;
+        try{
+            parent=getParent(path);
+        }catch(TicketException te){
+            return null;
+        }
+        return parent.getComponentsMap().keySet();
     }
 
     /**
@@ -92,7 +112,13 @@ public class IssueManager {
      * @return name of the parent
      */
     public String getParentComponent(String path){
-        return "";
+        Component parent;
+        try{
+            parent=getParent(path);
+        }catch(TicketException te){
+            return null;
+        }
+        return parent.getName();
     }
 
     /**
