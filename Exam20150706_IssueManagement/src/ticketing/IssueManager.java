@@ -3,6 +3,8 @@ package ticketing;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import ticketing.Ticket.State;
+
 public class IssueManager {
     private Map<String,User> usersMap= new HashMap<>();
     private Map<String,Component> componentsMap= new HashMap<>();
@@ -173,7 +175,15 @@ public class IssueManager {
      *                          are not valid, or the user does not belong to the <i>Maintainer</i> user class
      */
     public void assingTicket(int ticketId, String username) throws TicketException {
-        
+        if(!ticketsMap.containsKey(ticketId)) throw new TicketException();
+        Ticket searchedTicket= ticketsMap.get(ticketId);
+        if(searchedTicket.getState()!=State.Open) throw new TicketException();
+        if(!usersMap.containsKey(username)) throw new TicketException();
+        User searchedUser= usersMap.get(username);
+        if(!searchedUser.getClasses().contains(UserClass.Maintainer)) throw new TicketException();
+        searchedTicket.setState(State.Assigned);
+        searchedTicket.setUsername(username);
+        searchedUser.addTicket(searchedTicket);
     }
 
     /**
@@ -184,8 +194,12 @@ public class IssueManager {
      * @throws TicketException if the ticket is not in state <i>Assigned</i>
      */
     public void closeTicket(int ticketId, String description) throws TicketException {
-        
-    }
+        if(!ticketsMap.containsKey(ticketId)) throw new TicketException();
+        Ticket searchedTicket=ticketsMap.get(ticketId);
+        if(searchedTicket.getState()!=State.Assigned) throw new TicketException();
+        searchedTicket.setSolution(description);
+        searchedTicket.setState(State.Closed);
+    }   
 
     /**
      * returns a sorted map (keys sorted in natural order) with the number of  

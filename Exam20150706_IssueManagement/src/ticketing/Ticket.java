@@ -61,13 +61,11 @@ public class Ticket {
     }
     
     public String getSolutionDescription() throws TicketException {
-        return null;
+        if(state!=State.Closed) throw new TicketException();
+        return solution;
     }
     public void setUsername(String username) {
         this.username = username;
-    }
-    public String getSolution() {
-        return solution;
     }
 
     public void setSolution(String solution) {
@@ -76,5 +74,7 @@ public class Ticket {
     public String getUsername() {
         return username;
     }
-
+    public void setState(State state) {
+        this.state = state;
+    }
 }
