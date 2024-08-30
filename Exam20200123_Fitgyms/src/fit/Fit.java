@@ -104,15 +104,16 @@ public class Fit {
 	//R6
 	
 	public String mostActiveGymn() {
-		return null;
+		return gymsMap.values().stream().max(Comparator.comparingInt(gym->gym.getLessonMap().size())).map(Gym::getName).orElse(null);
 	}
 	
 	public Map<String, Integer> totalLessonsPerGymn() {		
-		return null;
+		return gymsMap.values().stream().collect(Collectors.toMap(Gym::getName, gym->gym.getLessonMap().size()));
 	}
 	
 	public SortedMap<Integer, List<String>> slotsPerNofParticipants(String gymnname) throws FitException{
-	    return null;
+	    if(!gymsMap.containsKey(gymnname)) throw new FitException();
+		return gymsMap.get(gymnname).getLessonMap().values().stream().collect(Collectors.groupingBy(lesson->lesson.getCustomersList().size(),TreeMap::new,Collectors.mapping(lesson->lesson.getSlot(), Collectors.toList())));
 	}
 	
 
