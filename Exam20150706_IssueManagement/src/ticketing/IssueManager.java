@@ -1,6 +1,7 @@
 package ticketing;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class IssueManager {
     private Map<String,User> usersMap= new HashMap<>();
@@ -135,7 +136,13 @@ public class IssueManager {
      *                          or the user does not belong to the Reporter {@link IssueManager.UserClass}.
      */
     public int openTicket(String username, String componentPath, String description, Ticket.Severity severity) throws TicketException {
-        return -1;
+        if(!usersMap.containsKey(username)) throw new TicketException();
+        Component component = getParent(componentPath);
+        User user= usersMap.get(username);
+        if(!user.getClasses().contains(UserClass.Reporter)) throw new TicketException();
+        ticketCounter++;
+        ticketsMap.put(ticketCounter, new Ticket(ticketCounter, user, component, severity, description));
+        return ticketCounter;
     }
     
     /**
@@ -145,7 +152,7 @@ public class IssueManager {
      * @return the corresponding ticket object
      */
     public Ticket getTicket(int ticketId){
-        return null;
+        return ticketsMap.get(ticketId);
     }
     
     /**
@@ -154,7 +161,7 @@ public class IssueManager {
      * @return list of ticket objects
      */
     public List<Ticket> getAllTickets(){
-        return null;
+        return ticketsMap.values().stream().sorted(Comparator.comparing(Ticket::getSeverity)).collect(Collectors.toList());
     }
     
     /**
