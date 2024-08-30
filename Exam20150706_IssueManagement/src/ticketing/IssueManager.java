@@ -125,7 +125,7 @@ public class IssueManager {
             return null;
         }
         if(searchedComponent.getParent()==null) return null;
-        return searchedComponent.getParent().getName();
+        return "/"+searchedComponent.getParent().getName();
     }
 
     /**
@@ -226,7 +226,9 @@ public class IssueManager {
      * @return A list of strings with the top maintainers.
      */
     public List<String> topMaintainers(){
-        return usersMap.values().stream().sorted(Comparator.comparingInt((User user)->user.getClosedticketMap().size()).reversed().thenComparing(user->user.getUsername())).map(user->user.getUsername()+":"+user.getClosedticketMap().size()).collect(Collectors.toList());
+        return usersMap.values().stream().sorted(Comparator.comparingInt((User user)->user.getClosedTicket()).reversed().thenComparing(user->user.getUsername())).map(user->user.getUsername()+":"+user.getClosedTicket()).collect(Collectors.toList());
     }
+
+
 
 }

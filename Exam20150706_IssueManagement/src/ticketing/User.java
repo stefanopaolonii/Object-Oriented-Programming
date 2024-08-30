@@ -3,11 +3,12 @@ package ticketing;
 import java.util.*;
 
 import ticketing.IssueManager.UserClass;
+import ticketing.Ticket.State;
 
 public class User {
     private final String username;
     private Set<UserClass> classes = new HashSet<>();
-    private Map<Integer,Ticket> closedticketMap= new HashMap<>();
+    private Map<Integer,Ticket> ticketMap= new HashMap<>();
     
     public User(String username, Set<UserClass> classes) {
         this.username = username;
@@ -24,10 +25,13 @@ public class User {
     public Set<UserClass> getClasses() {
         return classes;
     }
-    public Map<Integer, Ticket> getClosedticketMap() {
-        return closedticketMap;
+    public Map<Integer, Ticket> getticketMap() {
+        return ticketMap;
     }
     public void addTicket(Ticket ticket){
-        closedticketMap.put(ticket.getId(), ticket);
+        ticketMap.put(ticket.getId(), ticket);
+    }
+    public int getClosedTicket(){
+        return (int)ticketMap.values().stream().filter(ticket->ticket.getState()==State.Closed).count();
     }
 }
