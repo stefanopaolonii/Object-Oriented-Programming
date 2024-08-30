@@ -1,6 +1,7 @@
 package timesheet;
 
 import java.util.*;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 public class Timesheet {
@@ -117,14 +118,14 @@ public class Timesheet {
 	
 	// R5
 	public Map<String, Integer> countActivitiesPerWorker() {
-        return null;
+        return reportsList.stream().collect(Collectors.groupingBy(report->report.getWorker().getId(),Collectors.collectingAndThen(Collectors.mapping(report->report.getProject().getName()+"-"+report.getActivity().getName(), Collectors.toSet()), Set::size)));
 	}
 	
 	public Map<String, Integer> getRemainingHoursPerProject() {
-        return null;
+        return projectsMap.values().stream().collect(Collectors.toMap(Project::getName, project->project.getMaxHours()-project.getWorkedHours()));
 	}
 	
 	public Map<String, Map<String, Integer>> getHoursPerActivityPerProject() {
-        return null;
+        return projectsMap.values().stream().collect(Collectors.toMap(Project::getName,project->project.getActivityMap().values().stream().collect(Collectors.toMap(Activity::getName,activity->reportsList.stream().filter(report->report.getProject().getName().equals(project.getName()) && report.getActivity().getName().equals(activity.getName())).mapToInt(Report::getWorkedHours).sum()))));
 	}
 }
