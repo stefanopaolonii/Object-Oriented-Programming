@@ -49,10 +49,14 @@ public class Discounts {
 	
 	//R3
 	public void setDiscount(String categoryId, int percentage) throws DiscountsException {
+		if(!categoriesMap.containsKey(categoryId)) throw new DiscountsException();
+		if(percentage<0 || percentage>50) throw new DiscountsException();
+		categoriesMap.get(categoryId).setDiscount(percentage);
 	}
 
 	public int getDiscount(String categoryId) {
-        return -1;
+		if(!categoriesMap.containsKey(categoryId)) return -1;
+        return categoriesMap.get(categoryId).getDiscount();
 	}
 
 	//R4
