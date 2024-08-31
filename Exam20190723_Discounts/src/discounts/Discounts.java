@@ -61,23 +61,33 @@ public class Discounts {
 
 	//R4
 	public int addPurchase(int cardId, String... items) throws DiscountsException {
-        return -1;
+		for(String item:items){
+			String[] parts=item.split(":");
+			if(!productsMap.containsKey(parts[0])) throw new DiscountsException();
+		}
+		purchaseCounter++;
+		Purchase newPurchase= new Purchase(purchaseCounter, cardId);
+		Arrays.asList(items).forEach(item->{String[] parts=item.split(":"); newPurchase.addProduct(productsMap.get(parts[0]),Integer.parseInt(parts[1]));});
+        return purchaseCounter;
 	}
 
 	public int addPurchase(String... items) throws DiscountsException {
-        return -1;
+        return addPurchase(0,items);
 	}
 	
 	public double getAmount(int purchaseCode) {
-        return -1.0;
+		if(!purchasesMap.containsKey(purchaseCode)) return -1.0;
+        return purchasesMap.get(purchaseCode).getTotal()-purchasesMap.get(purchaseCode).getDiscount();
 	}
 	
 	public double getDiscount(int purchaseCode)  {
-        return -1.0;
+		if(!purchasesMap.containsKey(purchaseCode)) return -1.0;
+        return purchasesMap.get(purchaseCode).getDiscount();
 	}
 	
 	public int getNofUnits(int purchaseCode) {
-        return -1;
+        if(!purchasesMap.containsKey(purchaseCode)) return -1;
+        return purchasesMap.get(purchaseCode).getProductsMap().values().stream().mapToInt(Integer::intValue).sum();
 	}
 	
 	//R5
