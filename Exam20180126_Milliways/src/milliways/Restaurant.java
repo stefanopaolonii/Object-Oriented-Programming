@@ -1,16 +1,21 @@
 package milliways;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 
 public class Restaurant {
-
+	private Map<String,Race> racesMap= new HashMap<>();
+	private Map<Integer,Hall> hallsMap= new HashMap<>();
     public Restaurant() {
 	}
 	
 	public Race defineRace(String name) throws MilliwaysException{
-	    return null;
+		if(racesMap.containsKey(name)) throw new MilliwaysException();
+		Race newRace= new Race(name);
+		racesMap.put(name, newRace);
+	    return newRace;
 	}
 	
 	public Party createParty() {

@@ -1,10 +1,9 @@
 package milliways;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Party {
-
+	private Map<Race,Integer> CompanionsMap= new HashMap<>();
     public void addCompanions(Race race, int num) {
 	}
 
