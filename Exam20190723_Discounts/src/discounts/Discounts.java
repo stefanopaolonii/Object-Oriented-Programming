@@ -2,20 +2,27 @@ package discounts;
 import java.util.*;
 
 public class Discounts {
-
+	private Map<Integer,String> cardsMap= new HashMap<>();
+	private int cardCounter=0;
+	private Map<String,Product> productsMap= new HashMap<>();
+	private Map<String,Category> categoriesMap= new HashMap<>();
+	private Map<Integer,Purchase> purchasesMap= new HashMap<>();
+	private int purchaseCounter=0;
 	
 	//R1
 	public int issueCard(String name) {
-	    return -1;
+		cardCounter++;
+		cardsMap.put(cardCounter, name);
+	    return cardCounter;
 	}
 	
     public String cardHolder(int cardN) {
-        return null;
+        return cardsMap.get(cardN);
     }
     
 
 	public int nOfCards() {
-	       return -1;
+	       return cardsMap.size();
 
 	}
 	
