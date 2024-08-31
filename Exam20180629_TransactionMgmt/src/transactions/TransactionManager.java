@@ -1,22 +1,31 @@
 package transactions;
 import java.util.*;
+import java.util.stream.Collectors;
 
 //import static java.util.stream.Collectors.*;
 //import static java.util.Comparator.*;
 
 public class TransactionManager {
-	
+	public enum Type{REQUEST,OFFER};
+	private Map<String,Region> regionsMap= new HashMap<>();
+	private Map<String,Carrier> carriersMap= new HashMap<>();
+	private Map<String,RequestOffer> roMap= new HashMap<>();
+	private Map<String,Transaction> transactionsMap= new HashMap<>();
 //R1
 	public List<String> addRegion(String regionName, String... placeNames) { 
-		return new ArrayList<String>();
+		regionsMap.put(regionName, new Region(regionName, placeNames));
+		return regionsMap.get(regionName).getPlacesSet().stream().sorted().collect(Collectors.toList());
 	}
 	
 	public List<String> addCarrier(String carrierName, String... regionNames) { 
-		return new ArrayList<String>();
+		Carrier newCarrier= new Carrier(carrierName);
+		Arrays.asList(regionNames).forEach(rname->newCarrier.addRegion(regionsMap.get(rname)));
+		carriersMap.put(carrierName,newCarrier);
+		return newCarrier.getRegionsSet().stream().map(Region::getName).sorted().collect(Collectors.toList());
 	}
 	
 	public List<String> getCarriersForRegion(String regionName) { 
-		return new ArrayList<String>();
+		return carriersMap.values().stream().filter(carrier->carrier.getRegionsSet().stream().map(Region::getName).collect(Collectors.toList()).contains(regionName)).map(Carrier::getName).collect(Collectors.toList());
 	}
 	
 //R2
