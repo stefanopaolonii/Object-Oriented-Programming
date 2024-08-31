@@ -7,9 +7,9 @@ import java.util.Set;
 public class Region {
     private final String name;
     private Set<String> placesSet= new HashSet<>();
-    public Region(String name, String...placeNames) {
+    public Region(String name, Set<String> placeNames) {
         this.name = name;
-        this.placesSet.addAll(Arrays.asList(placeNames));
+        this.placesSet=placeNames;
     }
     public String getName() {
         return name;

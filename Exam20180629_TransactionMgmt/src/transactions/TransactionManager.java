@@ -11,9 +11,12 @@ public class TransactionManager {
 	private Map<String,Carrier> carriersMap= new HashMap<>();
 	private Map<String,RequestOffer> roMap= new HashMap<>();
 	private Map<String,Transaction> transactionsMap= new HashMap<>();
+	private Set<String>placesSet= new HashSet<>();
 //R1
 	public List<String> addRegion(String regionName, String... placeNames) { 
-		regionsMap.put(regionName, new Region(regionName, placeNames));
+		Set<String> newplaces=Arrays.asList(placeNames).stream().filter(place->!placesSet.contains(place)).collect(Collectors.toSet());
+		regionsMap.put(regionName, new Region(regionName, newplaces));
+		placesSet.addAll(newplaces);
 		return regionsMap.get(regionName).getPlacesSet().stream().sorted().collect(Collectors.toList());
 	}
 	
@@ -54,7 +57,7 @@ public class TransactionManager {
 		if(transactionsMap.values().stream().map(Transaction::getOffer).map(RequestOffer::getId).collect(Collectors.toList()).contains(offerId)) throw new TMException();
 		RequestOffer request=roMap.get(requestId);
 		RequestOffer offer=roMap.get(offerId);
-		if(request.getProductid()!=offer.getId()) throw new TMException();
+		if(request.getProductid()!=offer.getProductid()) throw new TMException();
 		Set<String> carrierplaces=carriersMap.get(carrierName).getRegionsSet().stream().flatMap(region->region.getPlacesSet().stream()).collect(Collectors.toSet());
 		if(!carrierplaces.contains(request.getPlace())) throw new TMException();
 		if(!carrierplaces.contains(offer.getPlace())) throw new TMException();
@@ -70,7 +73,7 @@ public class TransactionManager {
 	
 //R4
 	public SortedMap<Long, List<String>> deliveryRegionsPerNT() {
-		return transactionsMap.values().stream().collect(Collectors.groupingBy(transaction->transaction.getRequest().getRegion().getName(),Collectors.counting())).entrySet().stream().collect(Collectors.groupingBy(entry->entry.getValue(),()-> new TreeMap<>(Collections.reverseOrder()),Collectors.mapping(entry->entry.getKey(), Collectors.toList())));
+		return transactionsMap.values().stream().collect(Collectors.groupingBy(transaction->transaction.getRequest().getRegion().getName(),Collectors.counting())).entrySet().stream().collect(Collectors.groupingBy(entry->entry.getValue(),()-> new TreeMap<>(Collections.reverseOrder()),Collectors.mapping(entry->entry.getKey(), Collectors.collectingAndThen(Collectors.toList(), list->{Collections.sort(list); return list;}))));
 	}
 	
 	public SortedMap<String, Integer> scorePerCarrier(int minimumScore) {
