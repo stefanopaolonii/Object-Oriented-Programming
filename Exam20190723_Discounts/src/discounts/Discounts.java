@@ -1,5 +1,6 @@
 package discounts;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Discounts {
 	private Map<Integer,String> cardsMap= new HashMap<>();
@@ -29,15 +30,21 @@ public class Discounts {
 	//R2
 	public void addProduct(String categoryId, String productId, double price) 
 			throws DiscountsException {
+		if(productsMap.containsKey(productId)) throw new DiscountsException();
+		if(!categoriesMap.containsKey(categoryId)) categoriesMap.put(categoryId, new Category(categoryId));
+		productsMap.put(productId, new Product(productId, categoriesMap.get(categoryId), price));
 	}
 	
 	public double getPrice(String productId) 
 			throws DiscountsException {
-        return -1.0;
+		if(!productsMap.containsKey(productId)) throw new DiscountsException();
+        return productsMap.get(productId).getPrice();
 	}
 
 	public int getAveragePrice(String categoryId) throws DiscountsException {
-        return -1;
+		Set<Product> searchedporProducts=productsMap.values().stream().filter(product->product.getCategory().getId().equals(categoryId)).collect(Collectors.toSet());
+		if(searchedporProducts.isEmpty()) throw new DiscountsException();
+        return (int) searchedporProducts.stream().mapToDouble(Product::getPrice).average().orElse(0);
 	}
 	
 	//R3
