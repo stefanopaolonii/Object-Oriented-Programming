@@ -92,19 +92,19 @@ public class Discounts {
 	
 	//R5
 	public SortedMap<Integer, List<String>> productIdsPerNofUnits() {
-        return null;
+        return purchasesMap.values().stream().flatMap(purchase->purchase.getProductsMap().entrySet().stream()).collect(Collectors.groupingBy(entry->entry.getValue(),TreeMap::new,Collectors.mapping(entry->entry.getKey().getId(), Collectors.collectingAndThen(Collectors.toList(), list->{Collections.sort(list);return list;}))));
 	}
 	
 	public SortedMap<Integer, Integer> totalPurchasePerCard() {
-        return null;
+        return purchasesMap.values().stream().filter(purchase->purchase.getCardid()!=0).collect(Collectors.groupingBy(Purchase::getCardid,TreeMap::new,Collectors.summingInt(purchase->(int) getAmount(purchase.getId()))));
 	}
 	
 	public int totalPurchaseWithoutCard() {
-        return -1;
+        return (int) purchasesMap.values().stream().filter(purchase->purchase.getCardid()==0).mapToDouble(purchase-> getAmount(purchase.getId())).sum();
 	}
 	
 	public SortedMap<Integer, Integer> totalDiscountPerCard() {
-        return null;
+        return purchasesMap.values().stream().filter(purchase->purchase.getCardid()!=0).collect(Collectors.groupingBy(Purchase::getCardid,TreeMap::new,Collectors.summingInt(purchase->(int) getDiscount(purchase.getId()))));
 	}
 
 
