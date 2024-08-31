@@ -31,10 +31,16 @@ public class TransactionManager {
 //R2
 	public void addRequest(String requestId, String placeName, String productId) 
 			throws TMException {
+		if(!regionsMap.values().stream().flatMap(region->region.getPlacesSet().stream()).collect(Collectors.toSet()).contains(placeName)) throw new TMException();
+		if(roMap.containsKey(requestId)) throw new TMException();
+		roMap.put(requestId, new RequestOffer(Type.REQUEST, requestId, placeName, productId));
 	}
 	
 	public void addOffer(String offerId, String placeName, String productId) 
 			throws TMException {
+		if(!regionsMap.values().stream().flatMap(region->region.getPlacesSet().stream()).collect(Collectors.toSet()).contains(placeName)) throw new TMException();
+		if(roMap.containsKey(offerId)) throw new TMException();
+		roMap.put(offerId, new RequestOffer(Type.OFFER, offerId, placeName, productId));
 	}
 	
 
