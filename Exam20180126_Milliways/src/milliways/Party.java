@@ -5,12 +5,12 @@ import java.util.stream.Collectors;
 
 public class Party {
 	private Map<Race,Integer> companionsMap= new HashMap<>();
-	
-    public Party() {
+	public Party() {
 	}
 
 	public void addCompanions(Race race, int num) {
-		companionsMap.put(race,num);
+		if(!companionsMap.containsKey(race)) companionsMap.put(race,num);
+		else companionsMap.put(race, companionsMap.get(race)+num);
 	}
 
 	public int getNum() {
@@ -29,5 +29,8 @@ public class Party {
     public Map<String,Integer> getDescription(){
         return companionsMap.entrySet().stream().collect(Collectors.toMap(entry->entry.getKey().getName(), Map.Entry::getValue));
     }
+	public Map<Race, Integer> getCompanionsMap() {
+		return companionsMap;
+	}
 
 }

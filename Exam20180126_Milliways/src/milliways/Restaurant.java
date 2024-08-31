@@ -1,8 +1,11 @@
 package milliways;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 
@@ -49,15 +52,15 @@ public class Restaurant {
 	}
 
 	public Map<Race, Integer> statComposition() {
-        return null;
+        return hallsMap.values().stream().flatMap(hall->hall.getPartySet().stream().flatMap(party->party.getCompanionsMap().entrySet().stream())).collect(Collectors.groupingBy(entry->entry.getKey(),Collectors.summingInt(entry->entry.getValue())));
 	}
 
 	public List<String> statFacility() {
-        return null;
+        return hallsMap.values().stream().flatMap(hall->hall.getFacilities().stream()).collect(Collectors.groupingBy(facility->facility,Collectors.counting())).entrySet().stream().sorted(Comparator.<Map.Entry<String,Long>>comparingLong(Map.Entry::getValue).reversed().thenComparing(entry->entry.getKey())).map(Map.Entry::getKey).collect(Collectors.toList());
 	}
 	
 	public Map<Integer,List<Integer>> statHalls() {
-        return null;
+        return hallsMap.values().stream().collect(Collectors.groupingBy(hall->hall.getNumFacilities(),TreeMap::new,Collectors.mapping(hall->hall.getId(), Collectors.collectingAndThen(Collectors.toList(), list->{Collections.sort(list); return list;}))));
 	}
 
 }
