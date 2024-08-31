@@ -5,7 +5,7 @@ public class Transaction {
     private final Carrier carrier;
     private RequestOffer request;
     private RequestOffer offer;
-    private int rating;
+    private int rating=0;
     public Transaction(String id, Carrier carrier, RequestOffer request, RequestOffer offer) {
         this.id = id;
         this.carrier = carrier;
