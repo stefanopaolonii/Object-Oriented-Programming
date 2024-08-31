@@ -1,6 +1,7 @@
 package milliways;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Hall {
 	private final int id;
@@ -12,14 +13,16 @@ public class Hall {
 	}
 
 	public int getId() {
-		return -1;
+		return id;
 	}
 
 	public void addFacility(String facility) throws MilliwaysException {
+		if(facilitesSet.contains(facility)) throw new MilliwaysException();
+		facilitesSet.add(facility);
 	}
 
 	public List<String> getFacilities() {
-        return null;
+        return facilitesSet.stream().sorted().collect(Collectors.toList());
 	}
 	
 	int getNumFacilities(){
@@ -27,7 +30,7 @@ public class Hall {
 	}
 
 	public boolean isSuitable(Party party) {
-		return false;
+		return facilitesSet.containsAll(party.getRequirements());
 	}
 
 }

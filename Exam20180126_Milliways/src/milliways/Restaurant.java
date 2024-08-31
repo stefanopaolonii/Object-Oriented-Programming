@@ -23,7 +23,10 @@ public class Restaurant {
 	}
 	
 	public Hall defineHall(int id) throws MilliwaysException{
-	    return null;
+		if(hallsMap.containsKey(id)) throw new MilliwaysException();
+		Hall newHall= new Hall(id);
+		hallsMap.put(id, newHall);
+	    return newHall;
 	}
 
 	public List<Hall> getHallList() {
