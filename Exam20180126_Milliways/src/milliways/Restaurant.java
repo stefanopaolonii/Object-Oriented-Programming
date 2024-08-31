@@ -3,6 +3,7 @@ package milliways;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -11,7 +12,7 @@ import java.util.stream.Collectors;
 
 public class Restaurant {
 	private Map<String,Race> racesMap= new HashMap<>();
-	private Map<Integer,Hall> hallsMap= new HashMap<>();
+	private Map<Integer,Hall> hallsMap= new LinkedHashMap<>();
     public Restaurant() {
 	}
 	
