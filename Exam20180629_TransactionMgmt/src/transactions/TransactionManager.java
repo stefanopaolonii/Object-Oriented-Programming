@@ -33,14 +33,14 @@ public class TransactionManager {
 			throws TMException {
 		if(!regionsMap.values().stream().flatMap(region->region.getPlacesSet().stream()).collect(Collectors.toSet()).contains(placeName)) throw new TMException();
 		if(roMap.containsKey(requestId)) throw new TMException();
-		roMap.put(requestId, new RequestOffer(Type.REQUEST, requestId, placeName, productId));
+		roMap.put(requestId, new RequestOffer(Type.REQUEST, requestId, placeName,regionsMap.values().stream().filter(region->region.getPlacesSet().contains(placeName)).findFirst().orElse(null), productId));
 	}
 	
 	public void addOffer(String offerId, String placeName, String productId) 
 			throws TMException {
 		if(!regionsMap.values().stream().flatMap(region->region.getPlacesSet().stream()).collect(Collectors.toSet()).contains(placeName)) throw new TMException();
 		if(roMap.containsKey(offerId)) throw new TMException();
-		roMap.put(offerId, new RequestOffer(Type.OFFER, offerId, placeName, productId));
+		roMap.put(offerId, new RequestOffer(Type.OFFER, offerId, placeName,regionsMap.values().stream().filter(region->region.getPlacesSet().contains(placeName)).findFirst().orElse(null),productId));
 	}
 	
 
@@ -70,15 +70,15 @@ public class TransactionManager {
 	
 //R4
 	public SortedMap<Long, List<String>> deliveryRegionsPerNT() {
-		return new TreeMap<Long, List<String>>();
+		return transactionsMap.values().stream().collect(Collectors.groupingBy(transaction->transaction.getRequest().getRegion().getName(),Collectors.counting())).entrySet().stream().collect(Collectors.groupingBy(entry->entry.getValue(),()-> new TreeMap<>(Collections.reverseOrder()),Collectors.mapping(entry->entry.getKey(), Collectors.toList())));
 	}
 	
 	public SortedMap<String, Integer> scorePerCarrier(int minimumScore) {
-		return new TreeMap<String, Integer>();
+		return transactionsMap.values().stream().filter(transaction->transaction.getRating()>=minimumScore).collect(Collectors.groupingBy(transaction->transaction.getCarrier().getName(),TreeMap::new,Collectors.summingInt(transaction->transaction.getRating())));
 	}
 	
 	public SortedMap<String, Long> nTPerProduct() {
-		return new TreeMap<String, Long>();
+		return transactionsMap.values().stream().collect(Collectors.groupingBy(transaction->transaction.getRequest().getProductid(),TreeMap::new,Collectors.counting()));
 	}
 	
 	
