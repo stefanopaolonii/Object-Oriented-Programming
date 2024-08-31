@@ -3,6 +3,7 @@ package milliways;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 
 public class Restaurant {
@@ -30,15 +31,21 @@ public class Restaurant {
 	}
 
 	public List<Hall> getHallList() {
-		return null;
+		return hallsMap.values().stream().collect(Collectors.toList());
 	}
 
 	public Hall seat(Party party, Hall hall) throws MilliwaysException {
-        return null;
+		if(!hallsMap.containsKey(hall.getId())) throw new MilliwaysException();
+		if(!hall.isSuitable(party)) throw new MilliwaysException();
+		hall.addParty(party);
+        return hall;
 	}
 
 	public Hall seat(Party party) throws MilliwaysException {
-        return null;
+		Hall searchedHall=hallsMap.values().stream().filter(hall->hall.isSuitable(party)).findFirst().orElse(null);
+		if(searchedHall==null) throw new MilliwaysException();
+		searchedHall.addParty(party);
+        return searchedHall;
 	}
 
 	public Map<Race, Integer> statComposition() {

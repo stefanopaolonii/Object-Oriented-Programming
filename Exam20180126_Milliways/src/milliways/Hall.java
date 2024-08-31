@@ -32,5 +32,8 @@ public class Hall {
 	public boolean isSuitable(Party party) {
 		return facilitesSet.containsAll(party.getRequirements());
 	}
+	public void addParty(Party party){
+		partySet.add(party);
+	}
 
 }
