@@ -1,26 +1,33 @@
 package milliways;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Party {
-	private Map<Race,Integer> CompanionsMap= new HashMap<>();
-    public void addCompanions(Race race, int num) {
+	private Map<Race,Integer> companionsMap= new HashMap<>();
+	
+    public Party() {
+	}
+
+	public void addCompanions(Race race, int num) {
+		companionsMap.put(race,num);
 	}
 
 	public int getNum() {
-        return -1;
+        return companionsMap.values().stream().mapToInt(Integer::intValue).sum();
 	}
 
 	public int getNum(Race race) {
-	    return -1;
+		if(!companionsMap.containsKey(race)) return -1;
+	    return companionsMap.get(race);
 	}
 
 	public List<String> getRequirements() {
-        return null;
+        return companionsMap.keySet().stream().flatMap(race->race.getRequirements().stream()).distinct().sorted().collect(Collectors.toList());
 	}
 
     public Map<String,Integer> getDescription(){
-        return null;
+        return companionsMap.entrySet().stream().collect(Collectors.toMap(entry->entry.getKey().getName(), Map.Entry::getValue));
     }
 
 }

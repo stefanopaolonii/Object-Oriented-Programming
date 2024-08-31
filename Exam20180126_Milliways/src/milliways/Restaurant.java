@@ -19,7 +19,7 @@ public class Restaurant {
 	}
 	
 	public Party createParty() {
-	    return null;
+	    return new Party();
 	}
 	
 	public Hall defineHall(int id) throws MilliwaysException{
