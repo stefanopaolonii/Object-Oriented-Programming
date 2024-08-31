@@ -29,6 +29,6 @@ public class Purchase {
     }
     public double getDiscount(){
         if(this.cardid==0) return 0.0;
-        return productsMap.entrySet().stream().mapToDouble(entry->{double dpercentage=entry.getKey().getCategory().getDiscount()/(double)100; return entry.getKey().getPrice()*entry.getValue()*dpercentage;}).sum();
+        return productsMap.entrySet().stream().mapToDouble(entry->{double dpercentage=entry.getKey().getCategory().getDiscount()/(double)100;return entry.getKey().getPrice()*entry.getValue()*dpercentage;}).sum();
     }
 }

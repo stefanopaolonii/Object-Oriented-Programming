@@ -44,7 +44,7 @@ public class Discounts {
 	public int getAveragePrice(String categoryId) throws DiscountsException {
 		Set<Product> searchedporProducts=productsMap.values().stream().filter(product->product.getCategory().getId().equals(categoryId)).collect(Collectors.toSet());
 		if(searchedporProducts.isEmpty()) throw new DiscountsException();
-        return (int) searchedporProducts.stream().mapToDouble(Product::getPrice).average().orElse(0);
+        return (int) Math.round(searchedporProducts.stream().mapToDouble(Product::getPrice).average().orElse(0));
 	}
 	
 	//R3
@@ -68,6 +68,7 @@ public class Discounts {
 		purchaseCounter++;
 		Purchase newPurchase= new Purchase(purchaseCounter, cardId);
 		Arrays.asList(items).forEach(item->{String[] parts=item.split(":"); newPurchase.addProduct(productsMap.get(parts[0]),Integer.parseInt(parts[1]));});
+		purchasesMap.put(purchaseCounter, newPurchase);
         return purchaseCounter;
 	}
 
@@ -92,7 +93,8 @@ public class Discounts {
 	
 	//R5
 	public SortedMap<Integer, List<String>> productIdsPerNofUnits() {
-        return purchasesMap.values().stream().flatMap(purchase->purchase.getProductsMap().entrySet().stream()).collect(Collectors.groupingBy(entry->entry.getValue(),TreeMap::new,Collectors.mapping(entry->entry.getKey().getId(), Collectors.collectingAndThen(Collectors.toList(), list->{Collections.sort(list);return list;}))));
+        //return purchasesMap.values().stream().flatMap(purchase->purchase.getProductsMap().entrySet().stream()).collect(Collectors.groupingBy(entry->entry.getValue(),TreeMap::new,Collectors.mapping(entry->entry.getKey().getId(), Collectors.collectingAndThen(Collectors.toList(), list->{Collections.sort(list);return list;}))));
+		return purchasesMap.values().stream().flatMap(purchase->purchase.getProductsMap().entrySet().stream()).collect(Collectors.groupingBy(entry->entry.getKey(),Collectors.summingInt(entry->entry.getValue()))).entrySet().stream().collect(Collectors.groupingBy(entry->entry.getValue(),TreeMap::new,Collectors.mapping(entry->entry.getKey().getId(), Collectors.collectingAndThen(Collectors.toList(),list->{Collections.sort(list); return list;}))));
 	}
 	
 	public SortedMap<Integer, Integer> totalPurchasePerCard() {
@@ -100,11 +102,11 @@ public class Discounts {
 	}
 	
 	public int totalPurchaseWithoutCard() {
-        return (int) purchasesMap.values().stream().filter(purchase->purchase.getCardid()==0).mapToDouble(purchase-> getAmount(purchase.getId())).sum();
+        return (int) Math.round(purchasesMap.values().stream().filter(purchase->purchase.getCardid()==0).mapToDouble(purchase-> getAmount(purchase.getId())).sum());
 	}
 	
 	public SortedMap<Integer, Integer> totalDiscountPerCard() {
-        return purchasesMap.values().stream().filter(purchase->purchase.getCardid()!=0).collect(Collectors.groupingBy(Purchase::getCardid,TreeMap::new,Collectors.summingInt(purchase->(int) getDiscount(purchase.getId()))));
+        return purchasesMap.values().stream().filter(purchase->purchase.getCardid()!=0).collect(Collectors.groupingBy(Purchase::getCardid,TreeMap::new,Collectors.summingInt(purchase->(int)Math.round(getDiscount(purchase.getId())))));
 	}
 
 

@@ -2,12 +2,12 @@ package discounts;
 
 public class Category {
     private final String id;
-    private int discount=-1;
+    private int discount=0;
 
     public Category(String id) {
         this.id = id;
     }
-    
+
     public String getId() {
         return id;
     }
