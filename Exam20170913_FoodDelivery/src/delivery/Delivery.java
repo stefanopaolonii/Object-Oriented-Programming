@@ -87,7 +87,8 @@ public class Delivery {
      * @return order id
      */
     public int newOrder(int customerId){
-        return -1;
+        ordersMap.put(orderCounter, new Order(++orderCounter, customersMap.get(customerId)));
+        return orderCounter;
     }
     
     /**
@@ -108,7 +109,12 @@ public class Delivery {
      * @throws DeliveryException in case of non unique match or invalid order ID
      */
     public int addItem(int orderId, String search, int qty) throws DeliveryException {
-        return -1;
+        if(!ordersMap.containsKey(orderId)) throw new DeliveryException();
+        if(findItem(search).size()>1) throw new DeliveryException();
+        Item searchedItem= itemsList.stream().filter(item->item.getDescription().contains(search)).findFirst().orElse(null);
+        if(searchedItem==null) throw new DeliveryException();
+        ordersMap.get(orderId).addItem(searchedItem, qty);
+        return ordersMap.get(orderId).getItemsMap().get(searchedItem);
     }
     
     /**
@@ -122,7 +128,8 @@ public class Delivery {
      * @throws DeliveryException when the order ID in invalid
      */
     public List<String> showOrder(int orderId) throws DeliveryException {
-        return null;
+        if(!ordersMap.containsKey(orderId)) throw new DeliveryException();
+        return ordersMap.get(orderId).getItemsMap().entrySet().stream().map(entry->entry.getKey().getDescription()+", "+entry.getValue()).collect(Collectors.toList());
     }
     
     /**
@@ -133,7 +140,8 @@ public class Delivery {
      * @throws DeliveryException when the order ID in invalid
      */
     public double totalOrder(int orderId) throws DeliveryException {
-        return -1.0;
+        if(!ordersMap.containsKey(orderId)) throw new DeliveryException();
+        return ordersMap.get(orderId).getAmount();
     }
     
     /**

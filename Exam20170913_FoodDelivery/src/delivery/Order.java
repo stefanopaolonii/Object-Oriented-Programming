@@ -8,8 +8,8 @@ public class Order {
     private final int id;
     private OrderStatus status;
     private Customer customer;
-
     private Map<Item,Integer> itemsMap= new HashMap<>();
+
     public Order(int id, Customer customer) {
         this.id = id;
         this.customer = customer;
@@ -34,5 +34,8 @@ public class Order {
     public void addItem(Item item,int quantity){
         if(!itemsMap.containsKey(item)) itemsMap.put(item,quantity);
         else itemsMap.put(item, itemsMap.get(item)+quantity);
+    }
+    public double getAmount(){
+        return itemsMap.entrySet().stream().mapToDouble(entry->entry.getKey().getPrice()*entry.getValue()).sum();
     }
 }
