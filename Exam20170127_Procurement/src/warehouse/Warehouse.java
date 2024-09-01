@@ -70,4 +70,5 @@ public class Warehouse {
 	public List<String> countDeliveredByProduct(){
 	    return productsMap.values().stream().collect(Collectors.toMap(product->product, product->(int) product.getOrdersMap().values().stream().filter(order->order.delivered()).count())).entrySet().stream().sorted(Comparator.comparingInt(entry->((Entry<Product, Integer>) entry).getValue()).reversed()).map(entry->entry.getKey().getCode()+" - "+entry.getValue()).collect(Collectors.toList());
 	}
+	
 }
