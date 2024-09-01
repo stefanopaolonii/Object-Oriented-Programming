@@ -1,40 +1,39 @@
 package warehouse;
 
-import java.util.List;
+import java.util.*;
 
 public class Product {
-
+	private final String code;
+	private final String description;
+	private int quantity;
+	private Map<String,Supplier> suppliersMap=new HashMap<>();
+	private Map<Integer,Order> ordersMap=new HashMap<>();
 	
+	public Product(String code, String description) {
+		this.code = code;
+		this.description = description;
+		this.quantity=0;
+	}
+
 	public String getCode(){
-		// TODO: completare!
-		return null;
+		return code;
 	}
-
 	public String getDescription(){
-		// TODO: completare!
-		return null;
+		return description;
 	}
-	
 	public void setQuantity(int quantity){
-		// TODO: completare!
+		this.quantity=quantity;
 	}
-
 	public void decreaseQuantity(){
-		// TODO: completare!
+		this.quantity--;
 	}
-
-	public int getQuantity(){
-		// TODO: completare!
-		return 0;
+	public int getQuantity(){	
+		return quantity;
 	}
-
 	public List<Supplier> suppliers(){
-		// TODO: completare!
 		return null;
 	}
-
 	public List<Order> pendingOrders(){
-		// TODO: completare
-		return null;
+			return null;
 	}
 }

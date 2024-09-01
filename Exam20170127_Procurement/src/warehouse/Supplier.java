@@ -1,25 +1,27 @@
 package warehouse;
 
-import java.util.List;
+import java.util.*;
 
 public class Supplier {
+	private final String code;
+	private final String name;
+	private Map<String,Product> productsMap= new HashMap<>();
+	
+	public Supplier(String code, String name) {
+		this.code = code;
+		this.name = name;
+	}
 
 	public String getCodice(){
-		// TODO: completare!
-		return null;
+		return code;
 	}
-
 	public String getNome(){
-		// TODO: completare!
-		return null;
+		return name;
 	}
-	
 	public void newSupply(Product product){
-		// TODO: completare!
+		productsMap.put(product.getCode(), product);
 	}
-	
 	public List<Product> supplies(){
-		// TODO: completare!
 		return null;
 	}
 }

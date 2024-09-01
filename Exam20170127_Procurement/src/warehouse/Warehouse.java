@@ -1,24 +1,31 @@
 package warehouse;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class Warehouse {
+	private Map<String,Product> productsMap= new HashMap<>();
+	private Map<String,Supplier> suppliersMap= new HashMap<>();
+	private Map<String,Order> ordersMap= new HashMap<>();
+	private int orderCounter=1;
 	
+	public Warehouse() {
+	}
+
 	public Product newProduct(String code, String description){
-		// TODO: completare
-		return null;
+		productsMap.put(code, new Product(code, description));
+		return productsMap.get(code);
 	}
 	
 	public Collection<Product> products(){
-		// TODO: completare
-		return null;
+		return productsMap.values().stream().collect(Collectors.toList());
 	}
 
 	public Product findProduct(String code){
-		// TODO: completare
-		return null;
+		return productsMap.get(code);
 	}
 
 	public Supplier newSupplier(String code, String name){
