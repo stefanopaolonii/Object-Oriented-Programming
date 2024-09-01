@@ -39,13 +39,16 @@ public class Warehouse {
 
 	public Order issueOrder(Product prod, int quantity, Supplier supp)
 		throws InvalidSupplier {
-		// TODO: completare
-		return null;
+		if(!supp.supplies().contains(prod)) throw new InvalidSupplier();
+		String code=String.format("ORD%d", orderCounter++);
+		Order newOrder= new Order(code, prod, quantity, supp);
+		ordersMap.put(code, newOrder);
+		prod.addOrder(newOrder);
+		return newOrder;
 	}
 
 	public Order findOrder(String code){
-		// TODO: completare
-		return null;
+		return ordersMap.get(code);
 	}
 	
 	public List<Order> pendingOrders(){

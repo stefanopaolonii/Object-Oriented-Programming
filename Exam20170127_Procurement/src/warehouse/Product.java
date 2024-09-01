@@ -8,7 +8,7 @@ public class Product {
 	private final String description;
 	private int quantity;
 	private Map<String,Supplier> suppliersMap=new HashMap<>();
-	private Map<Integer,Order> ordersMap=new HashMap<>();
+	private Map<String,Order> ordersMap=new HashMap<>();
 	
 	public Product(String code, String description) {
 		this.code = code;
@@ -39,5 +39,8 @@ public class Product {
 	}
 	public List<Order> pendingOrders(){
 			return null;
+	}
+	public void addOrder(Order order){
+		ordersMap.put(order.getCode(), order);
 	}
 }
