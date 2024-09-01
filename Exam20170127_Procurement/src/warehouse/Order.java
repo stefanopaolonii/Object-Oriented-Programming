@@ -24,6 +24,7 @@ public class Order {
 	public void setDelivered() throws MultipleDelivery {
 		if(delivered) throw new MultipleDelivery();
 		this.delivered=true;
+		product.setQuantity(product.getQuantity()+quantity);
 	}
 	public String toString(){
 		return "Order "+code+" for "+quantity+" of "+product.getCode()+" : "+product.getDescription()+" from "+supplier.getNome();

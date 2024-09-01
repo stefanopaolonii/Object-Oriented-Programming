@@ -56,7 +56,7 @@ public class Warehouse {
 	}
 	
 	public List<Order> pendingOrders(){
-		return ordersMap.values().stream().filter(order->!order.delivered()).sorted(Comparator.comparing((Order order)->order.getCode())).collect(Collectors.toList());
+		return ordersMap.values().stream().filter(order->!order.delivered()).sorted(Comparator.comparing((Order order)->order.getProduct().getCode())).collect(Collectors.toList());
 	}
 
 	public Map<String,List<Order>> ordersByProduct(){
