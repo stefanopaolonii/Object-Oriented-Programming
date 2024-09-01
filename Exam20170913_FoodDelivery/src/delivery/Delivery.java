@@ -152,7 +152,8 @@ public class Delivery {
      * @throws DeliveryException when the id is invalid
      */
     public OrderStatus getStatus(int orderId) throws DeliveryException {
-        return null;
+        if(!ordersMap.containsKey(orderId)) throw new DeliveryException();
+        return ordersMap.get(orderId).getStatus();
     }
     
     /**
@@ -170,7 +171,10 @@ public class Delivery {
      * @throws DeliveryException when order ID invalid to status not {@code NEW}
      */
     public int confirm(int orderId) throws DeliveryException {
-        return -1;
+        if(!ordersMap.containsKey(orderId)) throw new DeliveryException();
+        if(ordersMap.get(orderId).getStatus()!=OrderStatus.NEW) throw new DeliveryException();
+        ordersMap.get(orderId).setStatus(OrderStatus.CONFIRMED);
+        return 5+ordersMap.get(orderId).getItemsMap().entrySet().stream().map(entry->entry.getKey().getPrepTime()).max(Comparator.comparingInt(Integer::intValue)).orElse(0)+15;
     }
 
     /**
@@ -187,7 +191,10 @@ public class Delivery {
      * @throws DeliveryException when order ID invalid to status not {@code CONFIRMED}
      */
     public int start(int orderId) throws DeliveryException {
-        return -1;
+        if(!ordersMap.containsKey(orderId)) throw new DeliveryException();
+        if(ordersMap.get(orderId).getStatus()!=OrderStatus.CONFIRMED) throw new DeliveryException();
+        ordersMap.get(orderId).setStatus(OrderStatus.PREPARATION);
+        return ordersMap.get(orderId).getItemsMap().entrySet().stream().map(entry->entry.getKey().getPrepTime()).max(Comparator.comparingInt(Integer::intValue)).orElse(0)+15;
     }
 
     /**
@@ -203,7 +210,10 @@ public class Delivery {
      * @throws DeliveryException when order ID invalid to status not {@code PREPARATION}
      */
     public int deliver(int orderId) throws DeliveryException {
-        return -1;
+        if(!ordersMap.containsKey(orderId)) throw new DeliveryException();
+        if(ordersMap.get(orderId).getStatus()!=OrderStatus.PREPARATION) throw new DeliveryException();
+        ordersMap.get(orderId).setStatus(OrderStatus.ON_DELIVERY);
+        return 15;
     }
     
     /**
@@ -215,6 +225,9 @@ public class Delivery {
      * @throws DeliveryException when order ID invalid to status not {@code ON_DELIVERY}
      */
     public void complete(int orderId) throws DeliveryException {
+        if(!ordersMap.containsKey(orderId)) throw new DeliveryException();
+        if(ordersMap.get(orderId).getStatus()!=OrderStatus.ON_DELIVERY) throw new DeliveryException();
+        ordersMap.get(orderId).setStatus(OrderStatus.DELIVERED);
     }
     
     /**
