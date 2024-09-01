@@ -10,6 +10,7 @@ public class Product {
 	private Map<String,Supplier> suppliersMap=new HashMap<>();
 	private Map<String,Order> ordersMap=new HashMap<>();
 	
+
 	public Product(String code, String description) {
 		this.code = code;
 		this.description = description;
@@ -42,5 +43,8 @@ public class Product {
 	}
 	public void addOrder(Order order){
 		ordersMap.put(order.getCode(), order);
+	}
+	public Map<String, Order> getOrdersMap() {
+		return ordersMap;
 	}
 }

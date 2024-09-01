@@ -33,4 +33,11 @@ public class Supplier {
 	public double deliveryRate(){
 		return ordersMap.values().stream().filter(order->order.delivered()).count()/(double) ordersMap.size();
 	}
+	@Override
+	public boolean equals(Object o){
+		if(o==this) return true;
+		if(o==null || o.getClass()!=this.getClass()) return false;
+		Supplier other =(Supplier) o;
+		return this.getCodice().equals(other.getCodice());
+	}
 }

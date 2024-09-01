@@ -5,6 +5,8 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 public class Warehouse {
@@ -58,14 +60,14 @@ public class Warehouse {
 	}
 
 	public Map<String,List<Order>> ordersByProduct(){
-	    return null;
+	    return ordersMap.values().stream().collect(Collectors.groupingBy(order->order.getProduct().getCode(),Collectors.toList()));
 	}
 	
 	public Map<String,Long> orderNBySupplier(){
-	    return null;
+	    return suppliersMap.values().stream().collect(Collectors.toMap(Supplier::getNome,supplier-> (long) ordersMap.values().stream().filter(order->order.getSupplier().equals(supplier) && order.delivered()).count(),(e1,e2)->e1,TreeMap::new));
 	}
 	
 	public List<String> countDeliveredByProduct(){
-	    return null;
+	    return productsMap.values().stream().collect(Collectors.toMap(product->product, product->(int) product.getOrdersMap().values().stream().filter(order->order.delivered()).count())).entrySet().stream().sorted(Comparator.comparingInt(entry->((Entry<Product, Integer>) entry).getValue()).reversed()).map(entry->entry.getKey().getCode()+" - "+entry.getValue()).collect(Collectors.toList());
 	}
 }

@@ -31,4 +31,10 @@ public class Order {
 	public int getQuantity() {
 		return quantity;
 	}
+	public Product getProduct() {
+		return product;
+	}
+	public Supplier getSupplier() {
+		return supplier;
+	}
 }
