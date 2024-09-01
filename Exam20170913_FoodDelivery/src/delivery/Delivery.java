@@ -1,12 +1,15 @@
 package delivery;
 
-import java.util.List;
-import java.util.SortedMap;
-
+import java.util.*;
+import java.util.stream.Collectors;
 public class Delivery {
     
     public static enum OrderStatus { NEW, CONFIRMED, PREPARATION, ON_DELIVERY, DELIVERED } 
-    
+    private Map<Integer,Customer> customersMap= new HashMap<>();
+    private List<Item> itemsList= new ArrayList<>();
+    private Map<Integer,Order> ordersMap= new HashMap<>();
+    private int customerCounter=0;
+    private int orderCounter=0;
     /**
      * Creates a new customer entry and returns the corresponding unique ID.
      * 
@@ -20,7 +23,9 @@ public class Delivery {
      * @return unique customer ID (positive integer)
      */
     public int newCustomer(String name, String address, String phone, String email) throws DeliveryException {
-        return -1;
+        if(customersMap.values().stream().map(Customer::getEmail).collect(Collectors.toList()).contains(email)) throw new DeliveryException();
+        customersMap.put(customerCounter, new Customer(++customerCounter, name, address, phone, email));
+        return customerCounter;
     }
     
     /**
@@ -33,7 +38,8 @@ public class Delivery {
      * @return customer description string
      */
     public String customerInfo(int customerId){
-        return null;
+        if(!customersMap.containsKey(customerId)) return null;
+        return customersMap.get(customerId).toString();
     }
     
     /**
@@ -41,7 +47,7 @@ public class Delivery {
      * 
      */
     public List<String> listCustomers(){
-        return null;
+        return customersMap.values().stream().sorted(Comparator.comparing(Customer::getName)).map(Customer::toString).collect(Collectors.toList());
     }
     
     /**
@@ -53,7 +59,7 @@ public class Delivery {
      * @param prepTime estimate preparation time in minutes
      */
     public void newMenuItem(String description, double price, String category, int prepTime){
-        
+        itemsList.add(new Item(description, category, price, prepTime));
     }
     
     /**
@@ -69,7 +75,7 @@ public class Delivery {
      * @return list of matching items
      */
     public List<String> findItem(String search){
-        return null;
+        return itemsList.stream().filter(item->item.getDescription().contains(search)).sorted(Comparator.comparing(Item::getCategory).thenComparing(Item::getDescription)).map(Item::toString).collect(Collectors.toList());
     }
     
     /**
