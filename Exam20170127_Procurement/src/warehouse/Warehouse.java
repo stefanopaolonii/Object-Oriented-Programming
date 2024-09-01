@@ -1,6 +1,7 @@
 package warehouse;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +45,7 @@ public class Warehouse {
 		Order newOrder= new Order(code, prod, quantity, supp);
 		ordersMap.put(code, newOrder);
 		prod.addOrder(newOrder);
+		supp.addOrder(newOrder);
 		return newOrder;
 	}
 
@@ -52,8 +54,7 @@ public class Warehouse {
 	}
 	
 	public List<Order> pendingOrders(){
-		// TODO: completare
-		return null;
+		return ordersMap.values().stream().filter(order->!order.delivered()).sorted(Comparator.comparing((Order order)->order.getCode())).collect(Collectors.toList());
 	}
 
 	public Map<String,List<Order>> ordersByProduct(){

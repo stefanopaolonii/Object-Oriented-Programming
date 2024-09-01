@@ -28,4 +28,7 @@ public class Order {
 	public String toString(){
 		return "Order "+code+" for "+quantity+" of "+product.getCode()+" : "+product.getDescription()+" from "+supplier.getNome();
 	}
+	public int getQuantity() {
+		return quantity;
+	}
 }

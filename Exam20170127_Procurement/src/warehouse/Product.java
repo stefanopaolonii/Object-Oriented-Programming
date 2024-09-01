@@ -38,7 +38,7 @@ public class Product {
 		return suppliersMap.values().stream().sorted(Comparator.comparing(Supplier::getNome)).collect(Collectors.toList());
 	}
 	public List<Order> pendingOrders(){
-			return null;
+		return ordersMap.values().stream().filter(order->!order.delivered()).sorted(Comparator.comparingInt(Order::getQuantity).reversed()).collect(Collectors.toList());
 	}
 	public void addOrder(Order order){
 		ordersMap.put(order.getCode(), order);

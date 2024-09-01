@@ -7,6 +7,7 @@ public class Supplier {
 	private final String code;
 	private final String name;
 	private Map<String,Product> productsMap= new HashMap<>();
+	private Map<String,Order> ordersMap=new HashMap<>();
 	
 	public Supplier(String code, String name) {
 		this.code = code;
@@ -25,5 +26,11 @@ public class Supplier {
 	}
 	public List<Product> supplies(){
 		return productsMap.values().stream().sorted(Comparator.comparing(Product::getDescription)).collect(Collectors.toList());
+	}
+	public void addOrder(Order order){
+		ordersMap.put(order.getCode(), order);
+	}
+	public double deliveryRate(){
+		return ordersMap.values().stream().filter(order->order.delivered()).count()/(double) ordersMap.size();
 	}
 }
