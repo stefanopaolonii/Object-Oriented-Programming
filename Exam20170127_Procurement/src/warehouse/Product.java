@@ -1,6 +1,7 @@
 package warehouse;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Product {
 	private final String code;
@@ -30,8 +31,11 @@ public class Product {
 	public int getQuantity(){	
 		return quantity;
 	}
+	public void addSupplier(Supplier supplier){
+		suppliersMap.put(supplier.getCodice(), supplier);
+	}
 	public List<Supplier> suppliers(){
-		return null;
+		return suppliersMap.values().stream().sorted(Comparator.comparing(Supplier::getNome)).collect(Collectors.toList());
 	}
 	public List<Order> pendingOrders(){
 			return null;

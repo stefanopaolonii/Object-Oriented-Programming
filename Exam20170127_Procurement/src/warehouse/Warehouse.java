@@ -29,13 +29,12 @@ public class Warehouse {
 	}
 
 	public Supplier newSupplier(String code, String name){
-		// TODO: completare
-		return null;
+		suppliersMap.put(code, new Supplier(code, name));
+		return suppliersMap.get(code);
 	}
 	
 	public Supplier findSupplier(String code){
-		// TODO: completare
-		return null;
+		return suppliersMap.get(code);
 	}
 
 	public Order issueOrder(Product prod, int quantity, Supplier supp)

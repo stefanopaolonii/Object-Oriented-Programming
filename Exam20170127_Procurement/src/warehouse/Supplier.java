@@ -1,6 +1,7 @@
 package warehouse;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Supplier {
 	private final String code;
@@ -20,8 +21,9 @@ public class Supplier {
 	}
 	public void newSupply(Product product){
 		productsMap.put(product.getCode(), product);
+		product.addSupplier(this);
 	}
 	public List<Product> supplies(){
-		return null;
+		return productsMap.values().stream().sorted(Comparator.comparing(Product::getDescription)).collect(Collectors.toList());
 	}
 }
