@@ -77,7 +77,7 @@ public class Delivery {
      * @return list of matching items
      */
     public List<String> findItem(String search){
-        return itemsList.stream().filter(item->item.getDescription().contains(search)).sorted(Comparator.comparing(Item::getCategory).thenComparing(Item::getDescription)).map(Item::toString).collect(Collectors.toList());
+        return itemsList.stream().filter(item->item.getDescription().toLowerCase().contains(search.toLowerCase())).sorted(Comparator.comparing(Item::getCategory).thenComparing(Item::getDescription)).map(Item::toString).collect(Collectors.toList());
     }
     
     /**
