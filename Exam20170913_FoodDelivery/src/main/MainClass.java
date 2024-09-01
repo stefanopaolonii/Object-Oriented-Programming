@@ -18,7 +18,6 @@ public class MainClass {
         // [[Fastfood] Cheeseburger : 5.50, [Fastfood] Hamburger : 5.00, [Side] Fries : 1.50]
 
         int ido = ds.newOrder(id);
-        
         try{
             ds.addItem(ido, "burger", 1);
         }catch(DeliveryException e){

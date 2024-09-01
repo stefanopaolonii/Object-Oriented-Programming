@@ -1,6 +1,7 @@
 package delivery;
 
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 public class Delivery {
     
@@ -24,7 +25,8 @@ public class Delivery {
      */
     public int newCustomer(String name, String address, String phone, String email) throws DeliveryException {
         if(customersMap.values().stream().map(Customer::getEmail).collect(Collectors.toList()).contains(email)) throw new DeliveryException();
-        customersMap.put(customerCounter, new Customer(++customerCounter, name, address, phone, email));
+        customerCounter++;
+        customersMap.put(customerCounter, new Customer(customerCounter, name, address, phone, email));
         return customerCounter;
     }
     
@@ -87,7 +89,8 @@ public class Delivery {
      * @return order id
      */
     public int newOrder(int customerId){
-        ordersMap.put(orderCounter, new Order(++orderCounter, customersMap.get(customerId)));
+        orderCounter++;
+        ordersMap.put(orderCounter, new Order(orderCounter, customersMap.get(customerId)));
         return orderCounter;
     }
     
@@ -129,7 +132,7 @@ public class Delivery {
      */
     public List<String> showOrder(int orderId) throws DeliveryException {
         if(!ordersMap.containsKey(orderId)) throw new DeliveryException();
-        return ordersMap.get(orderId).getItemsMap().entrySet().stream().map(entry->entry.getKey().getDescription()+", "+entry.getValue()).collect(Collectors.toList());
+        return ordersMap.get(orderId).getItemsMap().entrySet().stream().sorted(Comparator.comparingInt(entry->entry.getValue())).map(entry->entry.getKey().getDescription()+", "+entry.getValue()).collect(Collectors.toList());
     }
     
     /**
@@ -237,7 +240,8 @@ public class Delivery {
      * @return total amount
      */
     public double totalCustomer(int customerId){
-        return -1.0;
+        if(!customersMap.containsKey(customerId)) return -1.0;
+        return ordersMap.values().stream().filter(order->order.getCustomer().getId()==customerId).mapToDouble(Order::getAmount).sum();
     }
     
     /**
@@ -246,27 +250,27 @@ public class Delivery {
      * @return the classification
      */
     public SortedMap<Double,List<String>> bestCustomers(){
-        return null;
+        return customersMap.values().stream().collect(Collectors.groupingBy(customer->totalCustomer(customer.getId()),()-> new TreeMap<>(Collections.reverseOrder()),Collectors.mapping(Customer::toString, Collectors.toList())));
     }
     
-// NOT REQUIRED
-//
-//    /**
-//     * Computes the best items by total amount of orders.
-//     *  
-//     * @return the classification
-//     */
-//    public List<String> bestItems(){
-//        return null;
-//    }
-//    
-//    /**
-//     * Computes the most popular items by total quantity ordered.
-//     *  
-//     * @return the classification
-//     */
-//    public List<String> popularItems(){
-//        return null;
-//    }
+
+
+   /**
+    * Computes the best items by total amount of orders.
+    *  
+    * @return the classification
+   */
+   public List<String> bestItems(){
+      return itemsList.stream().collect(Collectors.toMap(item->item,item->ordersMap.values().stream().filter(order->order.getItemsMap().containsKey(item)).mapToDouble(order->order.getItemsMap().get(item)*item.getPrice()).sum())).entrySet().stream().sorted(Comparator.comparingDouble(entry->((Entry<Item, Integer>) entry).getValue()).reversed().thenComparing(entry->((Entry<Item, Integer>) entry).getKey().getDescription())).map(entry->entry.getKey().toString()).collect(Collectors.toList());
+   }
+
+   /**
+   * Computes the most popular items by total quantity ordered.
+   *  
+   * @return the classification
+   */
+   public List<String> popularItems(){
+    return itemsList.stream().collect(Collectors.toMap(item->item,item->ordersMap.values().stream().filter(order->order.getItemsMap().containsKey(item)).mapToDouble(order->order.getItemsMap().get(item)).sum())).entrySet().stream().sorted(Comparator.comparingDouble(entry->((Entry<Item, Integer>) entry).getValue()).reversed().thenComparing(entry->((Entry<Item, Integer>) entry).getKey().getDescription())).map(entry->entry.getKey().toString()).collect(Collectors.toList());
+   }
 
 }
